@@ -1,0 +1,33 @@
+language: node_js
+node_js: 10.13.0
+
+branches:
+  only:
+    - src
+
+install:
+  - npm i -g yarn
+  - curl -Lso /tmp/hugo.tgz https://github.com/gohugoio/hugo/releases/download/v0.56.0/hugo_0.56.0_Linux-64bit.tar.gz
+  - tar xf /tmp/hugo.tgz -C /tmp/
+  - /tmp/hugo version
+
+script:
+  - git clone https://github.com/olOwOlo/hugo-theme-even themes/even
+  - cat themes/_variables.scss > themes/even/src/css/_variables.scss
+  - yarn --cwd themes/even/ && yarn --cwd themes/even/ build
+  - /tmp/hugo 
+  - echo $CNAME > ./public/CNAME
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  keep-history: true
+  verbose: true
+  email: $EMAIL
+  name: $USERNAME
+  github-token: $GITHUB_TOKEN
+  local-dir: public
+  target-branch: master
+  fqdn: blog.epurs.com
+  on:
+    branch: master
