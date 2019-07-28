@@ -21,13 +21,13 @@ script:
 deploy:
   provider: pages
   skip-cleanup: true
-  keep-history: true
+# keep-history: false
   verbose: true
   email: $EMAIL
   name: $USERNAME
   github-token: $GITHUB_TOKEN
   local-dir: public
   target-branch: master
-  fqdn: blog.epurs.com
+  fqdn: $CNAME
   on:
-    branch: master
+    branch: src

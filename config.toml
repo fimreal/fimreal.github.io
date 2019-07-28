@@ -58,7 +58,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   since = "2018"            # Site creation time          # 站点建立时间
   # use public git repo url to link lastmod git commit, enableGitInfo should be true.
   # 指定 git 仓库地址，可以生成指向最近更新的 git commit 的链接，需要将 enableGitInfo 设置成 true.
-  gitRepo = "https://github.com/aW1yCg/aW1yCg.github.io"
+  gitRepo = "https://github.com/Fimreal/Fimreal.github.io"
 
   # site info (optional)                                  # 站点信息（可选，不需要的可以直接注释掉）
   logoTitle = ""        # default: the title value    # 默认值: 上面设置的title值
@@ -133,10 +133,10 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
     warn = 180              # Display warning if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示警告
 
   [params.gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
-    owner = "aW1yCg"              # Your GitHub ID
-    repo = "https://github.com/aW1yCg/aW1yCg.github.io"               # The repo to store comments
-    clientId = "e6c7e7e49bbbb3d5204a"           # Your client ID
-    clientSecret = "d96aea3f71725a8711fab29767ee6918b284c636"       # Your client secret
+    owner = ""              # Your GitHub ID
+    repo = ""               # The repo to store comments
+    clientId = ""           # Your client ID
+    clientSecret = ""       # Your client secret
 
   [params.valine]
     enable = true
@@ -146,7 +146,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
     verify = true # Verification code
     avatar = 'mp'
     placeholder = 'Say something...'
-    visitor = true
+    visitor = false
 
   [params.gitalk]           # Gitalk is a comment system based on GitHub issues. see https://github.com/gitalk/gitalk
     owner = ""              # Your GitHub ID
@@ -170,8 +170,8 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
 
   [params.reward]                                         # 文章打赏
     enable = false
-    wechat = "/path/to/your/wechat-qr-code.png"           # 微信二维码
-    alipay = "/path/to/your/alipay-qr-code.png"           # 支付宝二维码
+    wechat = ""           # 微信二维码
+    alipay = ""           # 支付宝二维码
 
   [params.social]                                         # 社交链接
     a-email = "mailto:&#108;&#109;&#114;&#64;&#101;&#112;&#117;&#114;&#115;&#46;&#99;&#111;&#109;"
