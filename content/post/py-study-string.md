@@ -483,6 +483,6 @@ Python 中字符串的内置方法作用用例总结
 ##### 参考链接
 
 - [python中str函数isdigit、isdecimal、isnumeric的区别](https://www.cnblogs.com/jebeljebel/p/4006433.html)
-- [Python splitlines()方法](http://www.runoob.com/python/att-string-splitlines.html)
-- [Python3 字符串](http://www.runoob.com/python3/python3-string.html)
+- [Python splitlines()方法](https://www.runoob.com/python/att-string-splitlines.html)
+- [Python3 字符串](https://www.runoob.com/python3/python3-string.html)
 - [课时14：字符串：各种奇葩的内置方法](https://www.cnblogs.com/DC0307/p/9408848.html)

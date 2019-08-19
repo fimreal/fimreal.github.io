@@ -69,7 +69,7 @@ http://domain/app/.../24/data
 
 可能是之前的知识固化了思维，我以为在 `location` 后写正则，再去改写 path ，且不说怎么把把变化的数字传递给 `upstream_addr`，nginx 不是不允许这样做，会直接给出报错吗？
 
-那么如果使用 `if` 来限定缓存的 path 是不是就可以了，遗憾的是 nginx 也会报错。查阅 [nginx.org](http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache) 文档说明可以发现，proxy_cache 不能用在 `if` 语句内。
+那么如果使用 `if` 来限定缓存的 path 是不是就可以了，遗憾的是 nginx 也会报错。查阅 [nginx.org](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache) 文档说明可以发现，proxy_cache 不能用在 `if` 语句内。
 
 #### 正确的用法
 

@@ -2,7 +2,7 @@
 title: "一个查找 Docker 镜像包含 tag 的脚本"
 date: 2019-06-11T06:40:50Z
 lastmod: 2019-06-11T06:47:22Z
-draft: true
+draft: false
 keywords: ["shell script","docker"]
 description: "一个查找 Docker 镜像包含 tag 的脚本"
 tags: ["Linux",Docker]
@@ -50,7 +50,7 @@ sequenceDiagrams:
 
 可以高亮过滤 `tag` 内容，例如：
 
-![](http://od.epurs.com/images/2019/06/11/qrJtodTdzt/docker_tags.png)
+![](https://od.epurs.com/images/2019/06/11/qrJtodTdzt/docker_tags.png)
 
 
 ```bash

@@ -161,7 +161,7 @@ cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 配置 ntpd 服务主配置文件 `/etc/ntp.conf` ，以下以 CentOS7 中 ntp-4.2.6 为例
 
 ```bash
-$ cp /etc/ntp.conf{,.bak}
+$ tee </etc/ntp.conf /etc/ntp.conf.bak
 # For more information about this file, see the man pages
 # ntp.conf(5), ntp_acc(5), ntp_auth(5), ntp_clock(5), ntp_misc(5), ntp_mon(5).
 
@@ -196,7 +196,7 @@ restrict ::1
 # restrict ［授权同步的网段］ mask ［netmask］ ［parameter］
 # 例：restrict 172.16.1.0 mask 255.255.252.0 nomodify
 # Use public servers from the pool.ntp.org project.
-# Please consider joining the pool (http://www.pool.ntp.org/join.html).
+# Please consider joining the pool (https://www.pool.ntp.org/join.html).
 #server 0.centos.pool.ntp.org iburst
 #server 1.centos.pool.ntp.org iburst
 #server 2.centos.pool.ntp.org iburst
@@ -251,7 +251,7 @@ disable monitor
 
 觉着太长不看？简单来说，只要修改server 中上级ntp服务器为离自己较近的服务器即可。ntp提供的中国地区的时间同步服务器域名列表：
 
-<http://www.pool.ntp.org/zone/cn>
+<https://www.pool.ntp.org/zone/cn>
 
 配置 `/etc/sysconfig/ntpd` 文件
 
@@ -289,6 +289,7 @@ yum install ntpdate
 ```bash
 #!/bin/bash
 #设置上级ntp服务器的IP地址替换ntp_server
+ntp_server="ntp.epurs.com"
 # 尝试同步ntp_server，并修改硬件时间
 /usr/sbin/ntpdate ntp_server && /usr/sbin/hwclock -w ||exit 1
 # 添加定时任务，每五分钟同步一次
@@ -297,9 +298,9 @@ grep -q hwcklock /var/spool/cron/root &>/null || /bin/echo '*/5 * * * * /usr/sbi
 
 ## chrnoy时钟同步服务
 
-安装同上，直接yum install chrnoy即可，配置办法很简单，同样最简单的只需要修改server即可。需要注意的是，客户端不能使用ntpdate进行同步了，需要同样安装chrnoy软件，修改配置文件/etc/chrony.conf中server指定配置的server ip。这也是很多人不能接受新软件的问题，配置使用更麻烦了，不便于管理。
+安装同上，直接`yum install chrnoy`即可，配置办法很简单，同样最简单的只需要修改 server 即可。需要注意的是，客户端不能使用`ntpdate`进行同步了，需要同样安装`chrnoy`软件，修改配置文件`/etc/chrony.conf`中 server 指定配置的 server ip。可能这也是很多人不能接受新软件的问题，配置使用更麻烦，不便于管理。
 
-chrnoy和ntpd相比优势在哪里？
+`chrnoy`和`ntpd`相比优势在哪里？
 
 - 更快的同步只需要数分钟而非数小时时间，从而最大程度减少了时间和频率误差，这对于并非全天 24 小时运行的台式计算机或系统而言非常有用。
 - 能够更好地响应时钟频率的快速变化，这对于具备不稳定时钟的虚拟机或导致时钟频率发生变化的节能技术而言非常有用。

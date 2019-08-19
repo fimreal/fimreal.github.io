@@ -168,13 +168,13 @@ pam 控制命令简单说明：
 
 安装打开后，点击右上角 “+” ，选择 扫描二维码或者输入验证码
 
-![](http://od.epurs.com/images/2019/06/06/OrQR5XLo5p/google_authentication_0.png)
+![](https://od.epurs.com/images/2019/06/06/OrQR5XLo5p/google_authentication_0.png)
 
 在系统中可以查看 `/root/.google_authenticator` 文件找到配置的验证码
 
 手机端输入后保存
 
-![](http://od.epurs.com/images/2019/06/06/yKcQVHE4DR/google_authentication_1.png)
+![](https://od.epurs.com/images/2019/06/06/yKcQVHE4DR/google_authentication_1.png)
 
 
 ### 验证测试
@@ -260,6 +260,6 @@ sed -i.bak '1i auth            sufficient      pam_google_authenticator.so' /etc
 
 #### 3. 使用浏览器插件查看动态密码
 
-Chrome 插件：http://t.cn/E9oafuV
+Chrome 插件：https://t.cn/E9oafuV
 
-Firefox 插件：http://t.cn/zjaEAlS
+Firefox 插件：https://t.cn/zjaEAlS
