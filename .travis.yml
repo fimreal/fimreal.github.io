@@ -1,22 +1,25 @@
-language: node_js
-node_js: 10.13.0
+language: go
+go:
+- 1.13.x
 
 branches:
   only:
     - src
 
 install:
-  - npm i -g yarn
-  - curl -Lso /tmp/hugo.tgz https://github.com/gohugoio/hugo/releases/download/v0.56.0/hugo_0.56.0_Linux-64bit.tar.gz
-  - tar xf /tmp/hugo.tgz -C /tmp/
-  - /tmp/hugo version
+# - npm i -g yarn
+# - curl -Lso /tmp/hugo.tgz https://github.com/gohugoio/hugo/releases/download/v0.56.0/hugo_0.56.0_Linux-64bit.tar.gz
+# - tar xf /tmp/hugo.tgz -C /tmp/
+# - curl epurs.com/github/gohugoio/hugo | bash
+  - sudo snap install hugo --channel=extended
+  - hugo version
 
 script:
   - git clone https://github.com/olOwOlo/hugo-theme-even themes/even
   - cat themes/_variables.scss > themes/even/assets/sass/_variables.scss
   - cat themes/live2d >> themes/even/layouts/partials/scripts.html
-  - yarn --cwd themes/even/ && yarn --cwd themes/even/ build
-  - /tmp/hugo 
+# - yarn --cwd themes/even/ && yarn --cwd themes/even/ build
+  - hugo 
   - echo $CNAME > ./public/CNAME
 
 deploy:
