@@ -14,6 +14,7 @@ install:
 script:
   - git clone https://github.com/olOwOlo/hugo-theme-even themes/even
   - cat themes/_variables.scss > themes/even/src/css/_variables.scss
+  - cat themes/live2d >> themes/even/layouts/partials/scripts.html
   - yarn --cwd themes/even/ && yarn --cwd themes/even/ build
   - /tmp/hugo 
   - echo $CNAME > ./public/CNAME
