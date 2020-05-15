@@ -334,7 +334,47 @@ apply 上面文件完成部署。
 kubectl get po,svc
 ```
 
-### 二、ProxySQL 常见问题
+### 二、 添加 Prometheus 监控支持
+
+使用 [proxysql-export](https://github.com/percona/proxysql_exporter) 查询 PorySQL 状态暴露指标给 prometheus 。
+
+创建 Deployment，声明文件参考：
+
+```yaml
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: proxysql-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: proxysql-exporter
+  template:
+    metadata:
+      labels:
+        name: proxysql-exporter
+        app: proxysql-exporter
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "42004"
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+      - name: proxysql-exporter
+        image: epurs/proxysql_exporter
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 42004
+        env:
+        - name: DATA_SOURCE_NAME
+          value: "proxysql-admin:adminpassword@tcp(proxysql.default:6032)/"
+      # args:
+      # - -web.listen-address=:42004
+```
+
+
+### 三、ProxySQL 常见问题
 
 #### 1. 添加用户
 
