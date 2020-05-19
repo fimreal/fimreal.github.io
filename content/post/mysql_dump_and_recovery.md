@@ -176,7 +176,7 @@ echo "======================" >> ${LOGFILE}
 
 ### 三、一些异常错误的解决办法
 
-#### 1. 遇到报错：[MySQL ERROR 1231 (42000):Variable 'character_set_client' can't be set to the value of 'NULL'](https://stackoverflow.com/questions/29112716/mysql-error-1231-42000variable-character-set-client-cant-be-set-to-the-val) 时
+#### 1. 遇到报错：[`MySQL ERROR 1231 (42000):Variable 'character_set_client' can't be set to the value of 'NULL'`](https://stackoverflow.com/questions/29112716/mysql-error-1231-42000variable-character-set-client-cant-be-set-to-the-val) 时
 
 客户端字符集设置问题，可以修改 SQL 文件内的 [最后]
 
@@ -188,6 +188,7 @@ echo "======================" >> ${LOGFILE}
 
 默认 dump 文件环境配置可以参考：
 
+```mysql
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -207,7 +208,7 @@ echo "======================" >> ${LOGFILE}
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
+```
 
 
 ### Reference

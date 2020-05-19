@@ -81,6 +81,12 @@ ENV JAVA_OPTS="\
 java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -jar app.jar
 ```
 
+相应测试命令：
+
+```bash
+docker run -it -m 1G --rm openjdk:8 java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XshowSettings:vm  -version
+```
+
 
 ### 自动配置内存脚本
 
