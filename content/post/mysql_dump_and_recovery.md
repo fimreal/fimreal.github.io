@@ -39,12 +39,12 @@ sequenceDiagrams:
   options: ""
 
 ---
+MySQL 备份时常用到的命令，脚本笔记。
 
-# MySQL 备份及还原笔记
-
+<!--more-->
 ### 一、mysqldump 备份常用命令参数
 
-基础备份命令：
+#### 1. 基础备份命令
 
 ```bash
 mysql [-h <host_address>] [-P <host_port>] <-u <mysql_username>> [-p[<mysql_password>]] [dump_args] ...[scheme_name] [table_name] > filename-$(date +%F).sql
@@ -62,7 +62,32 @@ mysql [-h <host_address>] [-P <host_port>] <-u <mysql_username>> [-p[<mysql_pass
 8. `-d`只导出数据结构，不导出数据
 9. `-t`只导出数据，不导出数据结构
 
+#### 2. 其他
 
+##### 查看数据库大小
+
+```mysql
+select
+TABLE_SCHEMA,
+concat(truncate(sum(data_length)/1024/1024,2),' MB') as data_size,
+concat(truncate(sum(index_length)/1024/1024,2),'MB') as index_size
+from information_schema.tables
+group by TABLE_SCHEMA
+ORDER BY data_size desc;
+```
+
+##### 查看数据库表空间大小
+
+```mysql
+select
+TABLE_NAME,
+concat(truncate(data_length/1024/1024,2),' MB') as data_size,
+concat(truncate(index_length/1024/1024,2),' MB') as index_size
+from information_schema.tables
+where TABLE_SCHEMA = 'mysql'
+group by TABLE_NAME
+order by data_length desc;
+```
 
 ### 二、MySQL 导入SQL 备份文件
 

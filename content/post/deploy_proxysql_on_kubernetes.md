@@ -373,6 +373,10 @@ spec:
       # - -web.listen-address=:42004
 ```
 
+Grafana dashboard 可以使用
+
+[](https://github.com/percona/grafana-dashboards/blob/master/dashboards/ProxySQL_Overview.json)
+
 
 ### 三、ProxySQL 常见问题
 
