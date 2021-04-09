@@ -143,6 +143,28 @@ data:
 首先参考下面 StatefulSet 声明文件 创建 workload，然后等待 rabbitmq 三节点启动完成。
 
 ```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: rabbitmq
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  type: NodePort
+  ports:
+   - name: http
+     protocol: TCP
+     port: 15672
+     targetPort: 15672
+     nodePort: 15672
+   - name: amqp
+     protocol: TCP
+     port: 5672
+     targetPort: 5672
+     nodePort: 5672
+  selector:
+    app: rabbitmq
 ---
 apiVersion: apps/v1beta1
 kind: StatefulSet
