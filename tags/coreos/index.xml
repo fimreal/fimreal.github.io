@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CoreOS on 闲隅</title>
+    <link>/tags/coreos/</link>
+    <description>Recent content in CoreOS on 闲隅</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 23 Sep 2019 07:23:00 +0000</lastBuildDate><atom:link href="/tags/coreos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CoreOS 使用 systemd 定时任务启动容器更新 ssl 证书</title>
+      <link>/post/update-ssl-certificates-with-systemd-timer-and-docker/</link>
+      <pubDate>Mon, 23 Sep 2019 07:23:00 +0000</pubDate>
+      
+      <guid>/post/update-ssl-certificates-with-systemd-timer-and-docker/</guid>
+      <description>&lt;p&gt;如果你跟我一样“喜欢”并使用着 CoreOS 这个专为运行容器设计的系统，对它极精简和苛刻的安全策略着迷的同时，又烦闹于没有 crond 定时服务来管理一些小计划任务，可以参考这篇文章写的一个实例。
+使用 systemd 自带的 timer 即定时器功能来替代 crond 管理启动定时任务。
+文中给出我自己服务器上使用 Docker 定时更新 Let&amp;rsquo;s Encrypt 证书的 unit 配置文件，及一些简单的管理查看办法供参考。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CoreOS 添加 bash-completion 命令补全</title>
+      <link>/post/coreos-add-bash-completion/</link>
+      <pubDate>Tue, 16 Apr 2019 08:13:50 +0000</pubDate>
+      
+      <guid>/post/coreos-add-bash-completion/</guid>
+      <description>&lt;p&gt;CoreOS 系统常用作容器宿主机系统，开发者本着缩小镜像体积提供核心功能的初衷，没有附带上命令补全功能，这可真要逼死 &lt;code&gt;TAB&lt;/code&gt; 键按个不停随时感觉要飞起来的 &lt;code&gt;bash shell&lt;/code&gt; 用户。
+本文是参考 github/coreos 上 ISSUE 提供的办法来实践测试写出，最终解决方案有些许优化。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

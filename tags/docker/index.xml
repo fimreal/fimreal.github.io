@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on 闲隅</title>
+    <link>/tags/docker/</link>
+    <description>Recent content in Docker on 闲隅</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 30 Apr 2021 17:35:23 +0800</lastBuildDate><atom:link href="/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>帮助已经运行的容器暴露端口</title>
+      <link>/post/exposing-a-port-on-a-live-container/</link>
+      <pubDate>Fri, 30 Apr 2021 17:35:23 +0800</pubDate>
+      
+      <guid>/post/exposing-a-port-on-a-live-container/</guid>
+      <description>&lt;p&gt;使用Docker时经常会碰到某些容器需要额外打开端口调试的情况，而 docker-proxy 不支持用户在命令行创建新的端口映射，我们需要额外一些小技巧来实现端口转发。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Docker 中 java 应用内存配置问题</title>
+      <link>/post/java_in_docker/</link>
+      <pubDate>Sat, 12 Oct 2019 18:17:20 +0800</pubDate>
+      
+      <guid>/post/java_in_docker/</guid>
+      <description>&lt;p&gt;使用 Dockerhub &lt;code&gt;java:8&lt;/code&gt; 为基础镜像创建 Springboot APP 时，会遇到很多内存配置的问题。首先容器内存使用 cgroup 技术隔离，当对容器作出限制时，低版本 java 找不到正确的内存配置，
+而 java8 默认会取总内存 1/4 作为堆内存配置来启动应用，可能会导致 OOM 频繁发生，并且不便于节约服务器资源。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CoreOS 使用 systemd 定时任务启动容器更新 ssl 证书</title>
+      <link>/post/update-ssl-certificates-with-systemd-timer-and-docker/</link>
+      <pubDate>Mon, 23 Sep 2019 07:23:00 +0000</pubDate>
+      
+      <guid>/post/update-ssl-certificates-with-systemd-timer-and-docker/</guid>
+      <description>&lt;p&gt;如果你跟我一样“喜欢”并使用着 CoreOS 这个专为运行容器设计的系统，对它极精简和苛刻的安全策略着迷的同时，又烦闹于没有 crond 定时服务来管理一些小计划任务，可以参考这篇文章写的一个实例。
+使用 systemd 自带的 timer 即定时器功能来替代 crond 管理启动定时任务。
+文中给出我自己服务器上使用 Docker 定时更新 Let&amp;rsquo;s Encrypt 证书的 unit 配置文件，及一些简单的管理查看办法供参考。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>一个查找 Docker 镜像包含 tag 的脚本</title>
+      <link>/post/a-shell-script-for-searhing-docker-image-tags/</link>
+      <pubDate>Tue, 11 Jun 2019 06:40:50 +0000</pubDate>
+      
+      <guid>/post/a-shell-script-for-searhing-docker-image-tags/</guid>
+      <description>&lt;p&gt;用 cURL 简单写一个查询 Docker 镜像的脚本，可以非常方便的查看搜索可以选 tag 。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Docker login 报证书存储错误的解决办法</title>
+      <link>/post/docker-login-error-saving-credentials/</link>
+      <pubDate>Thu, 11 Apr 2019 10:05:58 +0000</pubDate>
+      
+      <guid>/post/docker-login-error-saving-credentials/</guid>
+      <description>&lt;p&gt;docker login 出现错误，提示：&lt;code&gt;Error saving credentials: error storing credentials - err: exit status 1, out: Cannot autolaunch D-Bus without X11 $DISPLAY &lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

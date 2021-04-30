@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on 闲隅</title>
+    <link>/tags/</link>
+    <description>Recent content in Tags on 闲隅</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 30 Apr 2021 17:35:23 +0800</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Container</title>
+      <link>/tags/container/</link>
+      <pubDate>Fri, 30 Apr 2021 17:35:23 +0800</pubDate>
+      
+      <guid>/tags/container/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker</title>
+      <link>/tags/docker/</link>
+      <pubDate>Fri, 30 Apr 2021 17:35:23 +0800</pubDate>
+      
+      <guid>/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>socat</title>
+      <link>/tags/socat/</link>
+      <pubDate>Fri, 30 Apr 2021 17:35:23 +0800</pubDate>
+      
+      <guid>/tags/socat/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kubernetes</title>
+      <link>/tags/kubernetes/</link>
+      <pubDate>Fri, 15 May 2020 13:43:30 +0800</pubDate>
+      
+      <guid>/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rabbitmq</title>
+      <link>/tags/rabbitmq/</link>
+      <pubDate>Fri, 15 May 2020 13:43:30 +0800</pubDate>
+      
+      <guid>/tags/rabbitmq/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MySQL</title>
+      <link>/tags/mysql/</link>
+      <pubDate>Thu, 14 May 2020 16:27:36 +0800</pubDate>
+      
+      <guid>/tags/mysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>proxysql</title>
+      <link>/tags/proxysql/</link>
+      <pubDate>Thu, 14 May 2020 16:27:36 +0800</pubDate>
+      
+      <guid>/tags/proxysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux</title>
+      <link>/tags/linux/</link>
+      <pubDate>Sat, 28 Mar 2020 14:00:14 +0800</pubDate>
+      
+      <guid>/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CoreOS</title>
+      <link>/tags/coreos/</link>
+      <pubDate>Mon, 23 Sep 2019 07:23:00 +0000</pubDate>
+      
+      <guid>/tags/coreos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux shell</title>
+      <link>/tags/linux-shell/</link>
+      <pubDate>Mon, 19 Aug 2019 06:33:00 +0000</pubDate>
+      
+      <guid>/tags/linux-shell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>secure</title>
+      <link>/tags/secure/</link>
+      <pubDate>Thu, 06 Jun 2019 02:40:00 +0000</pubDate>
+      
+      <guid>/tags/secure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sshd</title>
+      <link>/tags/sshd/</link>
+      <pubDate>Thu, 06 Jun 2019 02:40:00 +0000</pubDate>
+      
+      <guid>/tags/sshd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nginx</title>
+      <link>/tags/nginx/</link>
+      <pubDate>Thu, 09 May 2019 06:51:22 +0000</pubDate>
+      
+      <guid>/tags/nginx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>websocket</title>
+      <link>/tags/websocket/</link>
+      <pubDate>Tue, 23 Apr 2019 16:36:34 +0000</pubDate>
+      
+      <guid>/tags/websocket/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Git</title>
+      <link>/tags/git/</link>
+      <pubDate>Tue, 16 Apr 2019 08:36:34 +0000</pubDate>
+      
+      <guid>/tags/git/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>/tags/python/</link>
+      <pubDate>Mon, 15 Apr 2019 11:45:00 +0000</pubDate>
+      
+      <guid>/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>时间同步</title>
+      <link>/tags/%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5/</link>
+      <pubDate>Wed, 10 Jan 2018 17:05:13 +0000</pubDate>
+      
+      <guid>/tags/%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

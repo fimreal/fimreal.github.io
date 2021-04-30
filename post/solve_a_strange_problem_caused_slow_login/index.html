@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>记一次解决 Linux 登陆慢的问题 - 闲隅</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Fimreal" /><meta name="description" content="Linux 运行一段时间，登陆变得非常缓慢，连 reboot 命令都会失败，最终原因竟然是..." /><meta name="keywords" content="Linux" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.80.0 with theme even" />
+
+
+<link rel="canonical" href="/post/solve_a_strange_problem_caused_slow_login/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.ccc74220713006fb8449610ef1bc6302d9f4eb43d259740bc100c35852ee9c55.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="记一次解决 Linux 登陆慢的问题" />
+<meta property="og:description" content="Linux 运行一段时间，登陆变得非常缓慢，连 reboot 命令都会失败，最终原因竟然是..." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/post/solve_a_strange_problem_caused_slow_login/" />
+<meta property="article:published_time" content="2020-03-28T14:00:14+08:00" />
+<meta property="article:modified_time" content="2020-05-19T15:36:13+08:00" />
+<meta itemprop="name" content="记一次解决 Linux 登陆慢的问题">
+<meta itemprop="description" content="Linux 运行一段时间，登陆变得非常缓慢，连 reboot 命令都会失败，最终原因竟然是...">
+<meta itemprop="datePublished" content="2020-03-28T14:00:14+08:00" />
+<meta itemprop="dateModified" content="2020-05-19T15:36:13+08:00" />
+<meta itemprop="wordCount" content="1338">
+
+
+
+<meta itemprop="keywords" content="Linux," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="记一次解决 Linux 登陆慢的问题"/>
+<meta name="twitter:description" content="Linux 运行一段时间，登陆变得非常缓慢，连 reboot 命令都会失败，最终原因竟然是..."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">闲隅</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">闲隅</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">记一次解决 Linux 登陆慢的问题</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-28 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> Linux </a>
+            </div>
+          <span class="more-meta"> 约 1338 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#事件背景">事件背景</a></li>
+        <li><a href="#重启能解决-90-的系统问题">重启能解决 90% 的系统问题</a></li>
+        <li><a href="#终于抓到了问题关键">终于抓到了问题关键</a></li>
+        <li><a href="#问题总结">问题总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>Linux 运行一段时间，登陆变得非常缓慢，好不容易进入 shell，连 reboot 命令都会失败，最终原因竟然是&hellip;</p>
+<h3 id="事件背景">事件背景</h3>
+<p>家里有一台 mini x86 主机，系统用的 Deepin (从宋老板手里淘过来就预装好了，反正都是熟悉的 Linux ，也没必要再装一遍系统)，用 AC86U dmz 功能隔离暴露在公网上，方便偶尔代理到家里做测试。</p>
+<p>问题第一次出现在去年年底，发现 ssh 连接登陆异常困难，通过使用 <code>ssh -v</code> 可以看到 ssh 连接建立一切正常，但是迟迟不出下文，需要等待1min 以上才进入 shell 。</p>
+<p>这时候进入系统，先简单查看 ps、top 都没有找到异常占用资源的进程，加上 last 等各种分析确定了还没有被入侵。sudo 切换到 root 时，又开始了跟 ssh 登陆一样的等待，等待大概要 1 到 2 分钟才能登陆，登陆后查看系统错误日志。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># journalctl -xe -perr
+11月 04 21:13:42 *** deepin-sync-daemon[6621]: [ERR] bin.go:79: resp body: no token found map[Token:[] Access-Token:[]]
+11月 04 21:13:42 *** deepin-sync-daemon[6621]: [ERR] deepinid.go:178: check token info failed: failed to get token info
+11月 04 21:13:42 *** deepin-sync-daemon[6621]: [ERR] bin.go:79: resp body: no token found map[Token:[] Access-Token:[]]
+11月 04 21:13:42 *** deepin-sync-daemon[6621]: [ERR] deepinid.go:150: check token info failed: failed to get token info
+11月 04 21:13:43 *** deepin-sync-daemon[6819]: [CRI] main.go:38: failed to new deepinid: name &#39;com.deepin.deepinid&#39; has exists
+11月 04 21:14:07 *** pulseaudio[6738]: [pulseaudio] bluez5-util.c: GetManagedObjects() failed: org.freedesktop.DBus.Error.NoReply: Did not receive a reply. Possible causes 1月 04 21:14:32 *** daemon/bluetooth[6590]: bluetooth.go:236: Failed to activate service &#39;org.bluez&#39;: timed out
+                                                    -&gt;  bluetooth.go:211
+                                                    -&gt;  asm_amd64.s:2361
+</code></pre></td></tr></table>
+</div>
+</div><p>重点在<code>org.freedesktop.DBus.Error.NoReply: Did not receive a reply</code>，看起来是 dbus 挂了，Google 之，发现挺多外国小伙伴遇到这个问题，比如：</p>
+<p><a href="https://bbs.archlinux.org/viewtopic.php?id=188287">https://bbs.archlinux.org/viewtopic.php?id=188287</a></p>
+<p>至于遇到的问题，解决的办法看的我一头雾水。</p>
+<h3 id="重启能解决-90-的系统问题">重启能解决 90% 的系统问题</h3>
+<p>既然问题难以解决，主机上也没有重要内容，重启试试吧。</p>
+<p>终端敲下 <code>reboot</code>，等待&hellip; ，<code>ctrl + c</code>无事发生，<code>systemctl reboot</code>，等待近 10min， <code>ctrl + c</code>还是无事发生&hellip;</p>
+<p>哎，遇到了重启都重启不了的情况。</p>
+<p>Google  之，systemd 不重启怎么解决，得到解决办法，使用强制重启命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">sudo systemctl --force --force reboot
+</code></pre></td></tr></table>
+</div>
+</div><p>带上 2 * <code>--force</code>就是厉害，命令一敲系统麻溜的断开了连接。</p>
+<p>重启后问题解决了！但是问题根本原因在哪呢 ？</p>
+<h3 id="终于抓到了问题关键">终于抓到了问题关键</h3>
+<p>时隔这么久，主机又被我强制重启了两次，这次我终于忍不了了，<code>journactl -xe </code>一点点翻日志 ，但是除了 dbus 记录没有任何相关信息。</p>
+<p>这次出问题的不光是 ssh 慢了，docker 里一个代理容器也因为 aws  机器被锁定，ssh 隧道卡死杀不掉进程。于是万能的重启大法来了, <code>systemctl restart docker</code>！</p>
+<p>本来想重启 docker 解决眼前问题，但是却出现了新的的状况，dockerd 重启没起来，手动执行 <code>dockerd</code>，出现报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[system] Connection has not authenticated soon enough, closing it (auth_timeout=30000ms, elapsed: 30002ms)
+</code></pre></td></tr></table>
+</div>
+</div><p>这里很关键，Google 之，在第一条 <a href="https://github.com/openbmc/openbmc/issues/1432#issuecomment-293054813">github issue</a> 中发现了惊喜。</p>
+<blockquote>
+<p><strong><a href="https://github.com/mdmillerii">mdmillerii</a></strong>: you can explore /proc/*/fd to find processes that have lots of open files files (directories with lots of entries, which are symlinks), then find the commands for those processes numbers like was done on <a href="https://github.com/openbmc/openbmc/issues/875">#875</a> above.</p>
+</blockquote>
+<p>于是</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">ls /proc/*/fd/
+</code></pre></td></tr></table>
+</div>
+</div><p>发现 3862 进程 fd 有非常非常多的文件描述符，查看进程信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">lsof -p <span class="m">3862</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>定位到罪魁祸首是 <code>xrdp</code>服务，重启之，测试 ssh 连接，一路畅通，流畅的像新重启完一样。</p>
+<h3 id="问题总结">问题总结</h3>
+<p>根本原因在于 <code>xrdp</code>服务占用了过多的 fd ，导致 dbus 服务无响应，也最终致使 systemd 本身都不能好好工作，甚至出现想重启都难的问题。</p>
+<p>Google 搜索 &ldquo;xrdp fd&rdquo;，第一个 github issue 名字就是 <a href="https://github.com/neutrinolabs/xrdp/issues/279">leaks file descriptors</a> ，查看修复版本是 0.9.13，deepin apt 仓库里自带的版本是 0.9.1 ，看来是坑在用了 2014 年远古版本的 xrdp，并复现了多次已知 bug 。</p>
+<p>Linux 中遇到系统组件报错时，只拿一些通用的底层报错很难搜到解决办法，这时候可以启动一些不关健的小服务，测试调用系统服务时出现的报错信息，来定位原因。</p>
+    </div>
+
+    
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">Linux</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/mysql_dump_and_recovery/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">MySQL备份还原笔记</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/java_in_docker/">
+            <span class="next-text nav-default">Docker 中 java 应用内存配置问题</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+        el: '#vcomments' ,
+        appId: 'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',
+        appKey: 'cq9Rl1lkMWGfkEoq93b6t3bJ',
+        notify:  false ,
+        verify:  true ,
+        avatar:'mp',
+        placeholder: 'Say something...',
+        visitor:  false 
+    });
+  </script>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109;" class="iconfont icon-email" title="email"></a>
+  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2018 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-138489412-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>
