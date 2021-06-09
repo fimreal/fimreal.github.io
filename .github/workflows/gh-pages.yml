@@ -30,9 +30,10 @@ jobs:
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/src'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}     # see https://github.com/marketplace/actions/github-pages-action#github-actions-for-github-pages
           publish_dir: ./public
           cname: blog.epurs.com
           keep_files: false
+          publish_branch: master
