@@ -20,7 +20,7 @@ jobs:
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'
-          # extended: true
+          extended: true
 
       - name: install hugo theme
         run: git clone https://github.com/olOwOlo/hugo-theme-even themes/even && cat themes/_variables.scss > themes/even/assets/sass/_variables.scss
