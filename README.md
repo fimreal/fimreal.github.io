@@ -1,6 +1,6 @@
 ---
 
-[![Build Status](https://travis-ci.com/fimreal/fimreal.github.io.svg?branch=master)](https://travis-ci.com/fimreal/fimreal.github.io)
+[![Build Status](https://travis-ci.com/fimreal/fimreal.github.io.svg?branch=src)](https://travis-ci.com/fimreal/fimreal.github.io)
 
 #### Hey my friend
 
