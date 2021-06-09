@@ -1,6 +1,6 @@
 language: go
 go:
-- 1.13.x
+- 1.15.x
 
 branches:
   only:
@@ -11,7 +11,7 @@ install:
 # - curl -Lso /tmp/hugo.tgz https://github.com/gohugoio/hugo/releases/download/v0.56.0/hugo_0.56.0_Linux-64bit.tar.gz
 # - tar xf /tmp/hugo.tgz -C /tmp/
 # - curl epurs.com/github/gohugoio/hugo | bash
-  - sudo snap install hugo --channel=extended
+  - sudo snap install hugo # --channel=extended
   - hugo version
 
 script:
