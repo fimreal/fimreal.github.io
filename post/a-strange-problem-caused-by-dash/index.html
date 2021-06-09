@@ -1,322 +1,35 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>记一次 dash 导致脚本执行失败的问题 - 闲隅</title>
-  <meta name="renderer" content="webkit" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-<meta name="theme-color" content="#f8f5ec" />
-<meta name="msapplication-navbutton-color" content="#f8f5ec">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
-
-
-<meta name="author" content="Fimreal" /><meta name="description" content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。" /><meta name="keywords" content="dash, kettle" />
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.80.0 with theme even" />
-
-
-<link rel="canonical" href="/post/a-strange-problem-caused-by-dash/" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-
-
-
-<link href="/sass/main.min.ccc74220713006fb8449610ef1bc6302d9f4eb43d259740bc100c35852ee9c55.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
-
-
-<meta property="og:title" content="记一次 dash 导致脚本执行失败的问题" />
-<meta property="og:description" content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="/post/a-strange-problem-caused-by-dash/" />
-<meta property="article:published_time" content="2019-08-19T06:33:00+00:00" />
-<meta property="article:modified_time" content="2019-08-19T14:35:05+08:00" />
-<meta itemprop="name" content="记一次 dash 导致脚本执行失败的问题">
-<meta itemprop="description" content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。">
-<meta itemprop="datePublished" content="2019-08-19T06:33:00+00:00" />
-<meta itemprop="dateModified" content="2019-08-19T14:35:05+08:00" />
-<meta itemprop="wordCount" content="1275">
-
-
-
-<meta itemprop="keywords" content="Linux shell," />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="记一次 dash 导致脚本执行失败的问题"/>
-<meta name="twitter:description" content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。"/>
-
-<!--[if lte IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
-<![endif]-->
-
-<!--[if lt IE 9]>
-  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-<![endif]-->
-
-</head>
-<body>
-  <div id="mobile-navbar" class="mobile-navbar">
-  <div class="mobile-header-logo">
-    <a href="/" class="logo">闲隅</a>
-  </div>
-  <div class="mobile-navbar-icon">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</div>
-<nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list">
-    <a href="/">
-        <li class="mobile-menu-item">主页</li>
-      </a><a href="/post/">
-        <li class="mobile-menu-item">归档</li>
-      </a><a href="/tags/">
-        <li class="mobile-menu-item">标签</li>
-      </a><a href="/categories/">
-        <li class="mobile-menu-item">分类</li>
-      </a>
-  </ul>
-
-  
-
-
-</nav>
-
-  <div class="container" id="mobile-panel">
-    <header id="header" class="header">
-        <div class="logo-wrapper">
-  <a href="/" class="logo">闲隅</a>
-</div>
-
-
-
-
-
-<nav class="site-navbar">
-  <ul id="menu" class="menu">
-    <li class="menu-item">
-        <a class="menu-item-link" href="/">主页</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/post/">归档</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/tags/">标签</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/">分类</a>
-      </li>
-  </ul>
-</nav>
-
-    </header>
-
-    <main id="main" class="main">
-      <div class="content-wrapper">
-        <div id="content" class="content">
-          <article class="post">
-    
-    <header class="post-header">
-      <h1 class="post-title">记一次 dash 导致脚本执行失败的问题</h1>
-
-      <div class="post-meta">
-        <span class="post-time"> 2019-08-19 </span>
-        <div class="post-category">
-            <a href="/categories/linux/"> Linux </a>
-            </div>
-          <span class="more-meta"> 约 1275 字 </span>
-          <span class="more-meta"> 预计阅读 3 分钟 </span>
-        
-      </div>
-    </header>
-
-    <div class="post-toc" id="post-toc">
-  <h2 class="post-toc-title">文章目录</h2>
-  <div class="post-toc-content always-active">
-    <nav id="TableOfContents">
-  <ul>
-    <li>
-      <ul>
-        <li><a href="#起因">起因</a></li>
-        <li><a href="#分析">分析</a></li>
-        <li><a href="#反思">反思</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav>
-  </div>
-</div>
-    <div class="post-content">
-      <p>众所周知，Debian 系系统默认的 shell 是 <code>dash</code>（<a href="https://en.wikipedia.org/wiki/Almquist_shell">Debian Almquist shell</a>），日常使用也很少发现有不同于 <code>bash</code> ，完全不能用的地方。</p>
-<p>最近，我在重写开发搞的 kettle 定时任务时发现了奇怪的问题，日志正常打印，看起来所有 job 都正确执行了，但是数据库中数据却没有按预期更新。反复折腾排除后，发现是脚本第一行声明执行命令不同的缘故，也就是 ubuntu 环境下使用 <code>sh</code> 执行会导致数据库数据没有正确更新。</p>
-<h3 id="起因">起因</h3>
-<p>最近这段时间，深感于数据收集清洗的脚本太杂乱，准备一起迁移到 Kubernetes 上去，方便管理和查看执行日志，顺带把旧的脚本都翻新一遍。</p>
-<p>之前脚本主要内容是利用 Docker 启动 kettle 镜像，同时把执行任务脚本 bind 到相应目录启动执行，kettle 本身在命令行模式下提供了<code>kitchen.sh</code> 启动脚本，使用也比较方便。迁移到 Kubernetes 需要开启 cronjob 特性，同时修改脚本内容，去掉启动 Docker 的繁琐配置，除了启动脚本，剩下的一切复杂过程全部隐藏到 crontab.yaml 配置中。</p>
-<p>当然，这时候指定 cronjob 启动脚本就成了定时任务的执行入口，由它来间接调用 <code>kitchen.sh</code> 执行定时任务，所以这里成了出问题的高发地。</p>
-<p>问题暴露的很奇怪，上线定时任务两天后，开发询问我迁移后的定时任务是否正常执行，因为日志显示一切正常，但是数据库中数据没有按照计划更新。这里出现了不符合逻辑的结果，难道是脚本问题导致的？</p>
-<h3 id="分析">分析</h3>
-<p>问题出现后，第一时间确认了 Kubernetes 上日志输出情况，结果发现日志和之前完全一致没有出现任何异常信息。而模拟环境，使用<code>kubectl</code>创建容器手动执行时，复现了该现象。那么问题应该是启动脚本了吧。</p>
-<p>经过我反复比对，逐步修改启动脚本和原始脚本不同点，不停测试后发现原来写脚本我经常使用的<code>#!/usr/bin/env sh</code>在 ubuntu 系统中被解析为使用<code>dash</code>执行，修改为<code>#!/usr/bin/env bash</code>执行成功了！那么很可能是<code>dash</code>导致了最终结果出现偏差，而程序本身可能也由于一些不兼容的写法，造成除了最终结果，过程完全一致挑不出毛病的异常。</p>
-<p>那么为什么使用<code>dash</code>会导致错误出现，而<code>bash</code>在预期情况下一切正常？</p>
-<p>在搜索了 hitachi 网站后，我得到一些可能的原因：</p>
-<ol>
-<li>
-<p>首先，官方给出的脚本里开头都是 <code>#!/bin/sh</code> ，经常接触 shell script 的人肯定知道这是兼顾兼容性的写法，但是不可避免的一些语法差异会导致出现预期之外的错误，比如在 ubuntu 默认使用 <code>dash</code> 时，<a href="https://jira.pentaho.com/browse/PDI-14658?jql=text%20~%20%22dash%22">脚本执行完毕不会检测到异常，总会返回 0</a>，即执行成功。这和我遇到的情形一致，这里使用的 2018 版本还没有修复该问题。</p>
-</li>
-<li>
-<p>也有 <a href="https://jira.pentaho.com/browse/BISERVER-955?jql=text%20~%20%22dash%22">issue</a> 明确指出了，<code>dash</code> 很多基础性的语法解析都不同，例如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">root@deac908482a4:/# bash -c <span class="s1">&#39;echo -e &#34;1\n2&#34;&#39;</span>
-<span class="m">1</span>
-<span class="m">2</span>
-root@deac908482a4:/# dash -c <span class="s1">&#39;echo -e &#34;1\n2&#34;&#39;</span>
--e <span class="m">1</span>
-<span class="m">2</span>
-root@deac908482a4:/# bash -c <span class="s1">&#39;echo &#34;1\n2&#34;&#39;</span>
-1<span class="se">\n</span><span class="m">2</span>
-root@deac908482a4:/# dash -c <span class="s1">&#39;echo &#34;1\n2&#34;&#39;</span>
-<span class="m">1</span>
-<span class="m">2</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>还有众多例子提到使用默认<code>sh</code>可能带来的异常。</p>
-</li>
-</ol>
-<h3 id="反思">反思</h3>
-<p>虽说 shell script 已经很少会用来编写大型程序组成部件，但是我们依然要牢记默认使用 <code>sh</code> 带来的可能未预知的异常！</p>
-<p>很多在 <code>bash</code> 下熟悉的奇淫巧计，可能在 <code>ash</code>、<code>dash</code>、<code>zsh</code>等常见 shell 中都没法正常工作，跨环境写脚本需要测试，再测试，尤其是判断执行，出了错可能都无法第一时间发现。</p>
-<p>反思之前改过的清理 nginx_proxy_cache 缓存的脚本，应用在 alpine 容器中会报异常，后来还是使用 go 写了个小程序来解决交互问题，shell 脚本不可靠，应该只在测试通过的“当前”环境下使用。</p>
-    </div>
-
-    
-<footer class="post-footer">
-      <div class="post-tags">
-          <a href="/tags/linux-shell/">Linux shell</a>
-          </div>
-      <nav class="post-nav">
-        <a class="prev" href="/post/update-ssl-certificates-with-systemd-timer-and-docker/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">CoreOS 使用 systemd 定时任务启动容器更新 ssl 证书</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
-        <a class="next" href="/post/a-shell-script-for-searhing-docker-image-tags/">
-            <span class="next-text nav-default">一个查找 Docker 镜像包含 tag 的脚本</span>
-            <span class="next-text nav-mobile">下一篇</span>
-            <i class="iconfont icon-right"></i>
-          </a>
-      </nav>
-    </footer>
-  </article>
-        </div>
-        
-
-  
-  <div id="vcomments"></div>
-  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
-  <script type="text/javascript">
-    new Valine({
-        el: '#vcomments' ,
-        appId: 'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',
-        appKey: 'cq9Rl1lkMWGfkEoq93b6t3bJ',
-        notify:  false ,
-        verify:  true ,
-        avatar:'mp',
-        placeholder: 'Say something...',
-        visitor:  false 
-    });
-  </script>
-
-  
-
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="social-links">
-      <a href="mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109;" class="iconfont icon-email" title="email"></a>
-  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
-</div>
-
-<div class="copyright">
-  <span class="power-by">
-    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
-  </span>
-  <span class="division">|</span>
-  <span class="theme-info">
-    主题 - 
-    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
-  </span>
-
-  
-
-  <span class="copyright-year">
-    &copy; 
-    2018 - 
-    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
-  </span>
-</div>
-
-    </footer>
-
-    <div class="back-to-top" id="back-to-top">
-      <i class="iconfont icon-up"></i>
-    </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
-
-
-
-<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-138489412-1', 'auto');
-	ga('set', 'anonymizeIp', true);
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-
-
-</body>
-</html>
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>记一次 dash 导致脚本执行失败的问题 - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。"><meta name=keywords content="dash,kettle"><meta name=generator content="Hugo 0.83.1 with theme even"><link rel=canonical href=/post/a-strange-problem-caused-by-dash/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="记一次 dash 导致脚本执行失败的问题"><meta property="og:description" content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。"><meta property="og:type" content="article"><meta property="og:url" content="/post/a-strange-problem-caused-by-dash/"><meta property="article:section" content="post"><meta property="article:published_time" content="2019-08-19T06:33:00+00:00"><meta property="article:modified_time" content="2019-08-19T14:35:05+08:00"><meta itemprop=name content="记一次 dash 导致脚本执行失败的问题"><meta itemprop=description content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。"><meta itemprop=datePublished content="2019-08-19T06:33:00+00:00"><meta itemprop=dateModified content="2019-08-19T14:35:05+08:00"><meta itemprop=wordCount content="1275"><meta itemprop=keywords content="Linux shell,"><meta name=twitter:card content="summary"><meta name=twitter:title content="记一次 dash 导致脚本执行失败的问题"><meta name=twitter:description content="众所周知，Debian 系系统默认的 shell 是 `dash`，日常使用也很少发现有不同于`bash`完全不能用的地方。但是最近我碰到了 ubuntu 环境下使用 `sh` 执行特定的定时脚本会不生效，罪魁祸首就是它。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>记一次 dash 导致脚本执行失败的问题</h1><div class=post-meta><span class=post-time>2019-08-19</span><div class=post-category><a href=/categories/linux/>Linux</a></div><span class=more-meta>约 1275 字</span>
+<span class=more-meta>预计阅读 3 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#起因>起因</a></li><li><a href=#分析>分析</a></li><li><a href=#反思>反思</a></li></ul></li></ul></nav></div></div><div class=post-content><p>众所周知，Debian 系系统默认的 shell 是 <code>dash</code>（<a href=https://en.wikipedia.org/wiki/Almquist_shell>Debian Almquist shell</a>），日常使用也很少发现有不同于 <code>bash</code> ，完全不能用的地方。</p><p>最近，我在重写开发搞的 kettle 定时任务时发现了奇怪的问题，日志正常打印，看起来所有 job 都正确执行了，但是数据库中数据却没有按预期更新。反复折腾排除后，发现是脚本第一行声明执行命令不同的缘故，也就是 ubuntu 环境下使用 <code>sh</code> 执行会导致数据库数据没有正确更新。</p><h3 id=起因>起因</h3><p>最近这段时间，深感于数据收集清洗的脚本太杂乱，准备一起迁移到 Kubernetes 上去，方便管理和查看执行日志，顺带把旧的脚本都翻新一遍。</p><p>之前脚本主要内容是利用 Docker 启动 kettle 镜像，同时把执行任务脚本 bind 到相应目录启动执行，kettle 本身在命令行模式下提供了<code>kitchen.sh</code> 启动脚本，使用也比较方便。迁移到 Kubernetes 需要开启 cronjob 特性，同时修改脚本内容，去掉启动 Docker 的繁琐配置，除了启动脚本，剩下的一切复杂过程全部隐藏到 crontab.yaml 配置中。</p><p>当然，这时候指定 cronjob 启动脚本就成了定时任务的执行入口，由它来间接调用 <code>kitchen.sh</code> 执行定时任务，所以这里成了出问题的高发地。</p><p>问题暴露的很奇怪，上线定时任务两天后，开发询问我迁移后的定时任务是否正常执行，因为日志显示一切正常，但是数据库中数据没有按照计划更新。这里出现了不符合逻辑的结果，难道是脚本问题导致的？</p><h3 id=分析>分析</h3><p>问题出现后，第一时间确认了 Kubernetes 上日志输出情况，结果发现日志和之前完全一致没有出现任何异常信息。而模拟环境，使用<code>kubectl</code>创建容器手动执行时，复现了该现象。那么问题应该是启动脚本了吧。</p><p>经过我反复比对，逐步修改启动脚本和原始脚本不同点，不停测试后发现原来写脚本我经常使用的<code>#!/usr/bin/env sh</code>在 ubuntu 系统中被解析为使用<code>dash</code>执行，修改为<code>#!/usr/bin/env bash</code>执行成功了！那么很可能是<code>dash</code>导致了最终结果出现偏差，而程序本身可能也由于一些不兼容的写法，造成除了最终结果，过程完全一致挑不出毛病的异常。</p><p>那么为什么使用<code>dash</code>会导致错误出现，而<code>bash</code>在预期情况下一切正常？</p><p>在搜索了 hitachi 网站后，我得到一些可能的原因：</p><ol><li><p>首先，官方给出的脚本里开头都是 <code>#!/bin/sh</code> ，经常接触 shell script 的人肯定知道这是兼顾兼容性的写法，但是不可避免的一些语法差异会导致出现预期之外的错误，比如在 ubuntu 默认使用 <code>dash</code> 时，<a href="https://jira.pentaho.com/browse/PDI-14658?jql=text%20~%20%22dash%22">脚本执行完毕不会检测到异常，总会返回 0</a>，即执行成功。这和我遇到的情形一致，这里使用的 2018 版本还没有修复该问题。</p></li><li><p>也有 <a href="https://jira.pentaho.com/browse/BISERVER-955?jql=text%20~%20%22dash%22">issue</a> 明确指出了，<code>dash</code> 很多基础性的语法解析都不同，例如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>root@deac908482a4:/# bash -c <span class=s1>&#39;echo -e &#34;1\n2&#34;&#39;</span>
+<span class=m>1</span>
+<span class=m>2</span>
+root@deac908482a4:/# dash -c <span class=s1>&#39;echo -e &#34;1\n2&#34;&#39;</span>
+-e <span class=m>1</span>
+<span class=m>2</span>
+root@deac908482a4:/# bash -c <span class=s1>&#39;echo &#34;1\n2&#34;&#39;</span>
+1<span class=se>\n</span><span class=m>2</span>
+root@deac908482a4:/# dash -c <span class=s1>&#39;echo &#34;1\n2&#34;&#39;</span>
+<span class=m>1</span>
+<span class=m>2</span>
+</code></pre></td></tr></table></div></div></li><li><p>还有众多例子提到使用默认<code>sh</code>可能带来的异常。</p></li></ol><h3 id=反思>反思</h3><p>虽说 shell script 已经很少会用来编写大型程序组成部件，但是我们依然要牢记默认使用 <code>sh</code> 带来的可能未预知的异常！</p><p>很多在 <code>bash</code> 下熟悉的奇淫巧计，可能在 <code>ash</code>、<code>dash</code>、<code>zsh</code>等常见 shell 中都没法正常工作，跨环境写脚本需要测试，再测试，尤其是判断执行，出了错可能都无法第一时间发现。</p><p>反思之前改过的清理 nginx_proxy_cache 缓存的脚本，应用在 alpine 容器中会报异常，后来还是使用 go 写了个小程序来解决交互问题，shell 脚本不可靠，应该只在测试通过的“当前”环境下使用。</p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux-shell/>Linux shell</a></div><nav class=post-nav><a class=prev href=/post/update-ssl-certificates-with-systemd-timer-and-docker/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">CoreOS 使用 systemd 定时任务启动容器更新 ssl 证书</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/a-shell-script-for-searhing-docker-image-tags/><span class="next-text nav-default">一个查找 Docker 镜像包含 tag 的脚本</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script><script src=//unpkg.com/valine/dist/Valine.min.js></script><script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!1,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a><a href=/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

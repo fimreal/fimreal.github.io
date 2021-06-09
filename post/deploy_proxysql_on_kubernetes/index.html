@@ -1,343 +1,136 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记 - 闲隅</title>
-  <meta name="renderer" content="webkit" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-<meta name="theme-color" content="#f8f5ec" />
-<meta name="msapplication-navbutton-color" content="#f8f5ec">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
-
-
-<meta name="author" content="Fimreal" /><meta name="description" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记" /><meta name="keywords" content="kubernetes, proxysql, MySQL" />
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.80.0 with theme even" />
-
-
-<link rel="canonical" href="/post/deploy_proxysql_on_kubernetes/" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-
-
-
-<link href="/sass/main.min.ccc74220713006fb8449610ef1bc6302d9f4eb43d259740bc100c35852ee9c55.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
-
-
-<meta property="og:title" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记" />
-<meta property="og:description" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="/post/deploy_proxysql_on_kubernetes/" />
-<meta property="article:published_time" content="2020-05-14T16:27:36+08:00" />
-<meta property="article:modified_time" content="2020-05-19T13:17:31+08:00" />
-<meta itemprop="name" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记">
-<meta itemprop="description" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记">
-<meta itemprop="datePublished" content="2020-05-14T16:27:36+08:00" />
-<meta itemprop="dateModified" content="2020-05-19T13:17:31+08:00" />
-<meta itemprop="wordCount" content="2192">
-
-
-
-<meta itemprop="keywords" content="kubernetes,proxysql,MySQL," />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"/>
-<meta name="twitter:description" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"/>
-
-<!--[if lte IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
-<![endif]-->
-
-<!--[if lt IE 9]>
-  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-<![endif]-->
-
-</head>
-<body>
-  <div id="mobile-navbar" class="mobile-navbar">
-  <div class="mobile-header-logo">
-    <a href="/" class="logo">闲隅</a>
-  </div>
-  <div class="mobile-navbar-icon">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</div>
-<nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list">
-    <a href="/">
-        <li class="mobile-menu-item">主页</li>
-      </a><a href="/post/">
-        <li class="mobile-menu-item">归档</li>
-      </a><a href="/tags/">
-        <li class="mobile-menu-item">标签</li>
-      </a><a href="/categories/">
-        <li class="mobile-menu-item">分类</li>
-      </a>
-  </ul>
-
-  
-
-
-</nav>
-
-  <div class="container" id="mobile-panel">
-    <header id="header" class="header">
-        <div class="logo-wrapper">
-  <a href="/" class="logo">闲隅</a>
-</div>
-
-
-
-
-
-<nav class="site-navbar">
-  <ul id="menu" class="menu">
-    <li class="menu-item">
-        <a class="menu-item-link" href="/">主页</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/post/">归档</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/tags/">标签</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/">分类</a>
-      </li>
-  </ul>
-</nav>
-
-    </header>
-
-    <main id="main" class="main">
-      <div class="content-wrapper">
-        <div id="content" class="content">
-          <article class="post">
-    
-    <header class="post-header">
-      <h1 class="post-title">Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记</h1>
-
-      <div class="post-meta">
-        <span class="post-time"> 2020-05-14 </span>
-        <div class="post-category">
-            <a href="/categories/database/"> database </a>
-            </div>
-          <span class="more-meta"> 约 2192 字 </span>
-          <span class="more-meta"> 预计阅读 5 分钟 </span>
-        
-      </div>
-    </header>
-
-    <div class="post-toc" id="post-toc">
-  <h2 class="post-toc-title">文章目录</h2>
-  <div class="post-toc-content">
-    <nav id="TableOfContents">
-  <ul>
-    <li>
-      <ul>
-        <li><a href="#一statefulset-集群部署">一、StatefulSet 集群部署</a></li>
-        <li><a href="#二-添加-prometheus-监控支持">二、 添加 Prometheus 监控支持</a></li>
-        <li><a href="#三proxysql-常见问题">三、ProxySQL 常见问题</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav>
-  </div>
-</div>
-    <div class="post-content">
-      <p>一些在 k8s 上部署 Proxysql 集群时的的配置记录，
-一些在使用 ProxySQL 时遇到的问题，及解决办法。</p>
-<h3 id="一statefulset-集群部署">一、StatefulSet 集群部署</h3>
-<h4 id="1-proxysql-部署方式一些说明">1. ProxySQL 部署方式一些说明</h4>
-<p>ProxySQL 很轻量，作为应用的数据库连接代理，最好放置在客户端应用就近点部署。例如可以和应用在同一个 kubernetes 集群中，又或者针对单独应用当作 sidecar 和应用放在同一个 POD 内。</p>
-<h4 id="2-proxysql-配置文件一些基础">2. ProxySQL 配置文件一些基础</h4>
-<p>主要是下面 4 块配置</p>
-<ul>
-<li>
-<p><code>mysql_query_rules</code></p>
-<p>配置匹配 SQL 语句规则，按照优先级顺序匹配到规则后转发到指定 MySQL 服务器组</p>
-<p>路由概述可以参考：https://www.cnblogs.com/f-ck-need-u/p/9300829.html</p>
-</li>
-<li>
-<p><code>mysql_servers</code></p>
-<p>配置可用的 MySQL 服务器组</p>
-</li>
-<li>
-<p><code>mysql_users</code></p>
-<p>配置可用的 MySQL 用户，需要连接的数据库账号都要添加在这里</p>
-</li>
-<li>
-<p><code>proxysql_servers</code></p>
-<p>配置 ProxySQL 集群中实例信息</p>
-</li>
-</ul>
-<p>官方wiki参考：https://github.com/sysown/proxysql/wiki/ProxySQL-Cluster#preface</p>
-<h4 id="使用-configmap-存放配置文件">使用 Configmap 存放配置文件</h4>
-<p>ProxySQL 通常通过登陆管理接口使用 SQL 语句热更新来进行配置，使用配置文件只用来完成初始化。在 Kubernetes 中使用 configmap 好处是可以集中修改持久化的配置文件，缺点是不能在 proxysql 中热更新后再 load 配置到 disk 持久化。</p>
-<p><strong>生成并创建 <code>configmap</code> 配置文件命令参考</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create configmap proxysql-cnf --from-file=proxysql.cnf --dry-run -o yaml &gt; proxysql.cnf.yaml
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记 - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"><meta name=keywords content="kubernetes,proxysql,MySQL"><meta name=generator content="Hugo 0.83.1 with theme even"><link rel=canonical href=/post/deploy_proxysql_on_kubernetes/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"><meta property="og:description" content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"><meta property="og:type" content="article"><meta property="og:url" content="/post/deploy_proxysql_on_kubernetes/"><meta property="article:section" content="post"><meta property="article:published_time" content="2020-05-14T16:27:36+08:00"><meta property="article:modified_time" content="2020-05-19T13:17:31+08:00"><meta itemprop=name content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"><meta itemprop=description content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"><meta itemprop=datePublished content="2020-05-14T16:27:36+08:00"><meta itemprop=dateModified content="2020-05-19T13:17:31+08:00"><meta itemprop=wordCount content="2110"><meta itemprop=keywords content="kubernetes,proxysql,MySQL,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"><meta name=twitter:description content="Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记</h1><div class=post-meta><span class=post-time>2020-05-14</span><div class=post-category><a href=/categories/database/>database</a></div><span class=more-meta>约 2110 字</span>
+<span class=more-meta>预计阅读 5 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><ul><li><a href=#一statefulset-集群部署>一、StatefulSet 集群部署</a></li><li><a href=#二-添加-prometheus-监控支持>二、 添加 Prometheus 监控支持</a></li><li><a href=#三proxysql-常见问题>三、ProxySQL 常见问题</a></li></ul></li></ul></nav></div></div><div class=post-content><p>一些在 k8s 上部署 Proxysql 集群时的的配置记录，
+一些在使用 ProxySQL 时遇到的问题，及解决办法。</p><h3 id=一statefulset-集群部署>一、StatefulSet 集群部署</h3><h4 id=1-proxysql-部署方式一些说明>1. ProxySQL 部署方式一些说明</h4><p>ProxySQL 很轻量，作为应用的数据库连接代理，最好放置在客户端应用就近点部署。例如可以和应用在同一个 kubernetes 集群中，又或者针对单独应用当作 sidecar 和应用放在同一个 POD 内。</p><h4 id=2-proxysql-配置文件一些基础>2. ProxySQL 配置文件一些基础</h4><p>主要是下面 4 块配置</p><ul><li><p><code>mysql_query_rules</code></p><p>配置匹配 SQL 语句规则，按照优先级顺序匹配到规则后转发到指定 MySQL 服务器组</p><p>路由概述可以参考：https://www.cnblogs.com/f-ck-need-u/p/9300829.html</p></li><li><p><code>mysql_servers</code></p><p>配置可用的 MySQL 服务器组</p></li><li><p><code>mysql_users</code></p><p>配置可用的 MySQL 用户，需要连接的数据库账号都要添加在这里</p></li><li><p><code>proxysql_servers</code></p><p>配置 ProxySQL 集群中实例信息</p></li></ul><p>官方wiki参考：https://github.com/sysown/proxysql/wiki/ProxySQL-Cluster#preface</p><h4 id=使用-configmap-存放配置文件>使用 Configmap 存放配置文件</h4><p>ProxySQL 通常通过登陆管理接口使用 SQL 语句热更新来进行配置，使用配置文件只用来完成初始化。在 Kubernetes 中使用 configmap 好处是可以集中修改持久化的配置文件，缺点是不能在 proxysql 中热更新后再 load 配置到 disk 持久化。</p><p><strong>生成并创建 <code>configmap</code> 配置文件命令参考</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>kubectl create configmap proxysql-cnf --from-file=proxysql.cnf --dry-run -o yaml &gt; proxysql.cnf.yaml
 kubectl apply -f proxysql.cnf.yaml
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>修改配置可以使用</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">kubectl edit cm proxysql-cnf
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>初始化配置文件参考</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">  1
-</span><span class="lnt">  2
-</span><span class="lnt">  3
-</span><span class="lnt">  4
-</span><span class="lnt">  5
-</span><span class="lnt">  6
-</span><span class="lnt">  7
-</span><span class="lnt">  8
-</span><span class="lnt">  9
-</span><span class="lnt"> 10
-</span><span class="lnt"> 11
-</span><span class="lnt"> 12
-</span><span class="lnt"> 13
-</span><span class="lnt"> 14
-</span><span class="lnt"> 15
-</span><span class="lnt"> 16
-</span><span class="lnt"> 17
-</span><span class="lnt"> 18
-</span><span class="lnt"> 19
-</span><span class="lnt"> 20
-</span><span class="lnt"> 21
-</span><span class="lnt"> 22
-</span><span class="lnt"> 23
-</span><span class="lnt"> 24
-</span><span class="lnt"> 25
-</span><span class="lnt"> 26
-</span><span class="lnt"> 27
-</span><span class="lnt"> 28
-</span><span class="lnt"> 29
-</span><span class="lnt"> 30
-</span><span class="lnt"> 31
-</span><span class="lnt"> 32
-</span><span class="lnt"> 33
-</span><span class="lnt"> 34
-</span><span class="lnt"> 35
-</span><span class="lnt"> 36
-</span><span class="lnt"> 37
-</span><span class="lnt"> 38
-</span><span class="lnt"> 39
-</span><span class="lnt"> 40
-</span><span class="lnt"> 41
-</span><span class="lnt"> 42
-</span><span class="lnt"> 43
-</span><span class="lnt"> 44
-</span><span class="lnt"> 45
-</span><span class="lnt"> 46
-</span><span class="lnt"> 47
-</span><span class="lnt"> 48
-</span><span class="lnt"> 49
-</span><span class="lnt"> 50
-</span><span class="lnt"> 51
-</span><span class="lnt"> 52
-</span><span class="lnt"> 53
-</span><span class="lnt"> 54
-</span><span class="lnt"> 55
-</span><span class="lnt"> 56
-</span><span class="lnt"> 57
-</span><span class="lnt"> 58
-</span><span class="lnt"> 59
-</span><span class="lnt"> 60
-</span><span class="lnt"> 61
-</span><span class="lnt"> 62
-</span><span class="lnt"> 63
-</span><span class="lnt"> 64
-</span><span class="lnt"> 65
-</span><span class="lnt"> 66
-</span><span class="lnt"> 67
-</span><span class="lnt"> 68
-</span><span class="lnt"> 69
-</span><span class="lnt"> 70
-</span><span class="lnt"> 71
-</span><span class="lnt"> 72
-</span><span class="lnt"> 73
-</span><span class="lnt"> 74
-</span><span class="lnt"> 75
-</span><span class="lnt"> 76
-</span><span class="lnt"> 77
-</span><span class="lnt"> 78
-</span><span class="lnt"> 79
-</span><span class="lnt"> 80
-</span><span class="lnt"> 81
-</span><span class="lnt"> 82
-</span><span class="lnt"> 83
-</span><span class="lnt"> 84
-</span><span class="lnt"> 85
-</span><span class="lnt"> 86
-</span><span class="lnt"> 87
-</span><span class="lnt"> 88
-</span><span class="lnt"> 89
-</span><span class="lnt"> 90
-</span><span class="lnt"> 91
-</span><span class="lnt"> 92
-</span><span class="lnt"> 93
-</span><span class="lnt"> 94
-</span><span class="lnt"> 95
-</span><span class="lnt"> 96
-</span><span class="lnt"> 97
-</span><span class="lnt"> 98
-</span><span class="lnt"> 99
-</span><span class="lnt">100
-</span><span class="lnt">101
-</span><span class="lnt">102
-</span><span class="lnt">103
-</span><span class="lnt">104
-</span><span class="lnt">105
-</span><span class="lnt">106
-</span><span class="lnt">107
-</span><span class="lnt">108
-</span><span class="lnt">109
-</span><span class="lnt">110
-</span><span class="lnt">111
-</span><span class="lnt">112
-</span><span class="lnt">113
-</span><span class="lnt">114
-</span><span class="lnt">115
-</span><span class="lnt">116
-</span><span class="lnt">117
-</span><span class="lnt">118
-</span><span class="lnt">119
-</span><span class="lnt">120
-</span><span class="lnt">121
-</span><span class="lnt">122
-</span><span class="lnt">123
-</span><span class="lnt">124
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback"># filename：proxysql.cnf
+</code></pre></td></tr></table></div></div><p><strong>修改配置可以使用</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>kubectl edit cm proxysql-cnf
+</code></pre></td></tr></table></div></div><p><strong>初始化配置文件参考</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback># filename：proxysql.cnf
 datadir=&#34;/var/lib/proxysql&#34;
 
 admin_variables=
@@ -461,532 +254,320 @@ proxysql_servers =
     { hostname = &#34;proxysql-0.proxysqlcluster&#34;, port = 6032, weight = 1 },
     { hostname = &#34;proxysql-1.proxysqlcluster&#34;, port = 6032, weight = 1 }
 )
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="部署之前准备">部署之前准备</h4>
-<p>根据实际配置文件中内容修改下面命令或配置文件</p>
-<ol>
-<li>由于配置文件中需要指定的 monitor 账号，需要提前在 MySQL 内准备好，并添加<code>USAGE</code>权限。</li>
-</ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">GRANT</span> <span class="k">USAGE</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;proxysql_monitor&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span><span class="p">;</span>
-</code></pre></td></tr></table>
-</div>
-</div><ol start="2">
-<li>
-<p>配置文件中 <code>proxysql_servers</code> 里面的 <code>hostname</code> 指定的 <code>proxysql-0.proxysqlcluster</code> 需要提前创建无头服务，方便配置文件初始化时直接解析自己</p>
-<p>声明 headless svc 文件配置参考：</p>
-</li>
-</ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># filename: proxysql-admin-svc-headless.yml</span><span class="w">
-</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysqlcluster</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l">None </span><span class="w"> </span><span class="c"># 指明为无头服务，使解析直接返回 POD 的 IP 地址</span><span class="w">
-</span><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-admin</span><span class="w">
-</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">6032</span><span class="w">
-</span><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
-</span><span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="m">6032</span><span class="w">
-</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql </span><span class="w"> </span><span class="c"># 绑定接下来创建的服务</span><span class="w">
-</span><span class="w">  </span><span class="nt">sessionAffinity</span><span class="p">:</span><span class="w"> </span><span class="l">None</span><span class="w">
-</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ClusterIP</span><span class="w">
-</span></code></pre></td></tr></table>
-</div>
-</div><h4 id="部署-workload-类型为-statefulset-的-proxysql-集群">部署 workload 类型为 StatefulSet 的 Proxysql 集群</h4>
-<p>StatefulSet 声明文件参考：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># filename: proxysql-statefulset.yaml</span><span class="w">
-</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
-</span><span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l">proxysqlcluster</span><span class="w">
-</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">RollingUpdate</span><span class="w">
-</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
-</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql/proxysql:2.0.8</span><span class="w">
-</span><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-cnf</span><span class="w">
-</span><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/proxysql.cnf</span><span class="w">
-</span><span class="w">          </span><span class="nt">subPath</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql.cnf</span><span class="w">
-</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">6033</span><span class="w">
-</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-mysql</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">6032</span><span class="w">
-</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-admin</span><span class="w">
-</span><span class="w">      </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-cnf</span><span class="w">
-</span><span class="w">        </span><span class="nt">configMap</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-cnf</span><span class="w">
-</span><span class="w"></span><span class="nn">---</span><span class="w">
-</span><span class="w"></span><span class="c"># filename: proxysql-svc-nodeport.yaml</span><span class="w">
-</span><span class="w"></span><span class="c"># 根据需求是否创建 nodeport</span><span class="w">
-</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-mysql</span><span class="w">
-</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">6033</span><span class="w">
-</span><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
-</span><span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="m">6033</span><span class="w">
-</span><span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="m">6033</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-admin</span><span class="w">
-</span><span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="m">6032</span><span class="w">
-</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">6032</span><span class="w">
-</span><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
-</span><span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="m">6032</span><span class="w">
-</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql</span><span class="w">
-</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">NodePort </span><span class="w">
-</span></code></pre></td></tr></table>
-</div>
-</div><p>apply 上面文件完成部署。</p>
-<h4 id="验证启动状态">验证启动状态</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">kubectl get po,svc
-</code></pre></td></tr></table>
-</div>
-</div><h3 id="二-添加-prometheus-监控支持">二、 添加 Prometheus 监控支持</h3>
-<p>使用 <a href="https://github.com/percona/proxysql_exporter">proxysql-export</a> 查询 PorySQL 状态暴露指标给 prometheus 。</p>
-<p>创建 Deployment，声明文件参考：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
-</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">extensions/v1beta1</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-exporter</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-exporter</span><span class="w">
-</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-exporter</span><span class="w">
-</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-exporter</span><span class="w">
-</span><span class="w">      </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">prometheus.io/path</span><span class="p">:</span><span class="w"> </span><span class="l">/metrics</span><span class="w">
-</span><span class="w">        </span><span class="nt">prometheus.io/port</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;42004&#34;</span><span class="w">
-</span><span class="w">        </span><span class="nt">prometheus.io/scrape</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">proxysql-exporter</span><span class="w">
-</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">epurs/proxysql_exporter</span><span class="w">
-</span><span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">IfNotPresent</span><span class="w">
-</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">42004</span><span class="w">
-</span><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">DATA_SOURCE_NAME</span><span class="w">
-</span><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;proxysql-admin:adminpassword@tcp(proxysql.default:6032)/&#34;</span><span class="w">
-</span><span class="w">      </span><span class="c"># args:</span><span class="w">
-</span><span class="w">      </span><span class="c"># - -web.listen-address=:42004</span><span class="w">
-</span></code></pre></td></tr></table>
-</div>
-</div><p>Grafana dashboard 可以使用</p>
-<p><a href="https://github.com/percona/grafana-dashboards/blob/master/dashboards/ProxySQL_Overview.json"></a></p>
-<h3 id="三proxysql-常见问题">三、ProxySQL 常见问题</h3>
-<h4 id="1-添加用户">1. 添加用户</h4>
-<p>需要增加新用户访问时，登陆 6032 管理接口，参考如下命令查看添加：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1">-- 查看当前用户
-</span><span class="c1"></span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">mysql_users</span>            <span class="c1">-- 内存数据库中配置
-</span><span class="c1"></span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">runtime_mysql_users</span>    <span class="c1">-- 当前运行时中生效的配置，同 MySQL 密码为 * 开头的 hash 结果
-</span><span class="c1">-- 添加新用户
-</span><span class="c1"></span><span class="k">insert</span> <span class="k">into</span> <span class="nf">mysql_users</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="p">,</span><span class="n">default_hostgroup</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="s1">&#39;sqlsender&#39;</span><span class="p">,</span><span class="s1">&#39;P@ssword1!&#39;</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>  <span class="c1">-- 此时密码为明文
-</span><span class="c1">-- 加载配置
-</span><span class="c1"></span><span class="k">load</span> <span class="n">mysql</span> <span class="n">users</span> <span class="k">to</span> <span class="n">runtime</span>          <span class="c1">-- 此时已生效
-</span><span class="c1"></span><span class="n">save</span> <span class="n">mysql</span> <span class="n">users</span> <span class="k">to</span> <span class="n">memory</span><span class="p">;</span>          <span class="c1">-- 可选：将 hash 密码加载到内存数据库中
-</span><span class="c1">-- 验证
-</span><span class="c1"></span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">mysql_users</span> 
-</code></pre></td></tr></table>
-</div>
-</div><p>参考：<a href="https://www.cnblogs.com/f-ck-need-u/p/9286922.html#52-mysql_users%E8%A1%A8%E4%B8%AD%E7%94%A8%E6%88%B7%E7%9A%84%E5%AF%86%E7%A0%81%E7%AE%A1%E7%90%86">mysql_users表中用户的密码管理</a></p>
-<h4 id="2-添加修改-backend-数据库">2. 添加/修改 backend 数据库</h4>
-<p>需要增加新数据库实例到数据库组时，登陆 6032 管理接口，参考如下命令查看和添加：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1">-- 查看当前后端情况  select * from mysql_servers\G
-</span><span class="c1"></span><span class="k">select</span> <span class="n">hostgroup_id</span><span class="p">,</span><span class="n">hostname</span><span class="p">,</span><span class="n">port</span><span class="p">,</span><span class="n">status</span><span class="p">,</span><span class="n">weight</span> <span class="k">from</span> <span class="n">mysql_servers</span><span class="p">;</span> 
-<span class="c1">-- 
-</span><span class="c1">-- 需要平滑下掉某个节点，可以将状态改为 OFFLINE_SOFT，该后端将不再有新链接建立，但是旧链接不会主动释放。效果和把 weight 设置为 0 相同。
-</span><span class="c1">-- 如果需要立即停掉所有链接，可以 DELETE 实例条目，或者修改状态为 OFFLINE_HARD
-</span><span class="c1"></span><span class="k">UPDATE</span> <span class="n">mysql_servers</span> <span class="kt">SET</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;OFFLINE_SOFT&#39;</span> <span class="k">WHERE</span> <span class="n">hostname</span><span class="o">=</span><span class="s1">&#39;172.17.0.1&#39;</span>
-<span class="c1">-- 
-</span><span class="c1">-- 添加后端 MySQL 节点（简化版本）
-</span><span class="c1"></span><span class="k">insert</span> <span class="k">into</span> <span class="nf">mysql_servers</span><span class="p">(</span><span class="n">hostgroup_id</span><span class="p">,</span><span class="n">hostname</span><span class="p">,</span><span class="n">port</span><span class="p">)</span> 
-<span class="k">values</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="s1">&#39;172.17.0.0&#39;</span><span class="p">,</span><span class="mi">3306</span><span class="p">)</span>
-<span class="c1">-- 添加后端 MySQL 节点（完整版本）
-</span><span class="c1"></span><span class="n">NSERT</span> <span class="k">INTO</span> <span class="nf">mysql_servers</span><span class="p">(</span><span class="n">hostgroup_id</span><span class="p">,</span><span class="n">hostname</span><span class="p">,</span><span class="n">port</span><span class="p">,</span><span class="n">status</span><span class="p">,</span><span class="n">weight</span><span class="p">,</span><span class="n">compression</span><span class="p">,</span><span class="n">max_connections</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;10&#39;</span><span class="p">,</span><span class="s1">&#39;172.17.0.0&#39;</span><span class="p">,</span><span class="s1">&#39;3306&#39;</span><span class="p">,</span><span class="s1">&#39;ONLINE&#39;</span><span class="p">,</span><span class="s1">&#39;10&#39;</span><span class="p">,</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="s1">&#39;500&#39;</span><span class="p">);</span>
-<span class="c1">-- 
-</span><span class="c1">-- 加载配置
-</span><span class="c1"></span><span class="k">load</span> <span class="n">mysql</span> <span class="n">servers</span> <span class="k">to</span> <span class="n">runtime</span><span class="p">;</span>
-<span class="c1">-- 验证
-</span><span class="c1"></span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">mysql_servers</span><span class="err">\</span><span class="n">G</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="3-读写分离配置">3. 读写分离配置</h4>
-<p>比较通用的读写分离规则，<code>rule_id</code> 值越小优先级越高，先匹配到会直接按照规则执行 ：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">mysql_query_rules</span> <span class="p">(</span><span class="n">rule_id</span><span class="p">,</span><span class="n">active</span><span class="p">,</span><span class="n">match_digest</span><span class="p">,</span><span class="n">destination_hostgroup</span><span class="p">,</span><span class="n">apply</span><span class="p">)</span>
-<span class="k">VALUES</span>
-<span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;^SELECT.*FOR UPDATE$&#39;</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
-<span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;^SELECT&#39;</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>改配置官方认为只能作为例子使用，详细创建及优化流程参考官方 wiki 说明，https://github.com/sysown/proxysql/wiki/ProxySQL-Read-Write-Split-(HOWTO)</p>
-<h4 id="4-utf8mb4-字符集问题">4. utf8mb4 字符集问题</h4>
-<p>使用中遇到了配置文件中指定数据库变量 <code>mysql-default_charset=&quot;utf8mb4&quot;</code> 不生效的问题，需要部署完集群后，执行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="kt">SET</span> <span class="n">mysql</span><span class="o">-</span><span class="n">default_charset</span><span class="o">=</span><span class="s1">&#39;utf8mb4&#39;</span><span class="p">;</span>
-<span class="k">LOAD</span> <span class="n">MYSQL</span> <span class="n">VARIABLES</span> <span class="k">TO</span> <span class="n">RUNTIME</span><span class="p">;</span>
-<span class="c1">-- SAVE MYSQL VARIABLES TO DISK;
-</span><span class="c1"></span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span>  <span class="n">global_variables</span> <span class="p">;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="5-查看读写分离路由统计">5. 查看读写分离路由统计</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">stats_mysql_query_rules</span><span class="p">;</span>
-<span class="k">select</span> <span class="n">hostgroup</span><span class="p">,</span><span class="n">schemaname</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">digest_text</span> <span class="k">from</span> <span class="n">stats_mysql_query_digest</span><span class="p">;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="6-sql-查询遇到报错-proxysql-error-connection-is-locked-to-hostgroup-100-but-trying-to-reach-hostgroup-200">6. SQL 查询遇到报错 ProxySQL Error: connection is locked to hostgroup 100 but trying to reach hostgroup 200</h4>
-<p>修改配置</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="kt">set</span> <span class="n">mysql</span><span class="o">-</span><span class="n">set_query_lock_on_hostgroup</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>解释如下：</p>
-<p>Possible values for <code>mysql-set_query_lock_on_hostgroup</code>:</p>
-<ul>
-<li>0 : legacy behavior , before 2.0.6</li>
-<li>1 : (default) . SET statements that cannot be parsed correctly disable
+</code></pre></td></tr></table></div></div><h4 id=部署之前准备>部署之前准备</h4><p>根据实际配置文件中内容修改下面命令或配置文件</p><ol><li>由于配置文件中需要指定的 monitor 账号，需要提前在 MySQL 内准备好，并添加<code>USAGE</code>权限。</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-mysql data-lang=mysql><span class=k>GRANT</span><span class=w> </span><span class=k>USAGE</span><span class=w> </span><span class=k>ON</span><span class=w> </span><span class=o>*</span><span class=p>.</span><span class=o>*</span><span class=w> </span><span class=k>TO</span><span class=w> </span><span class=s1>&#39;proxysql_monitor&#39;</span><span class=o>@</span><span class=s1>&#39;%&#39;</span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table></div></div><ol start=2><li><p>配置文件中 <code>proxysql_servers</code> 里面的 <code>hostname</code> 指定的 <code>proxysql-0.proxysqlcluster</code> 需要提前创建无头服务，方便配置文件初始化时直接解析自己</p><p>声明 headless svc 文件配置参考：</p></li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-yaml data-lang=yaml><span class=c># filename: proxysql-admin-svc-headless.yml</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysqlcluster</span><span class=w>
+</span><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>clusterIP</span><span class=p>:</span><span class=w> </span><span class=l>None </span><span class=w> </span><span class=c># 指明为无头服务，使解析直接返回 POD 的 IP 地址</span><span class=w>
+</span><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-admin</span><span class=w>
+</span><span class=w>    </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>6032</span><span class=w>
+</span><span class=w>    </span><span class=nt>protocol</span><span class=p>:</span><span class=w> </span><span class=l>TCP</span><span class=w>
+</span><span class=w>    </span><span class=nt>targetPort</span><span class=p>:</span><span class=w> </span><span class=m>6032</span><span class=w>
+</span><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql </span><span class=w> </span><span class=c># 绑定接下来创建的服务</span><span class=w>
+</span><span class=w>  </span><span class=nt>sessionAffinity</span><span class=p>:</span><span class=w> </span><span class=l>None</span><span class=w>
+</span><span class=w>  </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>ClusterIP</span><span class=w>
+</span></code></pre></td></tr></table></div></div><h4 id=部署-workload-类型为-statefulset-的-proxysql-集群>部署 workload 类型为 StatefulSet 的 Proxysql 集群</h4><p>StatefulSet 声明文件参考：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-yaml data-lang=yaml><span class=c># filename: proxysql-statefulset.yaml</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>StatefulSet</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>2</span><span class=w>
+</span><span class=w>  </span><span class=nt>serviceName</span><span class=p>:</span><span class=w> </span><span class=l>proxysqlcluster</span><span class=w>
+</span><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w>  </span><span class=nt>updateStrategy</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>RollingUpdate</span><span class=w>
+</span><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>restartPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Always</span><span class=w>
+</span><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>proxysql/proxysql:2.0.8</span><span class=w>
+</span><span class=w>        </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w>        </span><span class=nt>volumeMounts</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-cnf</span><span class=w>
+</span><span class=w>          </span><span class=nt>mountPath</span><span class=p>:</span><span class=w> </span><span class=l>/etc/proxysql.cnf</span><span class=w>
+</span><span class=w>          </span><span class=nt>subPath</span><span class=p>:</span><span class=w> </span><span class=l>proxysql.cnf</span><span class=w>
+</span><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>6033</span><span class=w>
+</span><span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-mysql</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>6032</span><span class=w>
+</span><span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-admin</span><span class=w>
+</span><span class=w>      </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-cnf</span><span class=w>
+</span><span class=w>        </span><span class=nt>configMap</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-cnf</span><span class=w>
+</span><span class=w></span><span class=nn>---</span><span class=w>
+</span><span class=w></span><span class=c># filename: proxysql-svc-nodeport.yaml</span><span class=w>
+</span><span class=w></span><span class=c># 根据需求是否创建 nodeport</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-mysql</span><span class=w>
+</span><span class=w>    </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>6033</span><span class=w>
+</span><span class=w>    </span><span class=nt>protocol</span><span class=p>:</span><span class=w> </span><span class=l>TCP</span><span class=w>
+</span><span class=w>    </span><span class=nt>targetPort</span><span class=p>:</span><span class=w> </span><span class=m>6033</span><span class=w>
+</span><span class=w>    </span><span class=nt>nodePort</span><span class=p>:</span><span class=w> </span><span class=m>6033</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-admin</span><span class=w>
+</span><span class=w>    </span><span class=nt>nodePort</span><span class=p>:</span><span class=w> </span><span class=m>6032</span><span class=w>
+</span><span class=w>    </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>6032</span><span class=w>
+</span><span class=w>    </span><span class=nt>protocol</span><span class=p>:</span><span class=w> </span><span class=l>TCP</span><span class=w>
+</span><span class=w>    </span><span class=nt>targetPort</span><span class=p>:</span><span class=w> </span><span class=m>6032</span><span class=w>
+</span><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql</span><span class=w>
+</span><span class=w>  </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>NodePort </span><span class=w>
+</span></code></pre></td></tr></table></div></div><p>apply 上面文件完成部署。</p><h4 id=验证启动状态>验证启动状态</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl get po,svc
+</code></pre></td></tr></table></div></div><h3 id=二-添加-prometheus-监控支持>二、 添加 Prometheus 监控支持</h3><p>使用 <a href=https://github.com/percona/proxysql_exporter>proxysql-export</a> 查询 PorySQL 状态暴露指标给 prometheus 。</p><p>创建 Deployment，声明文件参考：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-yaml data-lang=yaml><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>extensions/v1beta1</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-exporter</span><span class=w>
+</span><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-exporter</span><span class=w>
+</span><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-exporter</span><span class=w>
+</span><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-exporter</span><span class=w>
+</span><span class=w>      </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>prometheus.io/path</span><span class=p>:</span><span class=w> </span><span class=l>/metrics</span><span class=w>
+</span><span class=w>        </span><span class=nt>prometheus.io/port</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;42004&#34;</span><span class=w>
+</span><span class=w>        </span><span class=nt>prometheus.io/scrape</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;true&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>proxysql-exporter</span><span class=w>
+</span><span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>epurs/proxysql_exporter</span><span class=w>
+</span><span class=w>        </span><span class=nt>imagePullPolicy</span><span class=p>:</span><span class=w> </span><span class=l>IfNotPresent</span><span class=w>
+</span><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>42004</span><span class=w>
+</span><span class=w>        </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>DATA_SOURCE_NAME</span><span class=w>
+</span><span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;proxysql-admin:adminpassword@tcp(proxysql.default:6032)/&#34;</span><span class=w>
+</span><span class=w>      </span><span class=c># args:</span><span class=w>
+</span><span class=w>      </span><span class=c># - -web.listen-address=:42004</span><span class=w>
+</span></code></pre></td></tr></table></div></div><p>Grafana dashboard 可以使用</p><p><a href=https://github.com/percona/grafana-dashboards/blob/master/dashboards/ProxySQL_Overview.json></a></p><h3 id=三proxysql-常见问题>三、ProxySQL 常见问题</h3><h4 id=1-添加用户>1. 添加用户</h4><p>需要增加新用户访问时，登陆 6032 管理接口，参考如下命令查看添加：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-mysql data-lang=mysql><span class=c1>-- 查看当前用户
+</span><span class=c1></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>mysql_users</span><span class=w>            </span><span class=c1>-- 内存数据库中配置
+</span><span class=c1></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>runtime_mysql_users</span><span class=w>    </span><span class=c1>-- 当前运行时中生效的配置，同 MySQL 密码为 * 开头的 hash 结果
+</span><span class=c1>-- 添加新用户
+</span><span class=c1></span><span class=k>insert</span><span class=w> </span><span class=k>into</span><span class=w> </span><span class=nf>mysql_users</span><span class=p>(</span><span class=n>username</span><span class=p>,</span><span class=n>password</span><span class=p>,</span><span class=n>default_hostgroup</span><span class=p>)</span><span class=w> </span><span class=k>values</span><span class=p>(</span><span class=s1>&#39;sqlsender&#39;</span><span class=p>,</span><span class=s1>&#39;P@ssword1!&#39;</span><span class=p>,</span><span class=mi>10</span><span class=p>)</span><span class=w>  </span><span class=c1>-- 此时密码为明文
+</span><span class=c1>-- 加载配置
+</span><span class=c1></span><span class=k>load</span><span class=w> </span><span class=n>mysql</span><span class=w> </span><span class=n>users</span><span class=w> </span><span class=k>to</span><span class=w> </span><span class=n>runtime</span><span class=w>          </span><span class=c1>-- 此时已生效
+</span><span class=c1></span><span class=n>save</span><span class=w> </span><span class=n>mysql</span><span class=w> </span><span class=n>users</span><span class=w> </span><span class=k>to</span><span class=w> </span><span class=n>memory</span><span class=p>;</span><span class=w>          </span><span class=c1>-- 可选：将 hash 密码加载到内存数据库中
+</span><span class=c1>-- 验证
+</span><span class=c1></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>mysql_users</span><span class=w> 
+</span></code></pre></td></tr></table></div></div><p>参考：<a href=https://www.cnblogs.com/f-ck-need-u/p/9286922.html#52-mysql_users%E8%A1%A8%E4%B8%AD%E7%94%A8%E6%88%B7%E7%9A%84%E5%AF%86%E7%A0%81%E7%AE%A1%E7%90%86>mysql_users表中用户的密码管理</a></p><h4 id=2-添加修改-backend-数据库>2. 添加/修改 backend 数据库</h4><p>需要增加新数据库实例到数据库组时，登陆 6032 管理接口，参考如下命令查看和添加：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-mysql data-lang=mysql><span class=c1>-- 查看当前后端情况  select * from mysql_servers\G
+</span><span class=c1></span><span class=k>select</span><span class=w> </span><span class=n>hostgroup_id</span><span class=p>,</span><span class=n>hostname</span><span class=p>,</span><span class=n>port</span><span class=p>,</span><span class=n>status</span><span class=p>,</span><span class=n>weight</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>mysql_servers</span><span class=p>;</span><span class=w> 
+</span><span class=w></span><span class=c1>-- 
+</span><span class=c1>-- 需要平滑下掉某个节点，可以将状态改为 OFFLINE_SOFT，该后端将不再有新链接建立，但是旧链接不会主动释放。效果和把 weight 设置为 0 相同。
+</span><span class=c1>-- 如果需要立即停掉所有链接，可以 DELETE 实例条目，或者修改状态为 OFFLINE_HARD
+</span><span class=c1></span><span class=k>UPDATE</span><span class=w> </span><span class=n>mysql_servers</span><span class=w> </span><span class=kt>SET</span><span class=w> </span><span class=n>status</span><span class=o>=</span><span class=s1>&#39;OFFLINE_SOFT&#39;</span><span class=w> </span><span class=k>WHERE</span><span class=w> </span><span class=n>hostname</span><span class=o>=</span><span class=s1>&#39;172.17.0.1&#39;</span><span class=w>
+</span><span class=w></span><span class=c1>-- 
+</span><span class=c1>-- 添加后端 MySQL 节点（简化版本）
+</span><span class=c1></span><span class=k>insert</span><span class=w> </span><span class=k>into</span><span class=w> </span><span class=nf>mysql_servers</span><span class=p>(</span><span class=n>hostgroup_id</span><span class=p>,</span><span class=n>hostname</span><span class=p>,</span><span class=n>port</span><span class=p>)</span><span class=w> 
+</span><span class=w></span><span class=k>values</span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=s1>&#39;172.17.0.0&#39;</span><span class=p>,</span><span class=mi>3306</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=c1>-- 添加后端 MySQL 节点（完整版本）
+</span><span class=c1></span><span class=n>NSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=nf>mysql_servers</span><span class=p>(</span><span class=n>hostgroup_id</span><span class=p>,</span><span class=n>hostname</span><span class=p>,</span><span class=n>port</span><span class=p>,</span><span class=n>status</span><span class=p>,</span><span class=n>weight</span><span class=p>,</span><span class=n>compression</span><span class=p>,</span><span class=n>max_connections</span><span class=p>)</span><span class=w> </span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;10&#39;</span><span class=p>,</span><span class=s1>&#39;172.17.0.0&#39;</span><span class=p>,</span><span class=s1>&#39;3306&#39;</span><span class=p>,</span><span class=s1>&#39;ONLINE&#39;</span><span class=p>,</span><span class=s1>&#39;10&#39;</span><span class=p>,</span><span class=s1>&#39;0&#39;</span><span class=p>,</span><span class=s1>&#39;500&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=c1>-- 
+</span><span class=c1>-- 加载配置
+</span><span class=c1></span><span class=k>load</span><span class=w> </span><span class=n>mysql</span><span class=w> </span><span class=n>servers</span><span class=w> </span><span class=k>to</span><span class=w> </span><span class=n>runtime</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=c1>-- 验证
+</span><span class=c1></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>mysql_servers</span><span class=err>\</span><span class=n>G</span><span class=w>
+</span></code></pre></td></tr></table></div></div><h4 id=3-读写分离配置>3. 读写分离配置</h4><p>比较通用的读写分离规则，<code>rule_id</code> 值越小优先级越高，先匹配到会直接按照规则执行 ：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-mysql data-lang=mysql><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=nf>mysql_query_rules</span><span class=w> </span><span class=p>(</span><span class=n>rule_id</span><span class=p>,</span><span class=n>active</span><span class=p>,</span><span class=n>match_digest</span><span class=p>,</span><span class=n>destination_hostgroup</span><span class=p>,</span><span class=n>apply</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=mi>10</span><span class=p>,</span><span class=mi>1</span><span class=p>,</span><span class=s1>&#39;^SELECT.*FOR UPDATE$&#39;</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>1</span><span class=p>),</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=mi>20</span><span class=p>,</span><span class=mi>1</span><span class=p>,</span><span class=s1>&#39;^SELECT&#39;</span><span class=p>,</span><span class=mi>20</span><span class=p>,</span><span class=mi>1</span><span class=p>);</span><span class=w>
+</span></code></pre></td></tr></table></div></div><p>改配置官方认为只能作为例子使用，详细创建及优化流程参考官方 wiki 说明，https://github.com/sysown/proxysql/wiki/ProxySQL-Read-Write-Split-(HOWTO)</p><h4 id=4-utf8mb4-字符集问题>4. utf8mb4 字符集问题</h4><p>使用中遇到了配置文件中指定数据库变量 <code>mysql-default_charset="utf8mb4"</code> 不生效的问题，需要部署完集群后，执行：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-mysql data-lang=mysql><span class=kt>SET</span><span class=w> </span><span class=n>mysql</span><span class=o>-</span><span class=n>default_charset</span><span class=o>=</span><span class=s1>&#39;utf8mb4&#39;</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=k>LOAD</span><span class=w> </span><span class=n>MYSQL</span><span class=w> </span><span class=n>VARIABLES</span><span class=w> </span><span class=k>TO</span><span class=w> </span><span class=n>RUNTIME</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=c1>-- SAVE MYSQL VARIABLES TO DISK;
+</span><span class=c1></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w>  </span><span class=n>global_variables</span><span class=w> </span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table></div></div><h4 id=5-查看读写分离路由统计>5. 查看读写分离路由统计</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-mysql data-lang=mysql><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>stats_mysql_query_rules</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=k>select</span><span class=w> </span><span class=n>hostgroup</span><span class=p>,</span><span class=n>schemaname</span><span class=p>,</span><span class=n>username</span><span class=p>,</span><span class=n>digest_text</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>stats_mysql_query_digest</span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table></div></div><h4 id=6-sql-查询遇到报错-proxysql-error-connection-is-locked-to-hostgroup-100-but-trying-to-reach-hostgroup-200>6. SQL 查询遇到报错 ProxySQL Error: connection is locked to hostgroup 100 but trying to reach hostgroup 200</h4><p>修改配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-mysql data-lang=mysql><span class=kt>set</span><span class=w> </span><span class=n>mysql</span><span class=o>-</span><span class=n>set_query_lock_on_hostgroup</span><span class=o>=</span><span class=mi>0</span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table></div></div><p>解释如下：</p><p>Possible values for <code>mysql-set_query_lock_on_hostgroup</code>:</p><ul><li>0 : legacy behavior , before 2.0.6</li><li>1 : (default) . SET statements that cannot be parsed correctly disable
 both multiplexing AND routing. Attempting to route traffic while a
 connection is linked to a specific backend connection will trigger
-an error to be returned to the client</li>
-</ul>
-<p>Issue 参考：</p>
-<p><a href="https://github.com/sysown/proxysql/pull/2156">https://github.com/sysown/proxysql/pull/2156</a></p>
-<p><a href="https://github.com/sysown/proxysql/issues/2234">https://github.com/sysown/proxysql/issues/2234</a></p>
-<h4 id="reference">Reference</h4>
-<p>部署参考：</p>
-<p><a href="https://severalnines.com/database-blog/proxysql-native-clustering-kubernetes">https://severalnines.com/database-blog/proxysql-native-clustering-kubernetes</a></p>
-<p>配置详解参考：</p>
-<p><a href="https://www.cnblogs.com/f-ck-need-u/p/7586194.html#auto_id_4">https://www.cnblogs.com/f-ck-need-u/p/7586194.html#auto_id_4</a></p>
-<p>github 地址：</p>
-<p><a href="https://github.com/sysown/proxysql">https://github.com/sysown/proxysql</a></p>
-    </div>
-
-    
-<footer class="post-footer">
-      <div class="post-tags">
-          <a href="/tags/kubernetes/">kubernetes</a>
-          <a href="/tags/proxysql/">proxysql</a>
-          <a href="/tags/mysql/">MySQL</a>
-          </div>
-      <nav class="post-nav">
-        <a class="prev" href="/post/deploy_rabbitmq_on_kubernetes/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Kubernetes 上部署 rabbitmq statefulset集群</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
-        <a class="next" href="/post/mysql_dump_and_recovery/">
-            <span class="next-text nav-default">MySQL备份还原笔记</span>
-            <span class="next-text nav-mobile">下一篇</span>
-            <i class="iconfont icon-right"></i>
-          </a>
-      </nav>
-    </footer>
-  </article>
-        </div>
-        
-
-  
-  <div id="vcomments"></div>
-  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
-  <script type="text/javascript">
-    new Valine({
-        el: '#vcomments' ,
-        appId: 'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',
-        appKey: 'cq9Rl1lkMWGfkEoq93b6t3bJ',
-        notify:  false ,
-        verify:  true ,
-        avatar:'mp',
-        placeholder: 'Say something...',
-        visitor:  false 
-    });
-  </script>
-
-  
-
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="social-links">
-      <a href="mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109;" class="iconfont icon-email" title="email"></a>
-  <a href="/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
-</div>
-
-<div class="copyright">
-  <span class="power-by">
-    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
-  </span>
-  <span class="division">|</span>
-  <span class="theme-info">
-    主题 - 
-    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
-  </span>
-
-  
-
-  <span class="copyright-year">
-    &copy; 
-    2018 - 
-    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
-  </span>
-</div>
-
-    </footer>
-
-    <div class="back-to-top" id="back-to-top">
-      <i class="iconfont icon-up"></i>
-    </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
-
-
-
-<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-138489412-1', 'auto');
-	ga('set', 'anonymizeIp', true);
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-
-
-</body>
-</html>
+an error to be returned to the client</li></ul><p>Issue 参考：</p><p><a href=https://github.com/sysown/proxysql/pull/2156>https://github.com/sysown/proxysql/pull/2156</a></p><p><a href=https://github.com/sysown/proxysql/issues/2234>https://github.com/sysown/proxysql/issues/2234</a></p><h4 id=reference>Reference</h4><p>部署参考：</p><p><a href=https://severalnines.com/database-blog/proxysql-native-clustering-kubernetes>https://severalnines.com/database-blog/proxysql-native-clustering-kubernetes</a></p><p>配置详解参考：</p><p><a href=https://www.cnblogs.com/f-ck-need-u/p/7586194.html#auto_id_4>https://www.cnblogs.com/f-ck-need-u/p/7586194.html#auto_id_4</a></p><p>github 地址：</p><p><a href=https://github.com/sysown/proxysql>https://github.com/sysown/proxysql</a></p></div><footer class=post-footer><div class=post-tags><a href=/tags/kubernetes/>kubernetes</a>
+<a href=/tags/proxysql/>proxysql</a>
+<a href=/tags/mysql/>MySQL</a></div><nav class=post-nav><a class=prev href=/post/deploy_rabbitmq_on_kubernetes/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Kubernetes 上部署 rabbitmq statefulset集群</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/mysql_dump_and_recovery/><span class="next-text nav-default">MySQL备份还原笔记</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script><script src=//unpkg.com/valine/dist/Valine.min.js></script><script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!1,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a><a href=/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
