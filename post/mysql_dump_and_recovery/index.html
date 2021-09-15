@@ -1,0 +1,429 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>MySQL备份还原笔记 - 闲隅</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="Fimreal"><meta name=description content="工作中常用到 MySQL 备份还原的一些命令，脚本，以及遇到的问题记录"><meta name=keywords content="MySQL">
+<meta name=generator content="Hugo 0.88.1 with theme even">
+<link rel=canonical href=/post/mysql_dump_and_recovery/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="MySQL备份还原笔记">
+<meta property="og:description" content="工作中常用到 MySQL 备份还原的一些命令，脚本，以及遇到的问题记录">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/post/mysql_dump_and_recovery/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2020-05-14T03:30:00+00:00">
+<meta property="article:modified_time" content="2020-05-19T13:57:59+08:00">
+<meta itemprop=name content="MySQL备份还原笔记">
+<meta itemprop=description content="工作中常用到 MySQL 备份还原的一些命令，脚本，以及遇到的问题记录"><meta itemprop=datePublished content="2020-05-14T03:30:00+00:00">
+<meta itemprop=dateModified content="2020-05-19T13:57:59+08:00">
+<meta itemprop=wordCount content="921">
+<meta itemprop=keywords content="MySQL,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="MySQL备份还原笔记">
+<meta name=twitter:description content="工作中常用到 MySQL 备份还原的一些命令，脚本，以及遇到的问题记录"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>闲隅</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>主页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>闲隅</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>主页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>MySQL备份还原笔记</h1>
+<div class=post-meta>
+<span class=post-time> 2020-05-14 </span>
+<div class=post-category>
+<a href=/categories/database/> database </a>
+</div>
+<span class=more-meta> 约 921 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#一mysqldump-备份常用命令参数>一、mysqldump 备份常用命令参数</a></li>
+<li><a href=#二mysql-导入sql-备份文件>二、MySQL 导入SQL 备份文件</a></li>
+<li><a href=#三一些异常错误的解决办法>三、一些异常错误的解决办法</a></li>
+<li><a href=#reference>Reference</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>MySQL 备份时常用到的命令，脚本笔记。</p>
+<h3 id=一mysqldump-备份常用命令参数>一、mysqldump 备份常用命令参数</h3>
+<h4 id=1-基础备份命令>1. 基础备份命令</h4>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>mysql <span class=o>[</span>-h &lt;host_address&gt;<span class=o>]</span> <span class=o>[</span>-P &lt;host_port&gt;<span class=o>]</span> &lt;-u &lt;mysql_username&gt;&gt; <span class=o>[</span>-p<span class=o>[</span>&lt;mysql_password&gt;<span class=o>]]</span> <span class=o>[</span>dump_args<span class=o>]</span> ...<span class=o>[</span>scheme_name<span class=o>]</span> <span class=o>[</span>table_name<span class=o>]</span> &gt; filename-<span class=k>$(</span>date +%F<span class=k>)</span>.sql
+</code></pre></td></tr></table>
+</div>
+</div><p><code>dump_args</code>可以为如下参数，不指定时默认参数受到变量控制，全部详情使用<code>mysqldump --help</code>查看：</p>
+<ol>
+<li><code>-A, --all-databases, --databases all</code>备份所有数据，默认为<code>FALSE</code></li>
+<li><code>-B, --databases &lt;db_name> [db_name1 db_name2...]</code>指定备份数据库，参数后面所有名字都被看作数据库名</li>
+<li><code>-C, --compress</code>客户端和服务端传输协议中启用压缩选项，默认为<code>FALSE</code></li>
+<li><code>--default-character-set=utf8</code>修改默认字符集为<code>utf8</code>，注意 MySQL 里该字符集没有"-"</li>
+<li><code>--add-drop-database</code>导出语句中每个数据库结构创建前添加 DROP DATABASE 语句，默认为<code>FALSE</code></li>
+<li><code>--add-drop-table</code>导出语句中每个表结构创建前添加 DROP TABLE 语句，默认为<code>TRUE</code></li>
+<li><code>--skip-add-drop-table</code>导出语句中每个表结构创建前不添加 DROP TABLE 语句，相比 6 具有相反效果</li>
+<li><code>-d</code>只导出数据结构，不导出数据</li>
+<li><code>-t</code>只导出数据，不导出数据结构</li>
+</ol>
+<h4 id=2-其他>2. 其他</h4>
+<h5 id=查看数据库大小>查看数据库大小</h5>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=k>select</span><span class=w>
+</span><span class=w></span><span class=n>TABLE_SCHEMA</span><span class=p>,</span><span class=w>
+</span><span class=w></span><span class=nf>concat</span><span class=p>(</span><span class=nf>truncate</span><span class=p>(</span><span class=nf>sum</span><span class=p>(</span><span class=n>data_length</span><span class=p>)</span><span class=o>/</span><span class=mi>1024</span><span class=o>/</span><span class=mi>1024</span><span class=p>,</span><span class=mi>2</span><span class=p>),</span><span class=s1>&#39; MB&#39;</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=n>data_size</span><span class=p>,</span><span class=w>
+</span><span class=w></span><span class=nf>concat</span><span class=p>(</span><span class=nf>truncate</span><span class=p>(</span><span class=nf>sum</span><span class=p>(</span><span class=n>index_length</span><span class=p>)</span><span class=o>/</span><span class=mi>1024</span><span class=o>/</span><span class=mi>1024</span><span class=p>,</span><span class=mi>2</span><span class=p>),</span><span class=s1>&#39;MB&#39;</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=n>index_size</span><span class=w>
+</span><span class=w></span><span class=k>from</span><span class=w> </span><span class=n>information_schema</span><span class=p>.</span><span class=kp>tables</span><span class=w>
+</span><span class=w></span><span class=k>group</span><span class=w> </span><span class=k>by</span><span class=w> </span><span class=n>TABLE_SCHEMA</span><span class=w>
+</span><span class=w></span><span class=k>ORDER</span><span class=w> </span><span class=k>BY</span><span class=w> </span><span class=n>data_size</span><span class=w> </span><span class=k>desc</span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h5 id=查看数据库表空间大小>查看数据库表空间大小</h5>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=k>select</span><span class=w>
+</span><span class=w></span><span class=n>TABLE_NAME</span><span class=p>,</span><span class=w>
+</span><span class=w></span><span class=nf>concat</span><span class=p>(</span><span class=nf>truncate</span><span class=p>(</span><span class=n>data_length</span><span class=o>/</span><span class=mi>1024</span><span class=o>/</span><span class=mi>1024</span><span class=p>,</span><span class=mi>2</span><span class=p>),</span><span class=s1>&#39; MB&#39;</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=n>data_size</span><span class=p>,</span><span class=w>
+</span><span class=w></span><span class=nf>concat</span><span class=p>(</span><span class=nf>truncate</span><span class=p>(</span><span class=n>index_length</span><span class=o>/</span><span class=mi>1024</span><span class=o>/</span><span class=mi>1024</span><span class=p>,</span><span class=mi>2</span><span class=p>),</span><span class=s1>&#39; MB&#39;</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=n>index_size</span><span class=w>
+</span><span class=w></span><span class=k>from</span><span class=w> </span><span class=n>information_schema</span><span class=p>.</span><span class=kp>tables</span><span class=w>
+</span><span class=w></span><span class=k>where</span><span class=w> </span><span class=n>TABLE_SCHEMA</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s1>&#39;mysql&#39;</span><span class=w>
+</span><span class=w></span><span class=k>group</span><span class=w> </span><span class=k>by</span><span class=w> </span><span class=n>TABLE_NAME</span><span class=w>
+</span><span class=w></span><span class=k>order</span><span class=w> </span><span class=k>by</span><span class=w> </span><span class=n>data_length</span><span class=w> </span><span class=k>desc</span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id=二mysql-导入sql-备份文件>二、MySQL 导入SQL 备份文件</h3>
+<h4 id=1-从-mysql-全库备份中恢复单个表的方法>1. 从 MySQL 全库备份中恢复单个表的方法</h4>
+<h5 id=重命名当前表可选>重命名当前表（可选）</h5>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=k>ALTER</span><span class=w> </span><span class=k>TABLE</span><span class=w> </span><span class=o>&lt;</span><span class=n>table_name</span><span class=o>&gt;</span><span class=w> </span><span class=k>RENAME</span><span class=w> </span><span class=k>to</span><span class=w> </span><span class=o>&lt;</span><span class=n>table_name</span><span class=o>&gt;</span><span class=n>_bak7777</span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h5 id=从全备份文件中找出单个-scheme-sql>从全备份文件中找出单个 <strong>scheme SQL</strong></h5>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=n>sed</span><span class=w> </span><span class=o>-</span><span class=n>ne</span><span class=w> </span><span class=s1>&#39;/-- Current Database: `${scheme_name}`/,/-- Current Database/ p&#39;</span><span class=w> </span><span class=n>alldump</span><span class=p>.</span><span class=k>sql</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>scheme</span><span class=p>.</span><span class=k>sql</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h5 id=从单个-scheme-sql文件中找出单个表-sql>从单个 <strong>scheme SQL</strong>文件中找出单个表 <strong>SQL</strong></h5>
+<p>为了避免从不同库中有同名表存在，尽量从单个 scheme 中找到表数据恢复</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=n>sed</span><span class=w> </span><span class=o>-</span><span class=n>n</span><span class=w> </span><span class=o>-</span><span class=n>e</span><span class=w> </span><span class=s1>&#39;/-- Table structure for table `${table_name}`/,/-- Table structure for table/p&#39;</span><span class=w> </span><span class=n>scheme</span><span class=p>.</span><span class=k>sql</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=k>table</span><span class=p>.</span><span class=k>sql</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h5 id=恢复表>恢复表</h5>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=n>mysql</span><span class=w> </span><span class=o>-</span><span class=n>h</span><span class=w> </span><span class=err>$</span><span class=n>host</span><span class=w> </span><span class=o>-</span><span class=n>P</span><span class=w> </span><span class=err>$</span><span class=n>port</span><span class=w> </span><span class=o>-</span><span class=n>u</span><span class=err>$</span><span class=n>username</span><span class=w> </span><span class=o>-</span><span class=n>p</span><span class=w> </span><span class=err>${</span><span class=n>scheme_name</span><span class=err>}</span><span class=w> </span><span class=o>--</span><span class=n>max_allowed_packet</span><span class=o>=</span><span class=mi>64</span><span class=n>M</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=k>table</span><span class=p>.</span><span class=k>sql</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id=2-mysql-备份脚本>2. MySQL 备份脚本</h4>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># filename: mysqldump_cron.sh</span>
+<span class=c1>#!/usr/bin/env bash</span>
+
+<span class=c1># init</span>
+<span class=nv>now_Date</span><span class=o>=</span><span class=k>$(</span>date +%Y%m%d<span class=k>)</span>
+<span class=nv>LOGFILE</span><span class=o>=</span><span class=si>${</span><span class=nv>LOGFILE</span><span class=k>:-</span><span class=p>/tmp/mysqldump.log</span><span class=si>}</span>
+<span class=nv>WORKDIR</span><span class=o>=</span><span class=si>${</span><span class=nv>WORKDIR</span><span class=k>:-</span><span class=p>/data/mysqldump</span><span class=si>}</span>
+
+LOGSTATUS<span class=o>()</span> <span class=o>{</span>
+  <span class=k>if</span> <span class=o>[</span> <span class=nv>$?</span> -eq <span class=m>0</span> <span class=o>]</span><span class=p>;</span> <span class=k>then</span>
+      <span class=nb>echo</span> <span class=nv>$1</span> OK &gt;&gt; <span class=nv>$LOGFILE</span>
+    <span class=c1># 删除旧的日志</span>
+	  <span class=c1># echo \</span>
+      find <span class=nv>$WORKDIR</span> -name <span class=s2>&#34;</span><span class=nv>$1</span><span class=s2>*.gz&#34;</span> -mtime +<span class=nv>$2</span> -delete
+  <span class=k>else</span>
+      <span class=nb>echo</span> <span class=nv>$1</span> FAILD &gt;&gt; <span class=nv>$LOGFILE</span>
+    <span class=c1># mail to somebody</span>
+  <span class=k>fi</span>
+<span class=o>}</span>
+
+DUMPSQL<span class=o>()</span> <span class=o>{</span>
+  <span class=nv>DUMPFILENAME</span><span class=o>=</span><span class=si>${</span><span class=nv>2</span><span class=si>}</span>-<span class=si>${</span><span class=nv>1</span><span class=si>}</span>
+  <span class=k>if</span> <span class=o>[</span> <span class=si>${</span><span class=nv>1</span><span class=si>}</span> <span class=o>==</span> <span class=s2>&#34;all&#34;</span> <span class=o>]</span><span class=p>;</span> <span class=k>then</span>
+      <span class=nv>SCHEME_NAME</span><span class=o>=</span><span class=s2>&#34;-A&#34;</span>
+  <span class=k>fi</span>
+  <span class=nb>shift</span>
+  <span class=nv>MYSQL_HOST</span><span class=o>=</span><span class=si>${</span><span class=nv>1</span><span class=si>}</span>
+  <span class=nv>MYSQL_USERNAME</span><span class=o>=</span><span class=si>${</span><span class=nv>2</span><span class=si>}</span>
+  <span class=nv>MYSQL_PASSWORD</span><span class=o>=</span><span class=si>${</span><span class=nv>3</span><span class=si>}</span>
+  <span class=nv>MYSQL_PORT</span><span class=o>=</span><span class=si>${</span><span class=nv>4</span><span class=k>:-</span><span class=nv>3306</span><span class=si>}</span>
+  <span class=nv>MYSQL_ARGS</span><span class=o>=</span><span class=si>${</span><span class=nv>5</span><span class=si>}</span>
+
+
+  <span class=nb>echo</span> <span class=s2>&#34;Strating dump </span><span class=si>${</span><span class=nv>DUMPFILENAME</span><span class=si>}</span><span class=s2> SQL at </span><span class=k>$(</span>date<span class=k>)</span><span class=s2>&#34;</span> &gt;&gt; <span class=si>${</span><span class=nv>LOGFILE</span><span class=si>}</span>
+  mysqldump -h <span class=si>${</span><span class=nv>MYSQL_HOST</span><span class=si>}</span> -u <span class=si>${</span><span class=nv>MYSQL_USERNAME</span><span class=si>}</span> -p<span class=si>${</span><span class=nv>MYSQL_PASSWORD</span><span class=si>}</span> -P<span class=si>${</span><span class=nv>MYSQL_PORT</span><span class=si>}</span> <span class=si>${</span><span class=nv>MYSQL_ARGS</span><span class=si>}</span> <span class=si>${</span><span class=nv>SCHEME_NAME</span><span class=si>}</span> <span class=p>|</span>gzip &gt; <span class=si>${</span><span class=nv>DUMPFILENAME</span><span class=si>}</span>-<span class=si>${</span><span class=nv>now_Date</span><span class=si>}</span>.sql.gz 2&gt;/dev/null
+<span class=o>}</span>
+
+<span class=nb>cd</span> <span class=nv>$WORKDIR</span>
+
+DUMPSQL all 172.16.225.47 root woshimima
+LOGSTATUS 172.16.225.47 <span class=m>3</span>
+
+
+<span class=nb>echo</span> <span class=s2>&#34;======================&#34;</span> &gt;&gt; <span class=si>${</span><span class=nv>LOGFILE</span><span class=si>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=三一些异常错误的解决办法>三、一些异常错误的解决办法</h3>
+<h4 id=1-遇到报错mysql-error-1231-42000variable-character_set_client-cant-be-set-to-the-value-of-nullhttpsstackoverflowcomquestions29112716mysql-error-1231-42000variable-character-set-client-cant-be-set-to-the-val-时>1. 遇到报错：<a href=https://stackoverflow.com/questions/29112716/mysql-error-1231-42000variable-character-set-client-cant-be-set-to-the-val><code>MySQL ERROR 1231 (42000):Variable 'character_set_client' can't be set to the value of 'NULL'</code></a> 时</h4>
+<p>客户端字符集设置问题，可以修改 SQL 文件内的 [最后]</p>
+<p><code>/*!40101 SET character_set_client = @saved_cs_client */;</code></p>
+<p>改成</p>
+<p><code>/*!40101 SET character_set_client = 'utf8' */;</code></p>
+<p>默认 dump 文件环境配置可以参考：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=cm>/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40101 SET NAMES utf8 */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40103 SET TIME_ZONE=&#39;+00:00&#39; */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE=&#39;NO_AUTO_VALUE_ON_ZERO&#39; */</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=cm>/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */</span><span class=p>;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id=reference>Reference</h3>
+<p><a href=https://stackoverflow.com/questions/29112716/mysql-error-1231-42000variable-character-set-client-cant-be-set-to-the-val>https://stackoverflow.com/questions/29112716/mysql-error-1231-42000variable-character-set-client-cant-be-set-to-the-val</a></p>
+<p><a href=https://www.cnblogs.com/chenmh/p/5300370.html>https://www.cnblogs.com/chenmh/p/5300370.html</a></p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/mysql/>MySQL</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/deploy_proxysql_on_kubernetes/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
+<a class=next href=/post/solve_a_strange_problem_caused_slow_login/>
+<span class="next-text nav-default">记一次解决 Linux 登陆慢的问题</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=vcomments></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!1,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+</body>
+</html>

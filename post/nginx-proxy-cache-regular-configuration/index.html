@@ -1,0 +1,324 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>nginx location 规则使用正则时改写 request_uri 报错 - 闲隅</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="Fimreal"><meta name=description content="在 nginx 中使用正则匹配，同时改写 proxy_pass $request_uri 的小技巧，记住学会了，做各种各样的缓存规则匹配都不怕。"><meta name=keywords content="nginx">
+<meta name=generator content="Hugo 0.88.1 with theme even">
+<link rel=canonical href=/post/nginx-proxy-cache-regular-configuration/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="nginx location 规则使用正则时改写 request_uri 报错">
+<meta property="og:description" content="在 nginx 中使用正则匹配，同时改写 proxy_pass $request_uri 的小技巧，记住学会了，做各种各样的缓存规则匹配都不怕。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/post/nginx-proxy-cache-regular-configuration/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2019-05-09T06:51:22+00:00">
+<meta property="article:modified_time" content="2019-08-19T14:35:05+08:00">
+<meta itemprop=name content="nginx location 规则使用正则时改写 request_uri 报错">
+<meta itemprop=description content="在 nginx 中使用正则匹配，同时改写 proxy_pass $request_uri 的小技巧，记住学会了，做各种各样的缓存规则匹配都不怕。"><meta itemprop=datePublished content="2019-05-09T06:51:22+00:00">
+<meta itemprop=dateModified content="2019-08-19T14:35:05+08:00">
+<meta itemprop=wordCount content="1271">
+<meta itemprop=keywords content="nginx,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="nginx location 规则使用正则时改写 request_uri 报错">
+<meta name=twitter:description content="在 nginx 中使用正则匹配，同时改写 proxy_pass $request_uri 的小技巧，记住学会了，做各种各样的缓存规则匹配都不怕。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>闲隅</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>主页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>闲隅</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>主页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>nginx location 规则使用正则时改写 request_uri 报错</h1>
+<div class=post-meta>
+<span class=post-time> 2019-05-09 </span>
+<div class=post-category>
+<a href=/categories/web/> web </a>
+</div>
+<span class=more-meta> 约 1271 字 </span>
+<span class=more-meta> 预计阅读 3 分钟 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>今天在配置 nginx 缓存时，遇到一个棘手的问题，开发反馈需要实现缓存特定路径下的数据，并且要能手动清除缓存。缓存配置和清除的办法在前面已经有介绍，但是给出的路径中间有一位会变动，也就是说需要 location 正则匹配区分。
+“众所周知”，location 区块匹配正则表达式时，内部 proxy_pass 如果继续配置使用 request_uri 改写功能（即 http://somewhere/path 形式）会报错不可用，那要怎么解决这个需求呢？事实情况并没有这么简单。</p>
+<p>测试使用环境为 nginx-1.15.8 ，近几年的版本应该都一致。</p>
+<h4 id=开发的需求>开发的需求</h4>
+<p>有 uri ：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>https://domain/api/v2/app/.../24/data
+</code></pre></td></tr></table>
+</div>
+</div><p>需要转到后端服务器为：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>http://domain/app/.../24/data
+</code></pre></td></tr></table>
+</div>
+</div><p>其中只需要缓存 <code>.../24/data</code> 内容，但是不能对 <code>.../24</code>、<code>.../24/something</code> 做缓存，数字位 “24” 会随着查询数据不同变化。</p>
+<p>那么条件限定死了：</p>
+<ol>
+<li>不可能通过数字前面内容来匹配缓存 path</li>
+<li>要匹配可变数字，并且数字后面是固定 <code>/data</code></li>
+<li><code>proxy_pass</code>需要改写 path ，rewrite 不符合需求。</li>
+</ol>
+<h4 id=失败的尝试>失败的尝试</h4>
+<p>可能是之前的知识固化了思维，我以为在 <code>location</code> 后写正则，再去改写 path ，且不说怎么把把变化的数字传递给 <code>upstream_addr</code>，nginx 不是不允许这样做，会直接给出报错吗？</p>
+<p>那么如果使用 <code>if</code> 来限定缓存的 path 是不是就可以了，遗憾的是 nginx 也会报错。查阅 <a href=https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache>nginx.org</a> 文档说明可以发现，proxy_cache 不能用在 <code>if</code> 语句内。</p>
+<h4 id=正确的用法>正确的用法</h4>
+<p>为什么 <code>rewrite</code> 规则可以使用 正则，而且用的很好，nginx 却不给 location 添加支持呢？这时候灵光一闪想到可不可以用 <code>$1</code> 变量来代替可变的数字，试了再说 &mldr;</p>
+<p>修改配置文件</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx>  <span class=k>...</span>
+<span class=s>location</span> <span class=p>~</span> <span class=sr>/api/v2/app/.../([0-9]+)/data</span> <span class=p>{</span>
+  	<span class=kn>proxy_redirect</span> <span class=no>off</span><span class=p>;</span>
+    <span class=kn>proxy_set_header</span>         <span class=s>Host</span> <span class=nv>$host</span><span class=p>;</span>
+    <span class=kn>proxy_set_header</span>         <span class=s>X-real-ip</span> <span class=nv>$remote_addr</span><span class=p>;</span>
+    <span class=kn>proxy_set_header</span>         <span class=s>X-Forwarded-For</span> <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+    <span class=kn>proxy_pass</span>               <span class=s>http://domain/app/.../</span><span class=nv>$1/data</span><span class=p>;</span>
+
+    <span class=kn>proxy_buffering</span>          <span class=no>on</span><span class=p>;</span><span class=c1># 避免全局配置关闭代理缓存
+</span><span class=c1></span>    <span class=kn>proxy_cache</span>              <span class=s>cache_zone1</span><span class=p>;</span>   <span class=c1># 定义的 cache_zone 名称
+</span><span class=c1></span>    <span class=kn>proxy_cache_key</span>          <span class=s>&#34;</span><span class=nv>$host$request_uri&#34;</span><span class=p>;</span>   <span class=c1># 定义缓存存放目录的子目录命名规则
+</span><span class=c1></span>    <span class=kn>add_header</span> <span class=s>Cache</span>         <span class=s>&#34;</span><span class=nv>$upstream_cache_status&#34;</span><span class=p>;</span> <span class=c1># 增加缓存头信息，便于判断是否命中
+</span><span class=c1></span>    <span class=kn>proxy_cache_valid</span>        <span class=mi>200</span> <span class=mi>304</span> <span class=mi>301</span> <span class=mi>302</span> <span class=s>2h</span><span class=p>;</span>
+    <span class=kn>proxy_cache_valid</span>        <span class=mi>404</span> <span class=mi>1m</span><span class=p>;</span>
+    <span class=kn>proxy_cache_valid</span>        <span class=s>any</span> <span class=mi>5m</span><span class=p>;</span>
+<span class=p>}</span>
+  <span class=k>...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>nginx reload !！</p>
+<p>结果竟然没有报错，简单添加一个变量的，就实现了原来觉着不可能实现的需求。</p>
+<h4 id=后续测试>后续测试</h4>
+<p>测试使用正则表达式匹配，后面改写路径为 “/”</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=c1># cat test.conf
+</span><span class=c1></span><span class=k>server</span> <span class=p>{</span>
+    <span class=kn>location</span> <span class=p>~</span> <span class=sr>/.*</span>  <span class=p>{</span>
+        <span class=kn>proxy_pass</span> <span class=s>http://epurs.com/</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+<span class=c1># nginx -t
+</span><span class=c1></span><span class=k>2019/05/09</span> <span class=n>17</span><span class=p>:</span><span class=mi>13</span><span class=p>:</span><span class=mi>30</span> <span class=s>[emerg]</span> <span class=mi>7685</span><span class=c1>#7685: &#34;proxy_pass&#34; cannot have URI part in location given by regular expression, or inside named location, or inside &#34;if&#34; statement, or inside &#34;limit_except&#34; block in /etc/nginx/conf.d/test.conf:3
+</span><span class=c1></span><span class=s>nginx:</span> <span class=s>[emerg]</span> <span class=s>&#34;proxy_pass&#34;</span> <span class=s>cannot</span> <span class=s>have</span> <span class=s>URI</span> <span class=s>part</span> <span class=s>in</span> <span class=s>location</span> <span class=s>given</span> <span class=s>by</span> <span class=s>regular</span> <span class=s>expression,</span> <span class=s>or</span> <span class=s>inside</span> <span class=s>named</span> <span class=s>location,</span> <span class=s>or</span> <span class=s>inside</span> <span class=s>&#34;if&#34;</span> <span class=s>statement,</span> <span class=s>or</span> <span class=s>inside</span> <span class=s>&#34;limit_except&#34;</span> <span class=s>block</span> <span class=s>in</span> <span class=s>/etc/nginx/conf.d/test.conf:3</span>
+<span class=s>nginx:</span> <span class=s>configuration</span> <span class=s>file</span> <span class=s>/etc/nginx/nginx.conf</span> <span class=s>test</span> <span class=s>failed</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>报错。</p>
+<p>测试使用正则表达式匹配，使用变量匹配 <code>request_uri</code>，后面改写路径为 “/$1”</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=c1># cat test.conf
+</span><span class=c1></span><span class=k>server</span> <span class=p>{</span>
+    <span class=kn>location</span> <span class=p>~</span> <span class=sr>/(.*)</span>  <span class=p>{</span>
+        <span class=kn>proxy_pass</span> <span class=s>http://epurs.com/</span><span class=nv>$1</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+<span class=c1># nginx -t
+</span><span class=c1></span><span class=k>nginx:</span> <span class=s>the</span> <span class=s>configuration</span> <span class=s>file</span> <span class=s>/etc/nginx/nginx.conf</span> <span class=s>syntax</span> <span class=s>is</span> <span class=s>ok</span>
+<span class=s>nginx:</span> <span class=s>configuration</span> <span class=s>file</span> <span class=s>/etc/nginx/nginx.conf</span> <span class=s>test</span> <span class=s>is</span> <span class=s>successful</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可用。</p>
+<p>后续多次测试后发现，当使用正则表达式匹配时，使用不存在的变量 <code>$dontexist</code>作为改写路径：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=c1># nginx -t
+</span><span class=c1></span><span class=k>2019/05/09</span> <span class=n>17</span><span class=p>:</span><span class=mi>31</span><span class=p>:</span><span class=mi>09</span> <span class=s>[emerg]</span> <span class=mi>7787</span><span class=c1>#7787: unknown &#34;dontexist&#34; variable
+</span><span class=c1></span><span class=s>nginx:</span> <span class=s>[emerg]</span> <span class=s>unknown</span> <span class=s>&#34;dontexist&#34;</span> <span class=s>variable</span>
+<span class=s>nginx:</span> <span class=s>configuration</span> <span class=s>file</span> <span class=s>/etc/nginx/nginx.conf</span> <span class=s>test</span> <span class=s>failed</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>报错。</p>
+<p>但是如果变量是数字表示，即一个空变量，测试是可以通过的。</p>
+<h4 id=结论>结论</h4>
+<p>可见，nginx 也不是不能用正则来匹配规则，网上经常提到 <code>location</code> 用法中说到的 正则匹配时，后面不能再用 “http://domain/path” 其实是错误的说法。</p>
+<p>真实情况是，如果前面使用了正则表达式匹配出现多种可能路径，那么后面也需要一个对应的变量来保证路径也是可变的。这个变量只要真实存在哪怕为空，只要不是不存在的变量，就可以通过通过 <code>nginx -t</code> 检查。</p>
+<p>常用的比如 <code>$1</code>、<code>request_uri</code> 使用起来可以搭配正则表达式实现灵活转发。
+当然要注意使用正则时，优先级并不高的问题。</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/nginx/>nginx</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/google-authenticator/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">使用 google_authenticator 生成动态密码加固 ssh 登陆</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
+<a class=next href=/post/nginx-proxy-cache-configuration/>
+<span class="next-text nav-default">nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=vcomments></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!1,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+</body>
+</html>
