@@ -42,3 +42,22 @@ jobs:
           cname: blog.epurs.com
           keep_files: false
           publish_branch: master
+
+      - name: for qcloud-webify
+        run: |
+          sed -i '/.Site.Copyright/ a<a href="https://webify.cloudbase.net/"> 🚀 Powered by CloudBase Webify</a>' themes/even/layouts/partials/footer.html
+      - name: beian
+        run: |
+          sed -i '/.Site.Copyright/ a<a class="theme-link" href="http://beian.miit.gov.cn">京ICP备18059304号-1</a>' themes/even/layouts/partials/footer.html
+      - name: Build
+        run: hugo --minify
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/src'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}     # see https://github.com/marketplace/actions/github-pages-action#github-actions-for-github-pages
+          publish_dir: ./public
+        # cname: www.epurs.com
+          keep_files: false
+          publish_branch: qcloud-webify
+
