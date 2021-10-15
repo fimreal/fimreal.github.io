@@ -40,7 +40,7 @@ sequenceDiagrams:
 
 ---
 
-安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。
+安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。简单记录创建 fcc 配置文件，并在 vmware 安装 fcos ，转化 qcow2 镜像的过程。
 
 <!--more-->
 
@@ -175,5 +175,27 @@ https://docs.fedoraproject.org/en-US/fedora-coreos/
 
 
 
+## 5. 补充：vmware 生成 qcow2 镜像
 
+安装不算麻烦，后续想要将镜像导入到云服务器还需要些许努力。
+
+首先免费版本的 VMware Fusion 不支持导出镜像，需要在网上找个序列号升级到专业版本解锁额外功能。~~太坑了！~~
+
+前面安装的 CoreOS 默认就是 DHCP 配置网络，不用安装 cloud-init 等工具就可以在云平台跑起来，缺少的控制台重置密码功能麻烦点也能自己改，所以不需要再做额外配置。
+
+将装好的虚拟机导出为 OVF 格式，导出速度很快，OVF 其实就是配置文件，关键是要单独打包出来的 vmdk 磁盘镜像文件。
+
+获取到 vmdk 文件后，使用 `qemu-img` 转换格式：
+
+```bash
+qemu-img convert -f vmdk -O qcow2 Fedora-disk1.vmdk Fedora-disk1.qcow2
+```
+
+转换完成可以查看镜像实际大小：
+
+```bash
+qemu-img info Fedora-disk1.qcow2
+```
+
+后续根据云厂商说明文档导入进去，开机 ssh 即可。
 
