@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Nginx Tcp 代理添加 IP 限制 - 闲隅</title>
+<title>Docker 创建 NFS Volume - 闲隅</title>
 <meta name=renderer content="webkit">
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta http-equiv=cache-control content="no-transform">
@@ -11,10 +11,9 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="Fimreal"><meta name=description content="用容器启动一个便捷快速可管控的 TCP 代理。
-"><meta name=keywords content="nginx,proxy">
+<meta name=author content="Fimreal"><meta name=description content="Docker 如何使用 NFS Volume，多个容器使用 NFS Volume 的便捷用法"><meta name=keywords content="docker,nfs">
 <meta name=generator content="Hugo 0.88.1 with theme even">
-<link rel=canonical href=/post/nginx-tcp-proxy/>
+<link rel=canonical href=/post/docker-nfs-volume/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
 <link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
@@ -22,19 +21,19 @@
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Nginx Tcp 代理添加 IP 限制">
-<meta property="og:description" content="用容器启动一个便捷快速可管控的 TCP 代理。">
+<meta property="og:title" content="Docker 创建 NFS Volume">
+<meta property="og:description" content="Docker 如何使用 NFS Volume，多个容器使用 NFS Volume 的便捷用法">
 <meta property="og:type" content="article">
-<meta property="og:url" content="/post/nginx-tcp-proxy/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2021-10-14T18:20:49+08:00">
+<meta property="og:url" content="/post/docker-nfs-volume/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-10-15T09:22:52+08:00">
 <meta property="article:modified_time" content="2021-10-15T09:39:33+08:00">
-<meta itemprop=name content="Nginx Tcp 代理添加 IP 限制">
-<meta itemprop=description content="用容器启动一个便捷快速可管控的 TCP 代理。"><meta itemprop=datePublished content="2021-10-14T18:20:49+08:00">
+<meta itemprop=name content="Docker 创建 NFS Volume">
+<meta itemprop=description content="Docker 如何使用 NFS Volume，多个容器使用 NFS Volume 的便捷用法"><meta itemprop=datePublished content="2021-10-15T09:22:52+08:00">
 <meta itemprop=dateModified content="2021-10-15T09:39:33+08:00">
-<meta itemprop=wordCount content="194">
-<meta itemprop=keywords content="nginx,proxy,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Nginx Tcp 代理添加 IP 限制">
-<meta name=twitter:description content="用容器启动一个便捷快速可管控的 TCP 代理。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta itemprop=wordCount content="290">
+<meta itemprop=keywords content="docker,nfs,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Docker 创建 NFS Volume">
+<meta name=twitter:description content="Docker 如何使用 NFS Volume，多个容器使用 NFS Volume 的便捷用法"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -85,14 +84,14 @@
 <div id=content class=content>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title>Nginx Tcp 代理添加 IP 限制</h1>
+<h1 class=post-title>Docker 创建 NFS Volume</h1>
 <div class=post-meta>
-<span class=post-time> 2021-10-14 </span>
+<span class=post-time> 2021-10-15 </span>
 <div class=post-category>
-<a href=/categories/nginx/> nginx </a>
-<a href=/categories/proxy/> proxy </a>
+<a href=/categories/docker/> docker </a>
+<a href=/categories/nfs/> nfs </a>
 </div>
-<span class=more-meta> 约 194 字 </span>
+<span class=more-meta> 约 290 字 </span>
 <span class=more-meta> 预计阅读 1 分钟 </span>
 </div>
 </header>
@@ -103,8 +102,22 @@
 </div>
 </div>
 <div class=post-content>
-<p>用容器启动一个便捷快速可管控的 TCP 代理。</p>
-<p>可供容器使用的配置文件：</p>
+<p>Docker 如何使用 NFS Volume，多个容器使用 NFS Volume 的便捷用法。</p>
+<p>文中方法适合 docker 17.06 之后版本，使用<code>docker version</code> 确认。</p>
+<p>在容器创建时使用下面命令直接挂载：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker run -it --name nfs-test <span class=se>\
+</span><span class=se></span>--mount <span class=s1>&#39;type=volume,source=nfsvolume,target=/mnt,volume-driver=local,volume-opt=type=nfs,volume-opt=device=:/rxt68s30,&#34;volume-opt=o=addr=172.21.0.99,rw,vers=3,nolock,proto=tcp,noresvport&#34;&#39;</span> <span class=se>\
+</span><span class=se></span>alpine ash
+</code></pre></td></tr></table>
+</div>
+</div><p>查看生成的 volume 信息：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -123,79 +136,65 @@
 </span><span class=lnt>14
 </span><span class=lnt>15
 </span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=k>events</span> <span class=p>{</span>
-    <span class=kn>worker_connections</span>  <span class=mi>1024</span><span class=p>;</span>
-<span class=p>}</span>
-
-
-<span class=k>stream</span> <span class=p>{</span>
-    <span class=kn>log_format</span> <span class=s>proxy</span> <span class=s>&#39;</span><span class=nv>$remote_addr</span> <span class=s>[</span><span class=nv>$time_local]</span> <span class=s>&#39;</span>
-             <span class=s>&#39;</span><span class=nv>$protocol</span> <span class=nv>$status</span> <span class=nv>$bytes_sent</span> <span class=nv>$bytes_received</span> <span class=s>&#39;</span>
-             <span class=s>&#39;</span><span class=nv>$session_time</span> <span class=s>&#34;</span><span class=nv>$upstream_addr&#34;</span> <span class=s>&#39;</span>
-             <span class=s>&#39;&#34;</span><span class=nv>$upstream_bytes_sent&#34;</span> <span class=s>&#34;</span><span class=nv>$upstream_bytes_received&#34;</span> <span class=s>&#34;</span><span class=nv>$upstream_connect_time&#34;&#39;</span><span class=p>;</span>
-    <span class=kn>access_log</span> <span class=s>/dev/stdout</span> <span class=s>proxy</span> <span class=p>;</span>
-
-    <span class=kn>server</span> <span class=p>{</span>
-        <span class=kn>listen</span> <span class=mi>1080</span><span class=p>;</span>
-	      <span class=kn>proxy_pass</span> <span class=n>172.17.0.1</span><span class=p>:</span><span class=mi>7890</span><span class=p>;</span>
-      	<span class=kn>allow</span> <span class=mi>172</span><span class=s>.17.0.1</span><span class=p>;</span>
-      	<span class=kn>allow</span> <span class=mi>127</span><span class=s>.0.0.1</span><span class=p>;</span>
-      <span class=c1># 单独添加管理白名单 IP 的文件
-</span><span class=c1></span>      <span class=c1># include allow_ip.conf;
-</span><span class=c1></span>        <span class=kn>deny</span> <span class=s>all</span><span class=p>;</span>
-    <span class=p>}</span>
-
-<span class=p>}</span>
-</code></pre></td></tr></table>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># docker volume inspect nfsvolume</span><span class=w>
+</span><span class=w></span><span class=p>[</span><span class=w>
+</span><span class=w>    </span>{<span class=w>
+</span><span class=w>        </span><span class=nt>&#34;CreatedAt&#34;: </span><span class=s2>&#34;2021-09-22T14:22:27+08:00&#34;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=nt>&#34;Driver&#34;: </span><span class=s2>&#34;local&#34;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=nt>&#34;Labels&#34;: </span><span class=kc>null</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=nt>&#34;Mountpoint&#34;: </span><span class=s2>&#34;/var/lib/docker/volumes/nfsvolume/_data&#34;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=nt>&#34;Name&#34;: </span><span class=s2>&#34;nfsvolume&#34;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=nt>&#34;Options&#34;: </span>{<span class=w>
+</span><span class=w>            </span><span class=nt>&#34;device&#34;: </span><span class=s2>&#34;:/rxt68s30&#34;</span><span class=p>,</span><span class=w>
+</span><span class=w>            </span><span class=nt>&#34;o&#34;: </span><span class=s2>&#34;addr=172.21.0.99,rw,vers=3,nolock,proto=tcp,noresvport&#34;</span><span class=p>,</span><span class=w>
+</span><span class=w>            </span><span class=nt>&#34;type&#34;: </span><span class=s2>&#34;nfs&#34;</span><span class=w>
+</span><span class=w>        </span>}<span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=nt>&#34;Scope&#34;: </span><span class=s2>&#34;local&#34;</span><span class=w>
+</span><span class=w>    </span>}<span class=w>
+</span><span class=w></span><span class=p>]</span><span class=w>
+</span></code></pre></td></tr></table>
 </div>
-</div><p>启动：</p>
+</div><blockquote>
+<p>这里 volume 详细信息里会有默认的 Mountpoint 地址 [<code>/var/lib/docker/volumes/nfsvolume/_data</code>]，容器启动后，在宿主机上该位置也可以访问到 nfs 里挂载的文件内容，可以延伸出更多用法。</p>
+</blockquote>
+<p>参考上面生成信息，来手动创建 nfs volume：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
+</span><span class=lnt>5
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker run -d --name px1080 <span class=se>\
-</span><span class=se></span>--network host <span class=se>\
-</span><span class=se></span>-v /root/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf <span class=se>\
-</span><span class=se></span>openresty/openresty:alpine
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker volume create nfsvolume <span class=se>\
+</span><span class=se></span>-d <span class=nb>local</span> <span class=se>\
+</span><span class=se></span>-o <span class=nv>type</span><span class=o>=</span>nfs <span class=se>\
+</span><span class=se></span>-o <span class=nv>o</span><span class=o>=</span><span class=nv>addr</span><span class=o>=</span>172.21.0.99,rw,vers<span class=o>=</span>3,nolock,proto<span class=o>=</span>tcp,noresvport <span class=se>\
+</span><span class=se></span>-o <span class=nv>device</span><span class=o>=</span>:/rxt68s30
 </code></pre></td></tr></table>
 </div>
-</div><p>待补充：</p>
-<ul>
-<li>
-<p>lua 自主添加白名单 IP</p>
-<p>参考：https://www.jianshu.com/p/3f2fa52dc66a</p>
-</li>
-<li>
-<p>定期删除白名单 IP</p>
-</li>
-</ul>
+</div><p>启动容器时，映射使用 nfsvolume ：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker run --rm -v nfsvolume:/mnt alpine ls /mnt
+</code></pre></td></tr></table>
+</div>
+</div><p>Done！</p>
 </div>
 <footer class=post-footer>
 <div class=post-tags>
-<a href=/tags/nginx/>nginx</a>
-<a href=/tags/proxy/>proxy</a>
+<a href=/tags/docker/>docker</a>
+<a href=/tags/nfs/>nfs</a>
 </div>
 <nav class=post-nav>
-<a class=prev href=/post/docker-nfs-volume/>
-<i class="iconfont icon-left"></i>
-<span class="prev-text nav-default">Docker 创建 NFS Volume</span>
-<span class="prev-text nav-mobile">上一篇</span>
-</a>
-<a class=next href=/post/traefik2-ingress-useing-basicauth/>
-<span class="next-text nav-default">Traefik2 Ingress 使用 Basicauth</span>
+<a class=next href=/post/nginx-tcp-proxy/>
+<span class="next-text nav-default">Nginx Tcp 代理添加 IP 限制</span>
 <span class="next-text nav-mobile">下一篇</span>
 <i class="iconfont icon-right"></i>
 </a>
