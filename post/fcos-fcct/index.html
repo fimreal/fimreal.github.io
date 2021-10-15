@@ -1,0 +1,300 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos - 闲隅</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="Fimreal"><meta name=description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。
+"><meta name=keywords content="CoreOS,fedora,fccos">
+<meta name=generator content="Hugo 0.88.1 with theme even">
+<link rel=canonical href=/post/fcos-fcct/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos">
+<meta property="og:description" content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/post/fcos-fcct/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-09-10T09:49:22+08:00">
+<meta property="article:modified_time" content="2021-10-15T10:50:09+08:00">
+<meta itemprop=name content="从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos">
+<meta itemprop=description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。"><meta itemprop=datePublished content="2021-09-10T09:49:22+08:00">
+<meta itemprop=dateModified content="2021-10-15T10:50:09+08:00">
+<meta itemprop=wordCount content="776">
+<meta itemprop=keywords content="CoreOS,fedora,fccos,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos">
+<meta name=twitter:description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>闲隅</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>主页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>闲隅</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>主页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos</h1>
+<div class=post-meta>
+<span class=post-time> 2021-09-10 </span>
+<div class=post-category>
+<a href=/categories/coreos/> CoreOS </a>
+<a href=/categories/fedora/> fedora </a>
+<a href=/categories/fccos/> fccos </a>
+</div>
+<span class=more-meta> 约 776 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#0-什么是点火配置-ignition-configurations>0. 什么是点火配置 Ignition configurations</a></li>
+<li><a href=#1-创建一个简单的点火配置>1. 创建一个简单的点火配置</a></li>
+<li><a href=#2-将点火配置转换为-ign-配置文件>2. 将点火配置转换为 .ign 配置文件</a></li>
+<li><a href=#3-开始安装>3. 开始安装</a></li>
+<li><a href=#4-我的点火配置文件>4. 我的点火配置文件</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。</p>
+<h2 id=0-什么是点火配置-ignition-configurations>0. 什么是点火配置 Ignition configurations</h2>
+<p>​ Ignition configurations 可以理解为 cloud-init 同类型的初始化配置，用户可以按照指定语法创建 yaml 文件，使用 <code>fcct</code>命令行工具生成最终可用的 JSON 格式文件，供 Fedora CoreOS 安装时读取从而达成初始化配置。</p>
+<p>​ 由于 Fedora CoreOS 使用 ostree 管理文件结构，根分区等默认为只读挂载，如果需要自定义目录结构（其实还是通过软链接到 <code>/var/</code> 内实现），就必须用到点火文件来配置。</p>
+<p>官方说明文档：</p>
+<p><a href=https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/>https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/</a></p>
+<h2 id=1-创建一个简单的点火配置>1. 创建一个简单的点火配置</h2>
+<p>按照官方文档中描述，简单的点火配置 demo ：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>variant</span><span class=p>:</span><span class=w> </span><span class=l>fcos</span><span class=w>
+</span><span class=w></span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=m>1.4.0</span><span class=w>
+</span><span class=w></span><span class=nt>passwd</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>users</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>core</span><span class=w>
+</span><span class=w>      </span><span class=nt>ssh_authorized_keys</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=l>ssh-rsa AAAA...</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>默认 fcos 中已经内置了 core 用户，上面 yaml 配置在安装系统时同时配置了公钥，可以据此添加自定义用户和相应密钥。</p>
+<p>习惯使用密码的可以参考下面写法，创建一个用户，加入 docker 组，拥有 sudo 权限，并添加密码登陆方式。</p>
+<p>其中密码加密方式使用命令： <code>mkpasswd --method=yescrypt</code>。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>variant</span><span class=p>:</span><span class=w> </span><span class=l>fcos</span><span class=w>
+</span><span class=w></span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=m>1.1.0</span><span class=w>
+</span><span class=w></span><span class=nt>passwd</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>users</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>xiaoming</span><span class=w>
+</span><span class=w>      </span><span class=nt>groups</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=l>docker</span><span class=w>
+</span><span class=w>        </span>- <span class=l>sudo</span><span class=w>
+</span><span class=w>      </span><span class=nt>password_hash</span><span class=p>:</span><span class=w> </span><span class=l>$y$j9T$avmZo2f7txYwPs3H02yTk/$3sXp/LMxj7.lTTGadKyu5qb8PJzdXhM44zYQIr3AyV4</span><span class=w>
+</span><span class=w>      </span><span class=nt>home_dir</span><span class=p>:</span><span class=w> </span><span class=l>/home/xiaoming</span><span class=w>
+</span><span class=w>      </span><span class=nt>shell</span><span class=p>:</span><span class=w> </span><span class=l>/bin/bash</span><span class=w>
+</span><span class=w></span><span class=nt>storage</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>files</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span>- <span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/etc/ssh/sshd_config.d/99-AllowPasswordLogin.conf</span><span class=w>
+</span><span class=w>      </span><span class=nt>mode</span><span class=p>:</span><span class=w> </span><span class=m>0644</span><span class=w>
+</span><span class=w>      </span><span class=nt>contents</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>inline</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span><span class=sd>          </span><span class=w>          </span><span class=l>PasswordAuthentication yes</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=2-将点火配置转换为-ign-配置文件>2. 将点火配置转换为 .ign 配置文件</h2>
+<p>上面创建的 yaml 文件没法直接使用，需要用 butane 工具生成 JSON 格式 .ign 文件。</p>
+<p>fcct [ butane ] 很多发行版仓库中没有预装，安装可以参考：</p>
+<p><a href=https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/>https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/</a></p>
+<p>或者直接使用官方给的容器镜像来帮助生成：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>podman run -i --rm quay.io/coreos/butane:release <span class=se>\
+</span><span class=se></span>       --pretty --strict &lt; your_config.yaml &gt; transpiled_config.ign
+</code></pre></td></tr></table>
+</div>
+</div><p>这里给出一个网页在线转换工具：</p>
+<p><a href=https://fcct.epurs.com/>https://fcct.epurs.com/</a></p>
+<p>左侧输入 yaml 文件，点击 Transpile 即可生成 json 格式文件。再点击 Generate URL From FCC 即可生成 ign 文件的 url，可以直接用于系统安装。</p>
+<h2 id=3-开始安装>3. 开始安装</h2>
+<p>安装可以使用<code>coreos-installer</code> 在线下载镜像，考虑到国内网络因素，推荐下载离线镜像。</p>
+<p>这里使用 Vmware 通过 ISO 方式安装，裸机安装大同小异。</p>
+<p>ISO 文件下载地址：</p>
+<p><a href="https://getfedora.org/en/coreos/download?tab=metal_virtualized&stream=stable&arch=x86_64">https://getfedora.org/en/coreos/download?tab=metal_virtualized&stream=stable&arch=x86_64</a></p>
+<p><a href=https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/34.20210919.3.0/x86_64/fedora-coreos-34.20210919.3.0-live.x86_64.iso>https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/34.20210919.3.0/x86_64/fedora-coreos-34.20210919.3.0-live.x86_64.iso</a></p>
+<p>虚拟机启动后进入 LiveCD 模式，成功加载登陆后会给出安装命令提示。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo coreos-installer install /dev/sda <span class=se>\
+</span><span class=se></span>    --ignition-url https://example.com/example.ign
+</code></pre></td></tr></table>
+</div>
+</div><p><code>lsblk</code> 先确认需要安装的磁盘分区，数据无价。</p>
+<p>确认无误后，用自己的 ign 地址安装系统：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo coreos-installer install /dev/sda --ignition-url https://raw.githubusercontent.com/fimreal/fcc/main/fcc.ign
+</code></pre></td></tr></table>
+</div>
+</div><p>后面不需要再人工干预，安装后会提示重启系统。</p>
+<h2 id=4-我的点火配置文件>4. 我的点火配置文件</h2>
+<p><a href=https://github.com/fimreal/fcc/blob/main/ignition.yaml>https://github.com/fimreal/fcc/blob/main/ignition.yaml</a></p>
+<p>配置修改和增加可以参考官方文档中 System Configuration 部分：</p>
+<p><a href=https://docs.fedoraproject.org/en-US/fedora-coreos/>https://docs.fedoraproject.org/en-US/fedora-coreos/</a></p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/coreos/>CoreOS</a>
+<a href=/tags/fedora/>fedora</a>
+<a href=/tags/fccos/>fccos</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/traefik2-ingress-useing-basicauth/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Traefik2 Ingress 使用 Basicauth</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
+<a class=next href=/post/exposing-a-port-on-a-live-container/>
+<span class="next-text nav-default">帮助已经运行的容器暴露端口</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=vcomments></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!1,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+<a class=theme-link href=http://beian.miit.gov.cn>京ICP备18059304号-1</a>
+<a href=https://webify.cloudbase.net/> 🚀 Powered by CloudBase Webify</a>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+</body>
+</html>
