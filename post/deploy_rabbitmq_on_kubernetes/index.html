@@ -13,18 +13,18 @@
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="Fimreal"><meta name=description content="Kubernetes 上部署 rabbitmq statefulset集群"><meta name=keywords content="rabbitmq,kubernetes">
 <meta name=generator content="Hugo 0.88.1 with theme even">
-<link rel=canonical href=/post/deploy_rabbitmq_on_kubernetes/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
+<link rel=canonical href=blog.epurs.com/post/deploy_rabbitmq_on_kubernetes/>
+<link rel=apple-touch-icon sizes=180x180 href=/blog.epurs.com/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/blog.epurs.com/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/blog.epurs.com/favicon-16x16.png>
+<link rel=manifest href=/blog.epurs.com/manifest.json>
+<link rel=mask-icon href=/blog.epurs.com/safari-pinned-tab.svg color=#5bbad5>
+<link href=/blog.epurs.com/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Kubernetes 上部署 rabbitmq statefulset集群">
 <meta property="og:description" content="Kubernetes 上部署 rabbitmq statefulset集群">
 <meta property="og:type" content="article">
-<meta property="og:url" content="/post/deploy_rabbitmq_on_kubernetes/"><meta property="article:section" content="post">
+<meta property="og:url" content="blog.epurs.com/post/deploy_rabbitmq_on_kubernetes/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2020-05-15T13:43:30+08:00">
 <meta property="article:modified_time" content="2021-04-09T14:31:54+08:00">
 <meta itemprop=name content="Kubernetes 上部署 rabbitmq statefulset集群">
@@ -39,7 +39,7 @@
 <body>
 <div id=mobile-navbar class=mobile-navbar>
 <div class=mobile-header-logo>
-<a href=/ class=logo>闲隅</a>
+<a href=/blog.epurs.com/ class=logo>闲隅</a>
 </div>
 <div class=mobile-navbar-icon>
 <span></span>
@@ -49,13 +49,13 @@
 </div>
 <nav id=mobile-menu class="mobile-menu slideout-menu">
 <ul class=mobile-menu-list>
-<a href=/>
+<a href=blog.epurs.com/>
 <li class=mobile-menu-item>主页</li>
-</a><a href=/post/>
+</a><a href=blog.epurs.com/post/>
 <li class=mobile-menu-item>归档</li>
-</a><a href=/tags/>
+</a><a href=blog.epurs.com/tags/>
 <li class=mobile-menu-item>标签</li>
-</a><a href=/categories/>
+</a><a href=blog.epurs.com/categories/>
 <li class=mobile-menu-item>分类</li>
 </a>
 </ul>
@@ -63,18 +63,18 @@
 <div class=container id=mobile-panel>
 <header id=header class=header>
 <div class=logo-wrapper>
-<a href=/ class=logo>闲隅</a>
+<a href=/blog.epurs.com/ class=logo>闲隅</a>
 </div>
 <nav class=site-navbar>
 <ul id=menu class=menu>
 <li class=menu-item>
-<a class=menu-item-link href=/>主页</a>
+<a class=menu-item-link href=blog.epurs.com/>主页</a>
 </li><li class=menu-item>
-<a class=menu-item-link href=/post/>归档</a>
+<a class=menu-item-link href=blog.epurs.com/post/>归档</a>
 </li><li class=menu-item>
-<a class=menu-item-link href=/tags/>标签</a>
+<a class=menu-item-link href=blog.epurs.com/tags/>标签</a>
 </li><li class=menu-item>
-<a class=menu-item-link href=/categories/>分类</a>
+<a class=menu-item-link href=blog.epurs.com/categories/>分类</a>
 </li>
 </ul>
 </nav>
@@ -88,7 +88,7 @@
 <div class=post-meta>
 <span class=post-time> 2020-05-15 </span>
 <div class=post-category>
-<a href=/categories/kubernetes/> kubernetes </a>
+<a href=/blog.epurs.com/categories/kubernetes/> kubernetes </a>
 </div>
 <span class=more-meta> 约 865 字 </span>
 <span class=more-meta> 预计阅读 2 分钟 </span>
@@ -496,16 +496,16 @@
 </div>
 <footer class=post-footer>
 <div class=post-tags>
-<a href=/tags/rabbitmq/>rabbitmq</a>
-<a href=/tags/kubernetes/>kubernetes</a>
+<a href=/blog.epurs.com/tags/rabbitmq/>rabbitmq</a>
+<a href=/blog.epurs.com/tags/kubernetes/>kubernetes</a>
 </div>
 <nav class=post-nav>
-<a class=prev href=/post/exposing-a-port-on-a-live-container/>
+<a class=prev href=blog.epurs.com/post/exposing-a-port-on-a-live-container/>
 <i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">帮助已经运行的容器暴露端口</span>
 <span class="prev-text nav-mobile">上一篇</span>
 </a>
-<a class=next href=/post/deploy_proxysql_on_kubernetes/>
+<a class=next href=blog.epurs.com/post/deploy_proxysql_on_kubernetes/>
 <span class="next-text nav-default">Kubernetes 上部署维护 ProxySQL StatefulSet 集群笔记</span>
 <span class="next-text nav-mobile">下一篇</span>
 <i class="iconfont icon-right"></i>
@@ -523,7 +523,7 @@
 <footer id=footer class=footer>
 <div class=social-links>
 <a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
-<a href=/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+<a href=blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
 </div>
 <div class=copyright>
 <span class=power-by>
@@ -548,7 +548,7 @@
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript src=/blog.epurs.com/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
 <script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
 <script async src=https://www.google-analytics.com/analytics.js></script>
 </body>
