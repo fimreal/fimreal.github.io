@@ -40,6 +40,8 @@ sequenceDiagrams:
 
 ---
 
+网上搜不到资料，反复尝试才确认 Traefik 2.x 版本做 ingress 配置 basic authorization 的正确方式。
+
 <!--more-->
 
 
