@@ -1,4 +1,4 @@
-#baseURL = "blog.epurs.com"
+#baseURL = "http://blog.epurs.com/"
 resourceDir = "/tmp/"
 disableLiveReload= true
 languageCode = "zh-cn"
@@ -62,7 +62,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
 
   # site info (optional)                                  # 站点信息（可选，不需要的可以直接注释掉）
   logoTitle = ""        # default: the title value    # 默认值: 上面设置的title值
-  keywords = ["blog", "Docker","运维","k8s","Linux","devops","python"]
+  keywords = ["blog", "Docker","运维","k8s","Linux","devops"]
   description = "个人小站，技术笔记"
 
   # paginate of archives, tags and categories             # 归档、标签、分类每页显示的文章数目，建议修改为一个较大的值
@@ -101,7 +101,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
 
   livereUID = ""            # LiveRe UID                  # 来必力
 
-  baiduPush = false        # baidu push                  # 百度
+  baiduPush = true        # baidu push                  # 百度
   baiduAnalytics = ""      # Baidu Analytics
   baiduVerification = ""   # Baidu Verification
   googleVerification = ""  # Google Verification         # 谷歌
@@ -142,7 +142,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
     enable = true
     appId = 'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz'
     appKey = 'cq9Rl1lkMWGfkEoq93b6t3bJ'
-    notify = false  # mail notifier , https://github.com/xCss/Valine/wiki
+    notify = true  # mail notifier , https://github.com/xCss/Valine/wiki
     verify = true # Verification code
     avatar = 'mp'
     placeholder = 'Say something...'
