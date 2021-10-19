@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="Fimreal"><meta name=description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。
+<meta name=author content="Fimreal"><meta name=description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。简单记录创建 fcc 配置文件，并在 vmware 安装 fcos ，转化 qcow2 镜像的过程。
 "><meta name=keywords content="CoreOS,fedora,fccos">
 <meta name=generator content="Hugo 0.88.1 with theme even">
 <link rel=canonical href=https://www.epurs.com/post/fcos-fcct/>
@@ -23,18 +23,18 @@
 <link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos">
-<meta property="og:description" content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。">
+<meta property="og:description" content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。简单记录创建 fcc 配置文件，并在 vmware 安装 fcos ，转化 qcow2 镜像的过程。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://www.epurs.com/post/fcos-fcct/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2021-09-10T09:49:22+08:00">
-<meta property="article:modified_time" content="2021-10-15T10:50:09+08:00">
+<meta property="article:modified_time" content="2021-10-15T15:11:57+08:00">
 <meta itemprop=name content="从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos">
-<meta itemprop=description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。"><meta itemprop=datePublished content="2021-09-10T09:49:22+08:00">
-<meta itemprop=dateModified content="2021-10-15T10:50:09+08:00">
-<meta itemprop=wordCount content="776">
+<meta itemprop=description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。简单记录创建 fcc 配置文件，并在 vmware 安装 fcos ，转化 qcow2 镜像的过程。"><meta itemprop=datePublished content="2021-09-10T09:49:22+08:00">
+<meta itemprop=dateModified content="2021-10-15T15:11:57+08:00">
+<meta itemprop=wordCount content="1079">
 <meta itemprop=keywords content="CoreOS,fedora,fccos,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos">
-<meta name=twitter:description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。简单记录创建 fcc 配置文件，并在 vmware 安装 fcos ，转化 qcow2 镜像的过程。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -93,8 +93,8 @@
 <a href=/categories/fedora/> fedora </a>
 <a href=/categories/fccos/> fccos </a>
 </div>
-<span class=more-meta> 约 776 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
+<span class=more-meta> 约 1079 字 </span>
+<span class=more-meta> 预计阅读 3 分钟 </span>
 </div>
 </header>
 <div class=post-toc id=post-toc>
@@ -107,12 +107,13 @@
 <li><a href=#2-将点火配置转换为-ign-配置文件>2. 将点火配置转换为 .ign 配置文件</a></li>
 <li><a href=#3-开始安装>3. 开始安装</a></li>
 <li><a href=#4-我的点火配置文件>4. 我的点火配置文件</a></li>
+<li><a href=#5-补充vmware-生成-qcow2-镜像>5. 补充：vmware 生成 qcow2 镜像</a></li>
 </ul>
 </nav>
 </div>
 </div>
 <div class=post-content>
-<p>安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。</p>
+<p>安装 Fedora CoreOS 系统需要用到 ignition 配置，初看起来很复杂，其实做起来很简单。简单记录创建 fcc 配置文件，并在 vmware 安装 fcos ，转化 qcow2 镜像的过程。</p>
 <h2 id=0-什么是点火配置-ignition-configurations>0. 什么是点火配置 Ignition configurations</h2>
 <p>​ Ignition configurations 可以理解为 cloud-init 同类型的初始化配置，用户可以按照指定语法创建 yaml 文件，使用 <code>fcct</code>命令行工具生成最终可用的 JSON 格式文件，供 Fedora CoreOS 安装时读取从而达成初始化配置。</p>
 <p>​ 由于 Fedora CoreOS 使用 ostree 管理文件结构，根分区等默认为只读挂载，如果需要自定义目录结构（其实还是通过软链接到 <code>/var/</code> 内实现），就必须用到点火文件来配置。</p>
@@ -235,6 +236,30 @@
 <p><a href=https://github.com/fimreal/fcc/blob/main/ignition.yaml>https://github.com/fimreal/fcc/blob/main/ignition.yaml</a></p>
 <p>配置修改和增加可以参考官方文档中 System Configuration 部分：</p>
 <p><a href=https://docs.fedoraproject.org/en-US/fedora-coreos/>https://docs.fedoraproject.org/en-US/fedora-coreos/</a></p>
+<h2 id=5-补充vmware-生成-qcow2-镜像>5. 补充：vmware 生成 qcow2 镜像</h2>
+<p>安装不算麻烦，后续想要将镜像导入到云服务器还需要些许努力。</p>
+<p>首先免费版本的 VMware Fusion 不支持导出镜像，需要在网上找个序列号升级到专业版本解锁额外功能。<del>太坑了！</del></p>
+<p>前面安装的 CoreOS 默认就是 DHCP 配置网络，不用安装 cloud-init 等工具就可以在云平台跑起来，缺少的控制台重置密码功能麻烦点也能自己改，所以不需要再做额外配置。</p>
+<p>将装好的虚拟机导出为 OVF 格式，导出速度很快，OVF 其实就是配置文件，关键是要单独打包出来的 vmdk 磁盘镜像文件。</p>
+<p>获取到 vmdk 文件后，使用 <code>qemu-img</code> 转换格式：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>qemu-img convert -f vmdk -O qcow2 Fedora-disk1.vmdk Fedora-disk1.qcow2
+</code></pre></td></tr></table>
+</div>
+</div><p>转换完成可以查看镜像实际大小：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>qemu-img info Fedora-disk1.qcow2
+</code></pre></td></tr></table>
+</div>
+</div><p>后续根据云厂商说明文档导入进去，开机 ssh 即可。</p>
 </div>
 <footer class=post-footer>
 <div class=post-tags>
