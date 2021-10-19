@@ -1,0 +1,929 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>改进 lego 自动更新证书到 secret - 闲隅</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="Fimreal"><meta name=description content="配置自动更新域名证书，同时更新到指定的 K8s 的 secret 中。"><meta name=keywords content="cert,kubernetes,rbac">
+<meta name=generator content="Hugo 0.88.1 with theme even">
+<link rel=canonical href=https://blog.epurs.com/post/update-cert-to-secret/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="改进 lego 自动更新证书到 secret">
+<meta property="og:description" content="配置自动更新域名证书，同时更新到指定的 K8s 的 secret 中。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.epurs.com/post/update-cert-to-secret/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-10-18T18:27:26+08:00">
+<meta property="article:modified_time" content="2021-10-19T11:46:50+08:00">
+<meta itemprop=name content="改进 lego 自动更新证书到 secret">
+<meta itemprop=description content="配置自动更新域名证书，同时更新到指定的 K8s 的 secret 中。"><meta itemprop=datePublished content="2021-10-18T18:27:26+08:00">
+<meta itemprop=dateModified content="2021-10-19T11:46:50+08:00">
+<meta itemprop=wordCount content="3151">
+<meta itemprop=keywords content="kubernetes,rbac,cronjob,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="改进 lego 自动更新证书到 secret">
+<meta name=twitter:description content="配置自动更新域名证书，同时更新到指定的 K8s 的 secret 中。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>闲隅</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>主页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>闲隅</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>主页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>改进 lego 自动更新证书到 secret</h1>
+<div class=post-meta>
+<span class=post-time> 2021-10-18 </span>
+<div class=post-category>
+<a href=/categories/kubernetes/> kubernetes </a>
+</div>
+<span class=more-meta> 约 3151 字 </span>
+<span class=more-meta> 预计阅读 7 分钟 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#1-确定-acme-工具>1. 确定 ACME 工具</a></li>
+<li><a href=#2-尝试利用-client-go-生成-secret>2. 尝试：利用 client-go 生成 secret</a></li>
+<li><a href=#3-最终方案修改-lego-添加创建-secret-部分>3. 最终方案：修改 lego 添加创建 secret 部分</a>
+<ul>
+<li></li>
+</ul>
+</li>
+<li><a href=#4-创建-cronjob-定时更新证书>4. 创建 cronjob 定时更新证书</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>配置自动更新域名证书，同时更新到指定的 K8s 的 secret 中。</p>
+<p>近期把服务器上内容统计丢到了 k3s 集群内，彻底用 ingress 替代了原本的 openresty 作为服务入口，很多用到证书的服务为了方便 POD 漂移，也都改造利用 secret 进行挂载。</p>
+<p>由于要涉及到更新 secret 的步骤，之前更新证书使用的定时任务，或者特制容器做 daemon 的形式有点跟不上了，所以我又<del>又又</del>转回头测试了一把 <code>cert-manager</code>。不出意料，这越做越复杂的证书更新系统又一次没有跑起来。于是我坚定了我之前的想法，这工具门槛太高，就不是给个人用户使用的！一个基础的功能实现竟差到让我在两年内试了多次连 demo 都跑不起来，不看文档甚至不知道怎么去 debug。而它的文档结构又很机械化，根本不适合作为手册来使用，要我说是非常不推荐使用。</p>
+<p>Ingress 其实有自动 reload 的功能，修改 secret 之后会自动更新证书配置。所以我只要利用 client-go 调 kubernetes 的 API 来自动化更新证书，剩下的找到一个支持 acme 的工具稍微改造下就好了。</p>
+<h2 id=1-确定-acme-工具>1. 确定 ACME 工具</h2>
+<p>直接从老朋友 let‘sencrypt 文档下手，找到了各种语言写的客户端：</p>
+<p><a href=https://letsencrypt.org/docs/client-options/>https://letsencrypt.org/docs/client-options/</a></p>
+<p>bash 有之前用了很久的 <code>acme.sh</code>，如果统一用 shell 来写对运维人来说很简单，我只需要用 golang 多加一个读取证书并添加到 secret 的小程序就可以。</p>
+<p>而Go 写的 <code>lego</code> 支持的 dns 很多看起来也不错，我能稍微改动下源码，添加上我想要的小功能，打包成一个二进制文件是最完美的。</p>
+<p>nginx lua 的在 openresty 上测试了两个都没申请下来，想不到应该 debug 打印哪些信息，似乎需要对证书还有 http 等有比较深的理论知识，暂且放弃。</p>
+<h2 id=2-尝试利用-client-go-生成-secret>2. 尝试：利用 client-go 生成 secret</h2>
+<p>先考虑万能方法，用 <code>client-go</code> 实现创建 secret，这样不管是使用 <code>acme.sh</code> 还是 <code>lego</code> 都可以很简单的整合在一起。</p>
+<p>按照 client-go 的 example，读取 k8s 配置文件有两种方法，在集群内直接使用 <code>InClusterConfig()</code>，集群外要获取到 kubeconfig 配置。</p>
+<p>简化一下代码如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kd>func</span> <span class=nf>NewKubeClient</span><span class=p>()</span> <span class=p>(</span><span class=o>*</span><span class=nx>kubernetes</span><span class=p>.</span><span class=nx>Clientset</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+	<span class=c1>// in-cluster
+</span><span class=c1></span>	<span class=nx>config</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>rest</span><span class=p>.</span><span class=nf>InClusterConfig</span><span class=p>()</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=nx>err</span><span class=p>.</span><span class=nf>Error</span><span class=p>())</span>
+	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+		<span class=k>return</span> <span class=nx>kubernetes</span><span class=p>.</span><span class=nf>NewForConfig</span><span class=p>(</span><span class=nx>config</span><span class=p>)</span>
+	<span class=p>}</span>
+
+	<span class=c1>// read kubeconfig
+</span><span class=c1></span>	<span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Fallthrough...尝试读取本地配置文件&#34;</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>Conf</span><span class=p>.</span><span class=nx>Kubeconfig</span> <span class=o>==</span> <span class=s>&#34;&#34;</span> <span class=p>{</span>
+		<span class=nx>log</span><span class=p>.</span><span class=nf>Fatalln</span><span class=p>(</span><span class=s>&#34;配置文件中未指定 kubeconfig 位置&#34;</span><span class=p>)</span>
+	<span class=p>}</span>
+	<span class=nx>kubeconfig</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>Conf</span><span class=p>.</span><span class=nx>Kubeconfig</span>
+
+	<span class=nx>config</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>clientcmd</span><span class=p>.</span><span class=nf>BuildConfigFromFlags</span><span class=p>(</span><span class=s>&#34;&#34;</span><span class=p>,</span> <span class=o>*</span><span class=nx>kubeconfig</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>log</span><span class=p>.</span><span class=nf>Fatalln</span><span class=p>(</span><span class=nx>err</span><span class=p>.</span><span class=nf>Error</span><span class=p>())</span>
+	<span class=p>}</span>
+	<span class=k>return</span> <span class=nx>kubernetes</span><span class=p>.</span><span class=nf>NewForConfig</span><span class=p>(</span><span class=nx>config</span><span class=p>)</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>创建和升级 secret，没有找到合适的例子，很简陋的代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go>
+<span class=kd>func</span> <span class=nf>UpdateSecret</span><span class=p>(</span><span class=nx>clientset</span> <span class=o>*</span><span class=nx>kubernetes</span><span class=p>.</span><span class=nx>Clientset</span><span class=p>,</span> <span class=nx>Conf</span> <span class=o>*</span><span class=nx>config</span><span class=p>.</span><span class=nx>Config</span><span class=p>)</span> <span class=p>(</span><span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+
+	<span class=c1>// create secret struct
+</span><span class=c1></span>	<span class=nx>newSecret</span> <span class=o>:=</span> <span class=nx>v1</span><span class=p>.</span><span class=nx>Secret</span><span class=p>{</span>
+		<span class=nx>TypeMeta</span><span class=p>:</span>   <span class=nx>metav1</span><span class=p>.</span><span class=nx>TypeMeta</span><span class=p>{</span><span class=nx>Kind</span><span class=p>:</span> <span class=s>&#34;Secret&#34;</span><span class=p>,</span> <span class=nx>APIVersion</span><span class=p>:</span> <span class=s>&#34;v1&#34;</span><span class=p>},</span>
+		<span class=nx>ObjectMeta</span><span class=p>:</span> <span class=nx>metav1</span><span class=p>.</span><span class=nx>ObjectMeta</span><span class=p>{</span><span class=nx>Name</span><span class=p>:</span> <span class=nx>Conf</span><span class=p>.</span><span class=nx>SecretName</span><span class=p>,</span> <span class=nx>Namespace</span><span class=p>:</span> <span class=nx>Conf</span><span class=p>.</span><span class=nx>SecretNamespace</span><span class=p>},</span>
+		<span class=nx>Data</span><span class=p>:</span>       <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>][]</span><span class=kt>byte</span><span class=p>{},</span>
+		<span class=nx>StringData</span><span class=p>:</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kt>string</span><span class=p>{},</span>
+		<span class=nx>Type</span><span class=p>:</span>       <span class=s>&#34;kubernetes/tls&#34;</span><span class=p>,</span>
+	<span class=p>}</span>
+	<span class=nx>newSecret</span><span class=p>.</span><span class=nx>Data</span><span class=p>[</span><span class=s>&#34;tls.key&#34;</span><span class=p>],</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>ioutil</span><span class=p>.</span><span class=nf>ReadFile</span><span class=p>(</span><span class=s>&#34;certificates/tls.key&#34;</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+	<span class=nx>newSecret</span><span class=p>.</span><span class=nx>Data</span><span class=p>[</span><span class=s>&#34;tls.crt&#34;</span><span class=p>],</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>ioutil</span><span class=p>.</span><span class=nf>ReadFile</span><span class=p>(</span><span class=s>&#34;certificates/tls.crt&#34;</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+
+	<span class=c1>// update secret
+</span><span class=c1></span>	<span class=nx>secretOut</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>clientset</span><span class=p>.</span><span class=nf>CoreV1</span><span class=p>().</span><span class=nf>Secrets</span><span class=p>(</span><span class=nx>Conf</span><span class=p>.</span><span class=nx>SecretNamespace</span><span class=p>).</span><span class=nf>Update</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nf>TODO</span><span class=p>(),</span> <span class=o>&amp;</span><span class=nx>newSecret</span><span class=p>,</span> <span class=nx>metav1</span><span class=p>.</span><span class=nx>UpdateOptions</span><span class=p>{})</span>
+	<span class=nx>logrus</span><span class=p>.</span><span class=nf>Debug</span><span class=p>(</span><span class=nx>secretOut</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>logrus</span><span class=p>.</span><span class=nf>Errorln</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span>
+	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+
+	<span class=c1>// create secret
+</span><span class=c1></span>	<span class=nx>secretOut</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>clientset</span><span class=p>.</span><span class=nf>CoreV1</span><span class=p>().</span><span class=nf>Secrets</span><span class=p>(</span><span class=nx>Conf</span><span class=p>.</span><span class=nx>SecretNamespace</span><span class=p>).</span><span class=nf>Create</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nf>TODO</span><span class=p>(),</span> <span class=o>&amp;</span><span class=nx>newSecret</span><span class=p>,</span> <span class=nx>metav1</span><span class=p>.</span><span class=nx>CreateOptions</span><span class=p>{})</span>
+	<span class=nx>logrus</span><span class=p>.</span><span class=nf>Debug</span><span class=p>(</span><span class=nx>secretOut</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>logrus</span><span class=p>.</span><span class=nf>Errorln</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span>
+	<span class=p>}</span>
+	<span class=k>return</span>
+
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最后再加上调用外部命令比如 <code>lego</code> 来创建证书，把打包出来二进制文件添加到 <code>lego</code> 的镜像里，修改启动入口就完成了。</p>
+<p>些许波折不谈，配置好权限，添加定时任务，更新成功。</p>
+<h2 id=3-最终方案修改-lego-添加创建-secret-部分>3. 最终方案：修改 lego 添加创建 secret 部分</h2>
+<p><code>lego</code> 文档写的的 library 例子，属实看不懂。简单点，直接 fork 了一份，在原来基础上添加功能。</p>
+<p><code>lego</code> 入口在 <code>cmd/lego/main.go</code>，里面使用 <code>urfave/cli</code>来生成配置 cli 的各种参数。</p>
+<p>按照惯例，找到 <code>cmd/cmd_run.go</code> 文件，发现 <code>func run(ctx *cli.Context) error </code>也就是生成证书用到的子命令函数。</p>
+<p>简单查了下 <code>urfave/cli</code> 的用法，在函数内直接用 <code>ctx.GlobalString("arg")</code>就可以获取到参数值，在 <code>run()</code>开头加入 <code>log.Fatal("hello, exit")</code>，执行 lego 创建证书，验证输出信息正常返回，证明这里就是要添加方法的位置。</p>
+<h4 id=31-首先添加我们想要的参数>3.1 首先添加我们想要的参数</h4>
+<p>找到 <code>cmd/flags.go</code> 文件，在最后添加：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go>		<span class=nx>cli</span><span class=p>.</span><span class=nx>StringFlag</span><span class=p>{</span>
+			<span class=nx>Name</span><span class=p>:</span>  <span class=s>&#34;apply-to-secret&#34;</span><span class=p>,</span>
+			<span class=nx>Usage</span><span class=p>:</span> <span class=s>&#34;Apply certificate to k8s secret. Format: {namespace}/{secretname}&#34;</span><span class=p>,</span>
+		<span class=p>},</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>也就是说，用 <code>--apply-to-secret</code> 来指定创建 secret 的命名空间和名字。</p>
+<h4 id=32-添加生成-secret-方法的入口>3.2 添加生成 secret 方法的入口</h4>
+<p>回到之前的 <code>cmd/cmd_run.go</code> 文件，在 <code>run()</code> 函数最后返回前添加：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go>	<span class=nx>secretName</span> <span class=o>:=</span> <span class=nx>ctx</span><span class=p>.</span><span class=nf>GlobalString</span><span class=p>(</span><span class=s>&#34;apply-to-secret&#34;</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>secretName</span> <span class=o>!=</span> <span class=s>&#34;&#34;</span> <span class=p>{</span>
+		<span class=nx>log</span><span class=p>.</span><span class=nf>Infof</span><span class=p>(</span><span class=s>&#34;准备将证书部署到 secret[%s]...&#34;</span><span class=p>,</span> <span class=nx>secretName</span><span class=p>)</span>
+		<span class=k>if</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>ksecret</span><span class=p>.</span><span class=nf>DeployToSecret</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>secretName</span><span class=p>,</span> <span class=nx>cert</span><span class=p>);</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+			<span class=nx>log</span><span class=p>.</span><span class=nf>Fatal</span><span class=p>(</span><span class=s>&#34;部署到 secret 出现错误：&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+		<span class=p>}</span>
+		<span class=nx>log</span><span class=p>.</span><span class=nf>Infof</span><span class=p>(</span><span class=s>&#34;部署成功！\n&#34;</span><span class=p>)</span>
+	<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>cert</code> 是<code>lego</code>自有的对象，里面包含了生成证书的所有信息。这里用<code>ksecret.DeployToSecret()</code>来部署证书到 secret。</p>
+<h4 id=33-创建部署证书模块-ksecret>3.3 创建部署证书模块 ksecret</h4>
+<p>在项目目录下新建 <code>ksecret</code>目录，这里存放和 k8s API 交互的代码。</p>
+<p>创建连接配置文件 <code>kubeClientSet.go</code>，这里只考虑创建 cronjob 的情况，启动的容器已经有相应的 RBAC 权限来修改生成 secret，所以不再添加配置文件的加载方式。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kn>package</span> <span class=nx>ksecret</span>
+
+<span class=kn>import</span> <span class=p>(</span>
+	<span class=s>&#34;log&#34;</span>
+
+	<span class=s>&#34;k8s.io/client-go/kubernetes&#34;</span>
+	<span class=s>&#34;k8s.io/client-go/rest&#34;</span>
+<span class=p>)</span>
+
+<span class=kd>func</span> <span class=nf>NewKubeClient</span><span class=p>()</span> <span class=p>(</span><span class=o>*</span><span class=nx>kubernetes</span><span class=p>.</span><span class=nx>Clientset</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+	<span class=nx>config</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>rest</span><span class=p>.</span><span class=nf>InClusterConfig</span><span class=p>()</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span> <span class=kc>nil</span><span class=p>,</span> <span class=nx>err</span>
+	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+		<span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;成功获取到 kubernetes 配置&#34;</span><span class=p>)</span>
+		<span class=k>return</span> <span class=nx>kubernetes</span><span class=p>.</span><span class=nf>NewForConfig</span><span class=p>(</span><span class=nx>config</span><span class=p>)</span>
+	<span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>创建生成证书部分 <code>updateSecret.go</code>。万事具备，这里读取 <code>cert</code> 中的证书内容，拿到传参进来的 secret 名字就可以执行创建/更新操作了。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kn>package</span> <span class=nx>ksecret</span>
+
+<span class=kn>import</span> <span class=p>(</span>
+	<span class=s>&#34;context&#34;</span>
+	<span class=s>&#34;strings&#34;</span>
+
+	<span class=s>&#34;github.com/go-acme/lego/v4/certificate&#34;</span>
+	<span class=nx>v1</span> <span class=s>&#34;k8s.io/api/core/v1&#34;</span>
+	<span class=nx>metav1</span> <span class=s>&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span>
+	<span class=s>&#34;k8s.io/client-go/kubernetes&#34;</span>
+<span class=p>)</span>
+
+<span class=kd>type</span> <span class=nx>Secret</span> <span class=kd>struct</span> <span class=p>{</span>
+	<span class=nx>SecretName</span>      <span class=kt>string</span>
+	<span class=nx>SecretNamespace</span> <span class=kt>string</span>
+	<span class=nx>Crt</span>             <span class=p>[]</span><span class=kt>byte</span>
+	<span class=nx>Key</span>             <span class=p>[]</span><span class=kt>byte</span>
+<span class=p>}</span>
+
+<span class=kd>func</span> <span class=nf>DeployToSecret</span><span class=p>(</span><span class=nx>secretName</span> <span class=o>*</span><span class=kt>string</span><span class=p>,</span> <span class=nx>cert</span> <span class=o>*</span><span class=nx>certificate</span><span class=p>.</span><span class=nx>Resource</span><span class=p>)</span> <span class=p>(</span><span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+	<span class=nx>clientset</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>NewKubeClient</span><span class=p>()</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span> <span class=nx>err</span>
+	<span class=p>}</span>
+	<span class=nx>sName</span> <span class=o>:=</span> <span class=nx>strings</span><span class=p>.</span><span class=nf>Split</span><span class=p>(</span><span class=o>*</span><span class=nx>secretName</span><span class=p>,</span> <span class=s>&#34;/&#34;</span><span class=p>)</span>
+	<span class=nx>s</span> <span class=o>:=</span> <span class=nx>Secret</span><span class=p>{</span>
+		<span class=nx>SecretName</span><span class=p>:</span>      <span class=nx>sName</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span>
+		<span class=nx>SecretNamespace</span><span class=p>:</span> <span class=nx>sName</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span>
+		<span class=nx>Crt</span><span class=p>:</span>             <span class=nx>cert</span><span class=p>.</span><span class=nx>Certificate</span><span class=p>,</span>
+		<span class=nx>Key</span><span class=p>:</span>             <span class=nx>cert</span><span class=p>.</span><span class=nx>PrivateKey</span><span class=p>,</span>
+	<span class=p>}</span>
+  
+	<span class=k>return</span> <span class=nf>UpdateSecret</span><span class=p>(</span><span class=nx>clientset</span><span class=p>,</span> <span class=o>&amp;</span><span class=nx>s</span><span class=p>)</span>
+<span class=p>}</span>
+
+<span class=kd>func</span> <span class=nf>UpdateSecret</span><span class=p>(</span><span class=nx>clientset</span> <span class=o>*</span><span class=nx>kubernetes</span><span class=p>.</span><span class=nx>Clientset</span><span class=p>,</span> <span class=nx>s</span> <span class=o>*</span><span class=nx>Secret</span><span class=p>)</span> <span class=p>(</span><span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+
+	<span class=c1>// create secret struct
+</span><span class=c1></span>	<span class=nx>newSecret</span> <span class=o>:=</span> <span class=nx>v1</span><span class=p>.</span><span class=nx>Secret</span><span class=p>{</span>
+		<span class=nx>TypeMeta</span><span class=p>:</span>   <span class=nx>metav1</span><span class=p>.</span><span class=nx>TypeMeta</span><span class=p>{</span><span class=nx>Kind</span><span class=p>:</span> <span class=s>&#34;Secret&#34;</span><span class=p>,</span> <span class=nx>APIVersion</span><span class=p>:</span> <span class=s>&#34;v1&#34;</span><span class=p>},</span>
+		<span class=nx>ObjectMeta</span><span class=p>:</span> <span class=nx>metav1</span><span class=p>.</span><span class=nx>ObjectMeta</span><span class=p>{</span><span class=nx>Name</span><span class=p>:</span> <span class=nx>s</span><span class=p>.</span><span class=nx>SecretName</span><span class=p>,</span> <span class=nx>Namespace</span><span class=p>:</span> <span class=nx>s</span><span class=p>.</span><span class=nx>SecretNamespace</span><span class=p>},</span>
+		<span class=nx>Data</span><span class=p>:</span>       <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>][]</span><span class=kt>byte</span><span class=p>{},</span>
+		<span class=nx>StringData</span><span class=p>:</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kt>string</span><span class=p>{},</span>
+		<span class=nx>Type</span><span class=p>:</span>       <span class=s>&#34;kubernetes/tls&#34;</span><span class=p>,</span>
+	<span class=p>}</span>
+	<span class=nx>newSecret</span><span class=p>.</span><span class=nx>Data</span><span class=p>[</span><span class=s>&#34;tls.key&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>Key</span>
+	<span class=nx>newSecret</span><span class=p>.</span><span class=nx>Data</span><span class=p>[</span><span class=s>&#34;tls.crt&#34;</span><span class=p>]</span> <span class=p>=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>Crt</span>
+
+	<span class=c1>// update secret
+</span><span class=c1></span>	<span class=nx>_</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>clientset</span><span class=p>.</span><span class=nf>CoreV1</span><span class=p>().</span><span class=nf>Secrets</span><span class=p>(</span><span class=nx>s</span><span class=p>.</span><span class=nx>SecretNamespace</span><span class=p>).</span><span class=nf>Update</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nf>TODO</span><span class=p>(),</span> <span class=o>&amp;</span><span class=nx>newSecret</span><span class=p>,</span> <span class=nx>metav1</span><span class=p>.</span><span class=nx>UpdateOptions</span><span class=p>{})</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>==</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+
+	<span class=c1>// create secret
+</span><span class=c1></span>	<span class=nx>_</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>clientset</span><span class=p>.</span><span class=nf>CoreV1</span><span class=p>().</span><span class=nf>Secrets</span><span class=p>(</span><span class=nx>s</span><span class=p>.</span><span class=nx>SecretNamespace</span><span class=p>).</span><span class=nf>Create</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nf>TODO</span><span class=p>(),</span> <span class=o>&amp;</span><span class=nx>newSecret</span><span class=p>,</span> <span class=nx>metav1</span><span class=p>.</span><span class=nx>CreateOptions</span><span class=p>{})</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span> <span class=nx>err</span>
+	<span class=p>}</span>
+	<span class=k>return</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最终修改保存在：</p>
+<p><a href=https://github.com/fimreal/lego/tree/a412c04c33e1e46f4df9d7a57774704fe068f039>https://github.com/fimreal/lego/tree/a412c04c33e1e46f4df9d7a57774704fe068f039</a></p>
+<h4 id=34-打包成容器镜像>3.4 打包成容器镜像</h4>
+<p>自己使用，就不考虑 github action 和 makefile 来创建了，直接手动打包：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>mkdir builds
+<span class=nb>cd</span> builds
+<span class=nv>CGO_ENABLED</span><span class=o>=</span><span class=m>0</span> <span class=nv>GOOS</span><span class=o>=</span>linux <span class=nv>GOARCH</span><span class=o>=</span>amd64 go build -o ./lego -ldflags <span class=s1>&#39;-s -w&#39;</span> ../cmd/lego/main.go
+</code></pre></td></tr></table>
+</div>
+</div><p>按照原来的 Dockerfile，稍作修改</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=k>FROM</span><span class=s> alpine</span><span class=err>
+</span><span class=err></span><span class=k>RUN</span> apk update <span class=se>\
+</span><span class=se></span>    <span class=o>&amp;&amp;</span> apk add --no-cache ca-certificates tzdata <span class=se>\
+</span><span class=se></span>    <span class=o>&amp;&amp;</span> update-ca-certificates<span class=err>
+</span><span class=err>
+</span><span class=err></span><span class=k>COPY</span> lego /usr/bin/lego<span class=err>
+</span><span class=err>
+</span><span class=err></span><span class=k>ENTRYPOINT</span> <span class=p>[</span> <span class=s2>&#34;/usr/bin/lego&#34;</span> <span class=p>]</span><span class=err>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>打包上传</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker build -t epurs/updatecerts:n .
+docker push epurs/updatecerts:n
+</code></pre></td></tr></table>
+</div>
+</div><p>至此，大功告成。</p>
+<h2 id=4-创建-cronjob-定时更新证书>4. 创建 cronjob 定时更新证书</h2>
+<p>除了按照 <code>lego</code> 原命令创建证书方式添加参数，还要创建对应的 RBAC 权限，yaml 文件可参考：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span><span class=lnt>92
+</span><span class=lnt>93
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># 不同命名空间需要额外修改 namespace 的 value</span><span class=w>
+</span><span class=w></span><span class=c># 创建 sa 给 cronjob 使用</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>ServiceAccount</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>secrets-admin</span><span class=w>
+</span><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nn>---</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Role</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>rbac.authorization.k8s.io/v1</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>secrets-admin</span><span class=w>
+</span><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w></span><span class=nt>rules</span><span class=p>:</span><span class=w>
+</span><span class=w></span>- <span class=nt>apiGroups</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;&#34;</span><span class=p>]</span><span class=w>
+</span><span class=w>  </span><span class=nt>resources</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;secrets&#34;</span><span class=p>]</span><span class=w>
+</span><span class=w>  </span><span class=c># 添加需要的权限，可以有 get list watch create delete deletecollection patch update</span><span class=w>
+</span><span class=w>  </span><span class=nt>verbs</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;get&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;list&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;create&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;update&#34;</span><span class=p>]</span><span class=w>		
+</span><span class=w>
+</span><span class=w></span><span class=nn>---</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>rbac.authorization.k8s.io/v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>RoleBinding</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>secrets-admin</span><span class=w>
+</span><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w></span><span class=nt>subjects</span><span class=p>:</span><span class=w>
+</span><span class=w></span><span class=c># 绑定给前面创建的 sa</span><span class=w>
+</span><span class=w></span>- <span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>ServiceAccount</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>secrets-admin</span><span class=w>
+</span><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w></span><span class=nt>roleRef</span><span class=p>:</span><span class=w>
+</span><span class=w></span><span class=c># 使用前面创建 role</span><span class=w>
+</span><span class=w>  </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Role</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>secrets-admin</span><span class=w>
+</span><span class=w>  </span><span class=nt>apiGroup</span><span class=p>:</span><span class=w> </span><span class=l>rbac.authorization.k8s.io</span><span class=w>
+</span><span class=w>  
+</span><span class=w></span><span class=nn>---</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>batch/v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>CronJob</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>update-cert-n</span><span class=w>
+</span><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=c># 30 天执行一次</span><span class=w>
+</span><span class=w>  </span><span class=nt>schedule</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;10 1 */30 * *&#34;</span><span class=w>
+</span><span class=w>  </span><span class=nt>jobTemplate</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span><span class=nt>tolerations</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span>- <span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;node-role.kubernetes.io/master&#34;</span><span class=w>
+</span><span class=w>            </span><span class=nt>operator</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;Exists&#34;</span><span class=w>
+</span><span class=w>          </span><span class=c># 使用前面创建的 sa</span><span class=w>
+</span><span class=w>          </span><span class=nt>serviceAccountName</span><span class=p>:</span><span class=w> </span><span class=l>secrets-admin</span><span class=w>
+</span><span class=w>          </span><span class=nt>restartPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Never</span><span class=w>
+</span><span class=w>          </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>update-cert-n</span><span class=w>
+</span><span class=w>            </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>epurs/updatecerts:n</span><span class=w>
+</span><span class=w>            </span><span class=nt>imagePullPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Always</span><span class=w>
+</span><span class=w>            </span><span class=nt>args</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span>- --<span class=l>dns.resolvers</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;223.5.5.5&#34;</span><span class=w>
+</span><span class=w>              </span>- -<span class=l>m</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;acme@epurs.com&#34;</span><span class=w>
+</span><span class=w>              </span>- --<span class=l>dns</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;dnspod&#34;</span><span class=w>
+</span><span class=w>              </span>- -<span class=l>d</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;niml.ml&#34;</span><span class=w>
+</span><span class=w>              </span>- -<span class=l>d</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;*.n.niml.ml&#34;</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;--apply-to-secret&#34;</span><span class=w>
+</span><span class=w>              </span>- <span class=s2>&#34;default/niml-ml&#34;</span><span class=w>
+</span><span class=w>              </span>- -<span class=l>a</span><span class=w>
+</span><span class=w>              </span>- <span class=w> </span><span class=l>run</span><span class=w>
+</span><span class=w>            </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>DNSPOD_API_KEY</span><span class=w>
+</span><span class=w>              </span><span class=nt>valueFrom</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>secretKeyRef</span><span class=p>:</span><span class=w>
+</span><span class=w>                  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>dnspod</span><span class=w>
+</span><span class=w>                  </span><span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=l>userToken</span><span class=w>
+</span><span class=w></span><span class=nn>---</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>dnspod</span><span class=w>
+</span><span class=w></span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>Opaque</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>userToken</span><span class=p>:</span><span class=w>  </span><span class=l>xxxxxxxxxx</span><span class=w>
+</span><span class=w></span><span class=nn>---</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>apply 配置</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># kubectl apply -f crt.yaml</span>
+serviceaccount/secrets-admin created
+clusterrole.rbac.authorization.k8s.io/secrets-admin created
+clusterrolebinding.rbac.authorization.k8s.io/secrets-admin created
+cronjob.batch/update-cert-n created
+secret/dnspod unchanged
+</code></pre></td></tr></table>
+</div>
+</div><p>手动触发定时任务，测试结果：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># kubectl create job --from=cronjob/update-cert-n update-crt-manually</span>
+job.batch/update-crt-manually created
+<span class=c1># kubectl get job</span>
+NAME                   COMPLETIONS   DURATION   AGE
+update-crt-manually    0/1           4s         4s
+</code></pre></td></tr></table>
+</div>
+</div><p>查看定时任务日志：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># kubectl logs -f update-crt-manually-kx9w7</span>
+2021/10/19 03:37:44 No key found <span class=k>for</span> account acme@epurs.com. Generating a P256 key.
+2021/10/19 03:37:44 Saved key to /.lego/accounts/acme-v02.api.letsencrypt.org/acme@epurs.com/keys/acme@epurs.com.key
+2021/10/19 03:37:45 <span class=o>[</span>INFO<span class=o>]</span> acme: Registering account <span class=k>for</span> acme@epurs.com
+!!!! HEADS UP !!!!
+
+Your account credentials have been saved in your Let<span class=s1>&#39;s Encrypt
+</span><span class=s1>configuration directory at &#34;/.lego/accounts&#34;.
+</span><span class=s1>
+</span><span class=s1>You should make a secure backup of this folder now. This
+</span><span class=s1>configuration directory will also contain certificates and
+</span><span class=s1>private keys obtained from Let&#39;</span>s Encrypt so making regular
+backups of this folder is ideal.
+2021/10/19 03:37:45 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml, *.n.niml.ml<span class=o>]</span> acme: Obtaining bundled SAN certificate
+2021/10/19 03:37:47 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> AuthURL: https://acme-v02.api.letsencrypt.org/acme/authz-v3/41253422090
+2021/10/19 03:37:47 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> AuthURL: https://acme-v02.api.letsencrypt.org/acme/authz-v3/41253422100
+2021/10/19 03:37:47 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: use dns-01 solver
+2021/10/19 03:37:47 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> acme: Could not find solver <span class=k>for</span>: tls-alpn-01
+2021/10/19 03:37:47 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> acme: Could not find solver <span class=k>for</span>: http-01
+2021/10/19 03:37:47 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> acme: use dns-01 solver
+2021/10/19 03:37:47 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Preparing to solve DNS-01
+2021/10/19 03:37:48 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> acme: Preparing to solve DNS-01
+2021/10/19 03:37:48 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Trying to solve DNS-01
+2021/10/19 03:37:48 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Checking DNS record propagation using <span class=o>[</span>223.5.5.5:53<span class=o>]</span>
+2021/10/19 03:37:50 <span class=o>[</span>INFO<span class=o>]</span> Wait <span class=k>for</span> propagation <span class=o>[</span>timeout: 1m0s, interval: 2s<span class=o>]</span>
+2021/10/19 03:37:51 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Waiting <span class=k>for</span> DNS record propagation.
+2021/10/19 03:37:53 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Waiting <span class=k>for</span> DNS record propagation.
+2021/10/19 03:37:55 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Waiting <span class=k>for</span> DNS record propagation.
+2021/10/19 03:37:57 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Waiting <span class=k>for</span> DNS record propagation.
+2021/10/19 03:37:59 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Waiting <span class=k>for</span> DNS record propagation.
+2021/10/19 03:38:15 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> The server validated our request
+2021/10/19 03:38:15 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> acme: Trying to solve DNS-01
+2021/10/19 03:38:15 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> acme: Checking DNS record propagation using <span class=o>[</span>223.5.5.5:53<span class=o>]</span>
+2021/10/19 03:38:17 <span class=o>[</span>INFO<span class=o>]</span> Wait <span class=k>for</span> propagation <span class=o>[</span>timeout: 1m0s, interval: 2s<span class=o>]</span>
+2021/10/19 03:38:57 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> The server validated our request
+2021/10/19 03:38:57 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>*.n.niml.ml<span class=o>]</span> acme: Cleaning DNS-01 challenge
+2021/10/19 03:38:57 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> acme: Cleaning DNS-01 challenge
+2021/10/19 03:38:58 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml, *.n.niml.ml<span class=o>]</span> acme: Validations succeeded<span class=p>;</span> requesting certificates
+2021/10/19 03:38:59 <span class=o>[</span>INFO<span class=o>]</span> <span class=o>[</span>niml.ml<span class=o>]</span> Server responded with a certificate.
+2021/10/19 03:38:59 <span class=o>[</span>INFO<span class=o>]</span> 准备将证书部署到 secret<span class=o>[</span>default/niml-ml<span class=o>]</span>...
+2021/10/19 03:38:59 成功获取到 kubernetes 配置
+2021/10/19 03:38:59 <span class=o>[</span>INFO<span class=o>]</span> 部署成功！
+
+</code></pre></td></tr></table>
+</div>
+</div><p>确认证书：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># kubectl get secret niml-ml</span>
+NAME      TYPE             DATA   AGE
+niml-ml   kubernetes/tls   <span class=m>2</span>      61s
+</code></pre></td></tr></table>
+</div>
+</div><p>搞定！</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/kubernetes/>kubernetes</a>
+<a href=/tags/rbac/>rbac</a>
+<a href=/tags/cronjob/>cronjob</a>
+</div>
+<nav class=post-nav>
+<a class=next href=/post/external-service-in-k8s/>
+<span class="next-text nav-default">通过创建 svc，在 k8s 内优雅的访问集群外部服务</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=vcomments></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!0,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){var a,c,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.async=!0,c=window.location.protocol.split(':')[0],c==='https'?a.src='https://zz.bdstatic.com/linksubmit/push.js':a.src='http://push.zhanzhang.baidu.com/push.js',b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script>
+</body>
+</html>
