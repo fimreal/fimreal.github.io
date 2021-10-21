@@ -1,0 +1,320 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>FCOS rpm-ostree 使用避坑笔记 - 闲隅</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="Fimreal"><meta name=description content="FCOS rpm-ostree 使用避坑笔记"><meta name=keywords content="rpm-ostree,fcos">
+<meta name=generator content="Hugo 0.88.1 with theme even">
+<link rel=canonical href=https://www.epurs.com/post/rpm-oostree-stuck/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="FCOS rpm-ostree 使用避坑笔记">
+<meta property="og:description" content="FCOS rpm-ostree 使用避坑笔记">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.epurs.com/post/rpm-oostree-stuck/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-10-21T11:47:46+08:00">
+<meta property="article:modified_time" content="2021-10-21T13:42:20+08:00">
+<meta itemprop=name content="FCOS rpm-ostree 使用避坑笔记">
+<meta itemprop=description content="FCOS rpm-ostree 使用避坑笔记"><meta itemprop=datePublished content="2021-10-21T11:47:46+08:00">
+<meta itemprop=dateModified content="2021-10-21T13:42:20+08:00">
+<meta itemprop=wordCount content="866">
+<meta itemprop=keywords content="rpm-ostree,fcos,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="FCOS rpm-ostree 使用避坑笔记">
+<meta name=twitter:description content="FCOS rpm-ostree 使用避坑笔记"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>闲隅</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>主页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>闲隅</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>主页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>FCOS rpm-ostree 使用避坑笔记</h1>
+<div class=post-meta>
+<span class=post-time> 2021-10-21 </span>
+<div class=post-category>
+<a href=/categories/rpm-ostree/> rpm-ostree </a>
+<a href=/categories/fcos/> fcos </a>
+</div>
+<span class=more-meta> 约 866 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#1-yum-源镜像配置>1. yum 源镜像配置</a></li>
+<li><a href=#2-避免使用-archive-仓库>2. 避免使用 archive 仓库</a></li>
+<li><a href=#3-安装完-rpm-包如何不重启系统生效>3. 安装完 rpm 包，如何不重启系统生效</a></li>
+<li><a href=#4-安装更新失败卡死怎么办>4. 安装/更新失败，卡死怎么办</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>FCOS rpm-ostree 使用避坑笔记，应该会持续更新。</p>
+<h2 id=1-yum-源镜像配置>1. yum 源镜像配置</h2>
+<p>同为 fedora 系统，fcos 也使用 yum 源，只不过把包管理工具从 dnf 变成了具有事务能力的 rpm-ostree。</p>
+<p>yum 地址没有动态配置支持，如果在大陆使用，最好选择几个国内大学源保证下载速度。</p>
+<p>例如 USTC ：</p>
+<p><a href=http://mirrors.ustc.edu.cn/help/fedora.html>http://mirrors.ustc.edu.cn/help/fedora.html</a></p>
+<p>适用于刚安装完，备份加修改镜像源地址一键命令：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>sudo sed -e &#39;s|^metalink=|#metalink=|g&#39; \
+         -e &#39;s|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g&#39; \
+         -i.bak \
+         /etc/yum.repos.d/fedora.repo \
+         /etc/yum.repos.d/fedora-modular.repo \
+         /etc/yum.repos.d/fedora-updates.repo \
+         /etc/yum.repos.d/fedora-updates-modular.repo
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=2-避免使用-archive-仓库>2. 避免使用 archive 仓库</h2>
+<p>如果习惯<code>apt update</code>建立包索引，对于刚转完 fcos 的环境可能会出现下面这种，等待非常久的情况。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback># rpm-ostree refresh-md
+Enabled rpm-md repositories: fedora-cisco-openh264 fedora updates updates-archive
+Updating metadata for &#39;fedora-cisco-openh264&#39;... done
+Updating metadata for &#39;fedora&#39;... done
+Updating metadata for &#39;updates&#39;... done
+⠙ Updating metadata for &#39;updates-archive&#39;  95% [███████████████████░] (0s)
+</code></pre></td></tr></table>
+</div>
+</div><p>正如<code>fedora-updates-archive.repo</code>中注释的描述，该仓库存在非常多陈旧的安装包，索引该仓库会消耗非常多的时间，建议不必要不要使用该仓库。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat /etc/yum.repos.d/fedora-updates-archive.repo
+<span class=c1># This is a repo that contains all the old update packages from the</span>
+<span class=c1># Fedora updates yum repository (i.e. the packages that have made it</span>
+<span class=c1># to &#34;stable&#34;). This repo is needed for OSTree based systems where users</span>
+<span class=c1># may be trying to layer packages on top of a base layer that doesn&#39;t</span>
+<span class=c1># have the latest stable content. Since base layer content is locked</span>
+<span class=c1># the package layering operation will fail unless there are older versions</span>
+<span class=c1># of packages available.</span>
+<span class=c1>#</span>
+<span class=c1># This repo is given a high cost in order to prefer the normal Fedora</span>
+<span class=c1># yum repositories, which means only packages that can&#39;t be found</span>
+<span class=c1># elsewhere will be downloaded from here.</span>
+...
+</code></pre></td></tr></table>
+</div>
+</div><p>最直接的办法是把该文件排除掉，确定需要的时候再把名字手动改回来</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>mv /etc/yum.repos.d/fedora-updates-archive.repo<span class=o>{</span>,.bak<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=3-安装完-rpm-包如何不重启系统生效>3. 安装完 rpm 包，如何不重启系统生效</h2>
+<p>默认<code>rpm-ostree</code>安装完后会提示需要重启系统完成 commit，但还有一个简单的方法来跳过这一步直接使新安装的包生效，执行：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>rpm-ostree ex apply-live
+</code></pre></td></tr></table>
+</div>
+</div><p>在线生效的缺点是，可能出现位置错误，如果在生产环境不确定安装的包影响范围，最好是安排统一的重启时间。</p>
+<h2 id=4-安装更新失败卡死怎么办>4. 安装/更新失败，卡死怎么办</h2>
+<p>类似状态：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback># rpm-ostree status
+State: busy
+AutomaticUpdatesDriver: Zincati
+  DriverState: active; trying to stage 34.20210919.3.0 (3 failed deployment attempts)
+Transaction: deploy --lock-finalization revision=6334e11901fba7403600522286d817b520eeb15b66b341b392e0c08ed2576b74 --disallow-downgrade
+  Initiator: caller :1.1558
+</code></pre></td></tr></table>
+</div>
+</div><p><code>journalctl -xeu zincati.service</code>可以看到 error 信息。</p>
+<p>正常来说要使用取消命令，取消这次事务：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback># rpm-ostree cancel
+Cancelling transaction: deploy --lock-finalization revision=6334e11901fba7403600522286d817b520eeb15b66b341b392e0c08ed2576b74 --disallow-downgrade
+</code></pre></td></tr></table>
+</div>
+</div><p>但是我每次尝试的 cancel 操作，经常等了很久都没有成功返回。</p>
+<p>fedora 论坛里有人遇到相同问题，提出解决方法可以在 grub 回滚到上个 commit，还有指出可以粗暴的重启服务解决：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback># sudo systemctl restart rpm-ostreed.service
+# rpm-ostree status
+State: idle
+AutomaticUpdatesDriver: Zincati
+  DriverState: active; trying to stage 34.20210919.3.0 (4 failed deployment attempts)
+</code></pre></td></tr></table>
+</div>
+</div><p><a href=https://discussion.fedoraproject.org/t/cant-cancel-rpm-ostree-null-transaction/25174/9>https://discussion.fedoraproject.org/t/cant-cancel-rpm-ostree-null-transaction/25174/9</a></p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/rpm-ostree/>rpm-ostree</a>
+<a href=/tags/fcos/>fcos</a>
+</div>
+<nav class=post-nav>
+<a class=next href=/post/update-cert-to-secret/>
+<span class="next-text nav-default">改进 lego 自动更新证书到 secret</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=vcomments></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!0,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://www.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+<a class=theme-link href=http://beian.miit.gov.cn>京ICP备18059304号-1</a>
+<a href=https://webify.cloudbase.net/> 🚀 Powered by CloudBase Webify</a>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){var a,c,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.async=!0,c=window.location.protocol.split(':')[0],c==='https'?a.src='https://zz.bdstatic.com/linksubmit/push.js':a.src='http://push.zhanzhang.baidu.com/push.js',b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script>
+</body>
+</html>

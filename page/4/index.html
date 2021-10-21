@@ -82,6 +82,31 @@
 <section id=posts class=posts>
 <article class=post>
 <header class=post-header>
+<h1 class=post-title><a class=post-link href=/post/update-ssl-certificates-with-systemd-timer-and-docker/>CoreOS 使用 systemd 定时任务启动容器更新 ssl 证书</a></h1>
+<div class=post-meta>
+<span class=post-time> 2019-09-23 </span>
+<div class=post-category>
+<a href=/categories/linux/> Linux </a>
+<a href=/categories/coreos/> CoreOS </a>
+<a href=/categories/docker/> Docker </a>
+</div>
+<span class=more-meta> 约 518 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+</div>
+</header>
+<div class=post-content>
+<div class=post-summary>
+<p>如果你跟我一样“喜欢”并使用着 CoreOS 这个专为运行容器设计的系统，对它极精简和苛刻的安全策略着迷的同时，又烦闹于没有 crond 定时服务来管理一些小计划任务，可以参考这篇文章写的一个实例。
+使用 systemd 自带的 timer 即定时器功能来替代 crond 管理启动定时任务。
+文中给出我自己服务器上使用 Docker 定时更新 Let&rsquo;s Encrypt 证书的 unit 配置文件，及一些简单的管理查看办法供参考。</p>
+</div>
+<div class=read-more>
+<a href=/post/update-ssl-certificates-with-systemd-timer-and-docker/ class=read-more-link>阅读更多</a>
+</div>
+</div>
+</article>
+<article class=post>
+<header class=post-header>
 <h1 class=post-title><a class=post-link href=/post/a-strange-problem-caused-by-dash/>记一次 dash 导致脚本执行失败的问题</a></h1>
 <div class=post-meta>
 <span class=post-time> 2019-08-19 </span>
@@ -165,27 +190,6 @@
 </div>
 <div class=read-more>
 <a href=/post/nginx-proxy-cache-regular-configuration/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/nginx-proxy-cache-configuration/>nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本</a></h1>
-<div class=post-meta>
-<span class=post-time> 2019-05-09 </span>
-<div class=post-category>
-<a href=/categories/web/> web </a>
-</div>
-<span class=more-meta> 约 1349 字 </span>
-<span class=more-meta> 预计阅读 3 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>nginx 缓存 proxy_cache 配置可以减轻后端服务接口压力，提升访问速度，甚至可以当作 CDN 服务器来使用。文中略去概念性内容，简单粗暴的只记录关键配置办法，附送手动清理缓存脚本，开袋即食。</p>
-</div>
-<div class=read-more>
-<a href=/post/nginx-proxy-cache-configuration/ class=read-more-link>阅读更多</a>
 </div>
 </div>
 </article>
