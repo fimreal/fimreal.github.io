@@ -1,10 +1,10 @@
 ---
-title: "使用 Kubernettes-Replicator 在不同命名空间同步 secret"
+title: "使用 Kubernetes-Replicator 在不同命名空间同步 secret"
 date: 2021-11-03T15:46:49+08:00
 lastmod: 2021-11-03T15:46:49+08:00
 draft: false
 keywords: ["kubernetes","helm"]
-description: "使用 Kubernettes-Replicator 在不同命名空间同步 secret"
+description: "使用 Kubernetes-Replicator 在不同命名空间同步 secret"
 tags: ["kubernetes"]
 categories: ["kubernetes"]
 author: "Fimreal"
