@@ -1,0 +1,592 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>使用 Kubernettes-Replicator 在不同命名空间同步 secret - 闲隅</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="Fimreal"><meta name=description content="使用 Kubernettes-Replicator 在不同命名空间同步 secret"><meta name=keywords content="kubernetes,helm">
+<meta name=generator content="Hugo 0.89.0 with theme even">
+<link rel=canonical href=https://www.epurs.com/post/kubernettes-replicator/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="使用 Kubernettes-Replicator 在不同命名空间同步 secret">
+<meta property="og:description" content="使用 Kubernettes-Replicator 在不同命名空间同步 secret">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.epurs.com/post/kubernettes-replicator/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-11-03T15:46:49+08:00">
+<meta property="article:modified_time" content="2021-11-04T16:02:14+08:00">
+<meta itemprop=name content="使用 Kubernettes-Replicator 在不同命名空间同步 secret">
+<meta itemprop=description content="使用 Kubernettes-Replicator 在不同命名空间同步 secret"><meta itemprop=datePublished content="2021-11-03T15:46:49+08:00">
+<meta itemprop=dateModified content="2021-11-04T16:02:14+08:00">
+<meta itemprop=wordCount content="1242">
+<meta itemprop=keywords content="kubernetes,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="使用 Kubernettes-Replicator 在不同命名空间同步 secret">
+<meta name=twitter:description content="使用 Kubernettes-Replicator 在不同命名空间同步 secret"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>闲隅</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>主页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>闲隅</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>主页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>使用 Kubernettes-Replicator 在不同命名空间同步 secret</h1>
+<div class=post-meta>
+<span class=post-time> 2021-11-03 </span>
+<div class=post-category>
+<a href=/categories/kubernetes/> kubernetes </a>
+</div>
+<span class=more-meta> 约 1242 字 </span>
+<span class=more-meta> 预计阅读 3 分钟 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#kubernetes-replicator-有什么用>kubernetes-replicator 有什么用？</a></li>
+<li><a href=#安装方法>安装方法</a>
+<ul>
+<li><a href=#1-可以通过-helm-安装>1. 可以通过 helm 安装</a></li>
+<li><a href=#2-手动安装>2. 手动安装</a></li>
+</ul>
+</li>
+<li><a href=#常见用法>常见用法</a>
+<ul>
+<li><a href=#1-推送复制模式>1. 推送复制模式</a></li>
+<li><a href=#2-拉取复制模式>2. 拉取复制模式</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>kubernetes 最佳实践会教我们创建很多命名空间（namespace）来做服务隔离，但同时服务对应的 configmap 和 secret 也会因为命名空间被分割开。当我们需要对多个命名空间实则相同的对象，执行更新的配置时，同步配置着实有些麻烦。本文通过引入 kubernetes-replicator 来解决这个麻烦的问题。</p>
+<h2 id=kubernetes-replicator-有什么用>kubernetes-replicator 有什么用？</h2>
+<p>如 github 仓库简单的介绍，创建一个自定义的 <code>controller</code>，保证 <code>secret</code> 和 <code>configmaps</code> 在多个命名空间可用。</p>
+<blockquote>
+<p>This repository contains a custom Kubernetes controller that can be used to make secrets and config maps available in multiple namespaces.</p>
+</blockquote>
+<p>实际上它还可以复制 <code>roles</code>和<code>rolebindings</code>，并且可以通过注解配置是否允许被复制到某个命名空间。当源配置允许被复制时，源目标改变，控制器会自动更新/创建对应对象资源。</p>
+<h2 id=安装方法>安装方法</h2>
+<h3 id=1-可以通过-helm-安装>1. 可以通过 helm 安装</h3>
+<p>首先添加 chart repo：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>helm repo add mittwald https://helm.mittwald.de
+helm repo update
+</code></pre></td></tr></table>
+</div>
+</div><p>安装：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>helm install kubernetes-replicator mittwald/kubernetes-replicator
+</code></pre></td></tr></table>
+</div>
+</div><p>卸载：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>helm uninstall kubernetes-replicator
+</code></pre></td></tr></table>
+</div>
+</div><p>安装这里可能会遇到镜像 pull 不到的问题，issue 里给出的解决方法是查看 releases 信息确认版本，可以看到有部分 <code>x.x..0</code> 版本是没有 <code>quay.io</code> 镜像信息的。</p>
+<p>解决方式可以通过手动指定版本安装，例如：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>helm upgrade --install kubernetes-replicator mittwald/kubernetes-replicator --version 2.6.3
+</code></pre></td></tr></table>
+</div>
+</div><p><code>containerd</code> 配置国内镜像代理可以使用：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>mirrors:
+  <span class=s2>&#34;quay.io&#34;</span>:
+    endpoint:
+      - <span class=s2>&#34;quay.mirrors.ustc.edu.cn&#34;</span>
+      - <span class=s2>&#34;quay.azk8s.cn&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=2-手动安装>2. 手动安装</h3>
+<p>对于 yaml 工程师，建议下载下来修改使用，因为里面镜像 tag 是 latest，默认会安装在 <code>kube-system</code> 命名空间。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/mittwald/kubernetes-replicator/master/deploy/rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/mittwald/kubernetes-replicator/master/deploy/deployment.yaml
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=常见用法>常见用法</h2>
+<h3 id=1-推送复制模式>1. 推送复制模式</h3>
+<p>创建 <code>secret/configmap/roles/rolebindings</code> 对象，同时添加 <code>replicator.v1.mittwald.de/replicate-to</code> 或者 <code>replicator.v1.mittwald.de/replicate-to-matching</code> 注释，配置想要复制到的命名空间。</p>
+<h4 id=11-通过-ns-名称指定>1.1 通过 ns 名称指定</h4>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replicate-to</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;my-ns-1,namespace-[0-9]*&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>key1</span><span class=p>:</span><span class=w> </span><span class=l>&lt;value&gt;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id=12-通过-ns-label-指定>1.2 通过 ns label 指定</h4>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replicate-to-matching</span><span class=p>:</span><span class=w> </span><span class=p>&gt;</span><span class=sd>
+</span><span class=sd>      </span><span class=w>      </span><span class=l>my-label=value,my-other-label,my-other-label notin (foo,bar)</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>key1</span><span class=p>:</span><span class=w> </span><span class=l>&lt;value&gt;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id=13-示例>1.3 示例</h4>
+<p>例如要创建 docker 验证 secret ，yaml 配置如下</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># kubectl create secret docker-registry docker-token --docker-server=registry.epurs.com --docker-username=admin --docker-password=admin123 -oyaml --dry-run=client</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>.dockerconfigjson</span><span class=p>:</span><span class=w> </span><span class=l>eyJhdXRocyI6eyJyZWdpc3RyeS5lcHVycy5jb20iOnsidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4xMjMiLCJhdXRoIjoiWVdSdGFXNDZZV1J0YVc0eE1qTT0ifX19</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>creationTimestamp</span><span class=p>:</span><span class=w> </span><span class=kc>null</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>docker-token</span><span class=w>
+</span><span class=w></span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>kubernetes.io/dockerconfigjson</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>添加注释，使其可以同步到其他所有命名空间，修改完如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>.dockerconfigjson</span><span class=p>:</span><span class=w> </span><span class=l>eyJhdXRocyI6eyJyZWdpc3RyeS5lcHVycy5jb20iOnsidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4xMjMiLCJhdXRoIjoiWVdSdGFXNDZZV1J0YVc0eE1qTT0ifX19</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>creationTimestamp</span><span class=p>:</span><span class=w> </span><span class=kc>null</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>docker-token</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replicate-to</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;.*&#34;</span><span class=w>    </span><span class=c># 添加注释，正则匹配所有命名空间名称</span><span class=w>
+</span><span class=w></span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>kubernetes.io/dockerconfigjson</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>查看同步复制效果：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># kubectl apply -f docker-secret.yaml</span>
+secret/docker-token created
+<span class=c1># kubectl get secret -A |grep docker-token</span>
+default           docker-token                                         kubernetes.io/dockerconfigjson        <span class=m>1</span>      9s
+kube-system       docker-token                                         kubernetes.io/dockerconfigjson        <span class=m>1</span>      9s
+kube-public       docker-token                                         kubernetes.io/dockerconfigjson        <span class=m>1</span>      9s
+kube-node-lease   docker-token                                         kubernetes.io/dockerconfigjson        <span class=m>1</span>      9s
+infa              docker-token                                         kubernetes.io/dockerconfigjson        <span class=m>1</span>      9s
+ingress-nginx     docker-token                                         kubernetes.io/dockerconfigjson        <span class=m>1</span>      9s
+netmaker          docker-token                                         kubernetes.io/dockerconfigjson        <span class=m>1</span>      9s
+</code></pre></td></tr></table>
+</div>
+</div><p>⚠️注意：当源对象被删除后，自动复制的对象也会被控制器同步删除。</p>
+<h3 id=2-拉取复制模式>2. 拉取复制模式</h3>
+<h4 id=21-通过-ns-名称指定>2.1 通过 ns 名称指定</h4>
+<p>注释添加：<code>replicator.v1.mittwald.de/replication-allowed: "true"</code> 和 <code>replicator.v1.mittwald.de/replication-allowed-namespaces</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replication-allowed</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;true&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replication-allowed-namespaces</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;my-ns-1,namespace-[0-9]*&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>key1</span><span class=p>:</span><span class=w> </span><span class=l>&lt;value&gt;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id=22-创建接收对象>2.2 创建接收对象</h4>
+<p>注释添加：<code>replicator.v1.mittwald.de/replicate-from: &lt;namespace>/&lt;objectname></code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>secret-replica</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replicate-from</span><span class=p>:</span><span class=w> </span><span class=l>default/some-secret</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w> </span>{}<span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id=23-示例>2.3 示例</h4>
+<p>创建 docker 验证 secret ，yaml 配置如下</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># kubectl create secret docker-registry docker-token --docker-server=registry.epurs.com --docker-username=admin --docker-password=admin123 -oyaml --dry-run=client</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>.dockerconfigjson</span><span class=p>:</span><span class=w> </span><span class=l>eyJhdXRocyI6eyJyZWdpc3RyeS5lcHVycy5jb20iOnsidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4xMjMiLCJhdXRoIjoiWVdSdGFXNDZZV1J0YVc0eE1qTT0ifX19</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>creationTimestamp</span><span class=p>:</span><span class=w> </span><span class=kc>null</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>docker-token</span><span class=w>
+</span><span class=w></span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>kubernetes.io/dockerconfigjson</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>添加注释作为源对象，指定允许同步到其他所有命名空间，修改完如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>.dockerconfigjson</span><span class=p>:</span><span class=w> </span><span class=l>eyJhdXRocyI6eyJyZWdpc3RyeS5lcHVycy5jb20iOnsidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4xMjMiLCJhdXRoIjoiWVdSdGFXNDZZV1J0YVc0eE1qTT0ifX19</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>creationTimestamp</span><span class=p>:</span><span class=w> </span><span class=kc>null</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>docker-token</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replication-allowed</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;true&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replication-allowed-namespaces</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;.*&#34;</span><span class=w>   </span><span class=c># 添加注释，正则匹配所有命名空间名称</span><span class=w>
+</span><span class=w></span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>kubernetes.io/dockerconfigjson</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>准备空 secret，添加注释：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>docker-token-replica</span><span class=w>
+</span><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>kube-system</span><span class=w>
+</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>replicator.v1.mittwald.de/replicate-from</span><span class=p>:</span><span class=w> </span><span class=l>default/docker-token</span><span class=w>
+</span><span class=w></span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>kubernetes.io/dockerconfigjson</span><span class=w>
+</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>.dockerconfigjson</span><span class=p>:</span><span class=w> </span><span class=l>e30K</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>创建空 secret ，并添加注释。查看创建完内容是否一致：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># kubectl apply -f docker-secret.yaml -f rep-docker-secret.yaml</span>
+secret/docker-token created
+secret/docker-token-replica created
+<span class=c1># kubectl get -f docker-secret.yaml -f rep-docker-secret.yaml -o yaml</span>
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5lcHVycy5jb20iOnsidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4xMjMiLCJhdXRoIjoiWVdSdGFXNDZZV1J0YVc0eE1qTT0ifX19
+  kind: Secret
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: ...
+      replicator.v1.mittwald.de/replication-allowed: <span class=s2>&#34;true&#34;</span>
+      replicator.v1.mittwald.de/replication-allowed-namespaces: .*
+    name: docker-token
+    namespace: default
+    ...
+  type: kubernetes.io/dockerconfigjson
+- apiVersion: v1
+  data:
+    .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5lcHVycy5jb20iOnsidXNlcm5hbWUiOiJhZG1pbiIsInBhc3N3b3JkIjoiYWRtaW4xMjMiLCJhdXRoIjoiWVdSdGFXNDZZV1J0YVc0eE1qTT0ifX19
+  kind: Secret
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: ...
+      ...
+      replicator.v1.mittwald.de/replicate-from: default/docker-token
+      replicator.v1.mittwald.de/replicated-keys: .dockerconfigjson
+    name: docker-token-replica
+    namespace: kube-system
+    ...
+  type: kubernetes.io/dockerconfigjson
+kind: List
+metadata:
+  resourceVersion: <span class=s2>&#34;&#34;</span>
+  selfLink: <span class=s2>&#34;&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/kubernetes/>kubernetes</a>
+</div>
+<nav class=post-nav>
+<a class=next href=/post/rpm-oostree-stuck/>
+<span class="next-text nav-default">FCOS rpm-ostree 使用避坑笔记</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=vcomments></div>
+<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!0,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://www.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2018 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+<a class=theme-link href=http://beian.miit.gov.cn>京ICP备18059304号-1</a>
+<a href=https://webify.cloudbase.net/> 🚀 Powered by CloudBase Webify</a>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){var a,c,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.async=!0,c=window.location.protocol.split(':')[0],c==='https'?a.src='https://zz.bdstatic.com/linksubmit/push.js':a.src='http://push.zhanzhang.baidu.com/push.js',b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script>
+</body>
+</html>

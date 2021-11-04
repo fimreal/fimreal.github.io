@@ -12,7 +12,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="Fimreal"><meta name=description content="个人小站，技术笔记"><meta name=keywords content="blog,Docker,运维,k8s,Linux,devops">
-<meta name=generator content="Hugo 0.88.1 with theme even">
+<meta name=generator content="Hugo 0.89.0 with theme even">
 <link rel=canonical href=https://www.epurs.com/>
 <link href=https://www.epurs.com/index.xml rel=alternate type=application/rss+xml title=闲隅>
 <link href=https://www.epurs.com/index.xml rel=feed type=application/rss+xml title=闲隅>
@@ -80,6 +80,27 @@
 <div class=content-wrapper>
 <div id=content class=content>
 <section id=posts class=posts>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title><a class=post-link href=/post/kubernettes-replicator/>使用 Kubernettes-Replicator 在不同命名空间同步 secret</a></h1>
+<div class=post-meta>
+<span class=post-time> 2021-11-03 </span>
+<div class=post-category>
+<a href=/categories/kubernetes/> kubernetes </a>
+</div>
+<span class=more-meta> 约 1242 字 </span>
+<span class=more-meta> 预计阅读 3 分钟 </span>
+</div>
+</header>
+<div class=post-content>
+<div class=post-summary>
+<p>kubernetes 最佳实践会教我们创建很多命名空间（namespace）来做服务隔离，但同时服务对应的 configmap 和 secret 也会因为命名空间被分割开。当我们需要对多个命名空间实则相同的对象，执行更新的配置时，同步配置着实有些麻烦。本文通过引入 kubernetes-replicator 来解决这个麻烦的问题。</p>
+</div>
+<div class=read-more>
+<a href=/post/kubernettes-replicator/ class=read-more-link>阅读更多</a>
+</div>
+</div>
+</article>
 <article class=post>
 <header class=post-header>
 <h1 class=post-title><a class=post-link href=/post/rpm-oostree-stuck/>FCOS rpm-ostree 使用避坑笔记</a></h1>
@@ -162,28 +183,6 @@
 </div>
 <div class=read-more>
 <a href=/post/docker-nfs-volume/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/nginx-tcp-proxy/>Nginx Tcp 代理添加 IP 限制</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-10-14 </span>
-<div class=post-category>
-<a href=/categories/nginx/> nginx </a>
-<a href=/categories/proxy/> proxy </a>
-</div>
-<span class=more-meta> 约 194 字 </span>
-<span class=more-meta> 预计阅读 1 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>用容器启动一个便捷快速可管控的 TCP 代理。</p>
-</div>
-<div class=read-more>
-<a href=/post/nginx-tcp-proxy/ class=read-more-link>阅读更多</a>
 </div>
 </div>
 </article>

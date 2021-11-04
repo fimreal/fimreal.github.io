@@ -12,7 +12,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="Fimreal"><meta name=description content="个人小站，技术笔记"><meta name=keywords content="blog,Docker,运维,k8s,Linux,devops">
-<meta name=generator content="Hugo 0.88.1 with theme even">
+<meta name=generator content="Hugo 0.89.0 with theme even">
 <link rel=canonical href=https://www.epurs.com/>
 <link href=https://www.epurs.com/index.xml rel=alternate type=application/rss+xml title=闲隅>
 <link href=https://www.epurs.com/index.xml rel=feed type=application/rss+xml title=闲隅>
@@ -80,6 +80,28 @@
 <div class=content-wrapper>
 <div id=content class=content>
 <section id=posts class=posts>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title><a class=post-link href=/post/nginx-proxy-cache-regular-configuration/>nginx location 规则使用正则时改写 request_uri 报错</a></h1>
+<div class=post-meta>
+<span class=post-time> 2019-05-09 </span>
+<div class=post-category>
+<a href=/categories/web/> web </a>
+</div>
+<span class=more-meta> 约 1271 字 </span>
+<span class=more-meta> 预计阅读 3 分钟 </span>
+</div>
+</header>
+<div class=post-content>
+<div class=post-summary>
+<p>今天在配置 nginx 缓存时，遇到一个棘手的问题，开发反馈需要实现缓存特定路径下的数据，并且要能手动清除缓存。缓存配置和清除的办法在前面已经有介绍，但是给出的路径中间有一位会变动，也就是说需要 location 正则匹配区分。
+“众所周知”，location 区块匹配正则表达式时，内部 proxy_pass 如果继续配置使用 request_uri 改写功能（即 http://somewhere/path 形式）会报错不可用，那要怎么解决这个需求呢？事实情况并没有这么简单。</p>
+</div>
+<div class=read-more>
+<a href=/post/nginx-proxy-cache-regular-configuration/ class=read-more-link>阅读更多</a>
+</div>
+</div>
+</article>
 <article class=post>
 <header class=post-header>
 <h1 class=post-title><a class=post-link href=/post/nginx-proxy-cache-configuration/>nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本</a></h1>
@@ -164,27 +186,6 @@
 </div>
 <div class=read-more>
 <a href=/post/coreos-add-bash-completion/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/py-study-string/>Python 中字符串的内置方法</a></h1>
-<div class=post-meta>
-<span class=post-time> 2019-04-15 </span>
-<div class=post-category>
-<a href=/categories/python/> Python </a>
-</div>
-<span class=more-meta> 约 2014 字 </span>
-<span class=more-meta> 预计阅读 5 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>Python 中字符串的内置方法作用用例总结</p>
-</div>
-<div class=read-more>
-<a href=/post/py-study-string/ class=read-more-link>阅读更多</a>
 </div>
 </div>
 </article>

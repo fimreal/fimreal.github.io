@@ -12,7 +12,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="Fimreal"><meta name=description content="Python 中字符串的内置方法总结"><meta name=keywords content="Python">
-<meta name=generator content="Hugo 0.88.1 with theme even">
+<meta name=generator content="Hugo 0.89.0 with theme even">
 <link rel=canonical href=https://www.epurs.com/post/py-study-string/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
@@ -30,7 +30,7 @@
 <meta itemprop=name content="Python 中字符串的内置方法">
 <meta itemprop=description content="Python 中字符串的内置方法总结"><meta itemprop=datePublished content="2019-04-15T11:45:00+00:00">
 <meta itemprop=dateModified content="2019-08-19T14:35:05+08:00">
-<meta itemprop=wordCount content="2014">
+<meta itemprop=wordCount content="1992">
 <meta itemprop=keywords content="Python,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Python 中字符串的内置方法">
 <meta name=twitter:description content="Python 中字符串的内置方法总结"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -90,8 +90,8 @@
 <div class=post-category>
 <a href=/categories/python/> Python </a>
 </div>
-<span class=more-meta> 约 2014 字 </span>
-<span class=more-meta> 预计阅读 5 分钟 </span>
+<span class=more-meta> 约 1992 字 </span>
+<span class=more-meta> 预计阅读 4 分钟 </span>
 </div>
 </header>
 <div class=post-toc id=post-toc>
@@ -447,12 +447,12 @@ True: Unicode数字，byte数字（单字节），全角数字（双字节），
 False: 汉字数字
 Error: 无
 
-isdecimal()
+
 True: Unicode数字，，全角数字（双字节）
 False: 罗马数字，汉字数字
 Error: byte数字（单字节）
 
-isnumeric()
+
 True: Unicode数字，全角数字（双字节），罗马数字，汉字数字
 False: 无
 Error: byte数字（单字节）
@@ -498,7 +498,7 @@ Error: byte数字（单字节）
 <span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isnumeric</span><span class=p>()</span>
 <span class=kc>True</span>
 
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=sa>b</span><span class=s2>&#34;0&#34;</span>  <span class=c1># byte</span>
+
 <span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
 <span class=kc>True</span>
 <span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
@@ -510,7 +510,7 @@ Error: byte数字（单字节）
   <span class=n>File</span> <span class=s2>&#34;&lt;stdin&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
 <span class=ne>AttributeError</span><span class=p>:</span> <span class=s1>&#39;bytes&#39;</span> <span class=nb>object</span> <span class=n>has</span> <span class=n>no</span> <span class=n>attribute</span> <span class=s1>&#39;isnumeric&#39;</span>
 
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=s2>&#34;零&#34;</span>
+
 <span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
 <span class=kc>False</span>
 <span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
