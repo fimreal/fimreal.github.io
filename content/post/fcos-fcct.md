@@ -3,10 +3,10 @@ title: "从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos"
 date: 2021-09-10T09:49:22+08:00
 lastmod: 2021-09-10T10:02:42+08:00
 draft: false
-keywords: ["CoreOS","fedora","fccos"]
+keywords: ["CoreOS","fedora","fcos"]
 description: ""
-tags: ["CoreOS","fedora","fccos"]
-categories: ["CoreOS","fedora","fccos"]
+tags: ["CoreOS","fedora","fcos"]
+categories: ["CoreOS","fedora","fcos"]
 author: "Fimreal"
 
 # You can also close(false) or open(true) something for this content.
