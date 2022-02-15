@@ -44,11 +44,11 @@ FCOS rpm-ostree 使用避坑笔记，应该会持续更新。
 
 <!--more-->
 
-## 1. yum 源镜像配置
+## 1. yum/dnf 源镜像配置
 
-同为 fedora 系统，fcos 也使用 yum 源，只不过把包管理工具从 dnf 变成了具有事务能力的 rpm-ostree。
+同为 fedora 系统，fcos 也使用 yum/dnf 源，只不过把包管理工具从 dnf 变成了具有事务能力的 rpm-ostree。
 
-yum 地址没有动态配置支持，如果在大陆使用，最好选择几个国内大学源保证下载速度。
+由于仓库地址没有动态配置支持，如果在大陆使用，最好选择几个国内大学源保证下载速度。
 
 例如 USTC ：
 
@@ -99,11 +99,13 @@ cat /etc/yum.repos.d/fedora-updates-archive.repo
 ...
 ```
 
-最直接的办法是把该文件排除掉，确定需要的时候再把名字手动改回来
+最直接的办法是把该文件排除掉，需要的时候再把名字手动改回来。
 
 ```bash
 mv /etc/yum.repos.d/fedora-updates-archive.repo{,.bak}
 ```
+
+优雅点的做法是把配置文件中 `enabled=1` 置为0。
 
 
 
@@ -154,3 +156,85 @@ AutomaticUpdatesDriver: Zincati
 ```
 
 https://discussion.fedoraproject.org/t/cant-cancel-rpm-ostree-null-transaction/25174/9
+
+出现该问题通常是依赖找不到，或者自身机制导致无法更新新安装包，可以通过手动卸载解决。
+
+
+## 5. 国内更新卡住
+
+其实表现状态和上面 4 情况类似，通常是更新速度太慢超时，可以使用国内镜像源加速。
+
+例如使用上海交大镜像服务，修改文件 `/etc/ostree/remotes.d/fedora.conf` 
+
+```bash
+[remote "fedora"]
+url=https://mirror.sjtu.edu.cn/fedora-ostree
+gpg-verify=true
+gpgkeypath=/etc/pki/rpm-gpg/
+# contenturl=mirrorlist=https://ostree.fedoraproject.org/mirrorlist
+```
+
+测试发现修改完后需要重启服务生效。除了修改 fedora.conf 文件内容，还有 fedora-compose.conf 仓库没找到国内镜像，可以参考问题6中代理配置方法解决。
+
+#### 更新常用命令
+
+查看版本状态：
+
+```bash
+rpm-ostree status
+```
+
+查看更新到最新版本差异，由于有 zincati 自动升级管理在，手动执行时可能要添加 `--bypass-driver` ：
+
+```bash
+sudo rpm-ostree upgrade --check
+sudo rpm-ostree upgrade --preview
+```
+
+手动更新，由于有 zincati 自动升级管理在，手动执行时可能要添加 `--bypass-driver` ：
+
+```bash
+sudo rpm-ostree upgrade --download-only  # 仅下载
+sudo rpm-ostree upgrade
+# systemctl reboot # 最后需要重启生效
+# 安装并重启一步完成也行
+sudo rpm-ostree upgrade --reboot
+```
+回滚操作：
+
+```bash
+sudo rpm-ostree rollback
+sudo rpm-ostree rollback --reboot # 重启生效
+```
+
+自动更新配置在 `/etc/rpm-ostreed.conf` ，`AutomaticUpdatePolicy` 默认值 `none` ，关闭自动更新，可选为 `check`、`stage`，分别为检查更新，和自动更新并在重启后生效。
+
+
+
+## 6. rpm-ostree 代理
+
+关于配置自动更新代理的方法，网上搜到很多都不可用，其实可以直接的通过 systemd 对服务全局修改
+参考：https://github.com/coreos/rpm-ostree/issues/762#issuecomment-434256478
+
+```bash
+mkdir -p /etc/systemd/system/rpm-ostreed.service.d
+cat > /etc/systemd/system/rpm-ostreed.service.d/http-proxy.conf << EOF
+[Service]
+Environment="http_proxy=http://<my-proxy>"
+EOF
+systemctl daemon-reload
+systemctl restart rpm-ostreed.service
+```
+
+手动更新命令，可以使用配置参数
+参考：https://github.com/coreos/rpm-ostree/issues/762#issuecomment-299293470
+
+对于 `rpm-istree install` 命令代理，可以编辑 `/etc/yum.conf/` 或者 `/etc/dnf/dnf.conf` 文件，在要代理的 [] 下面添加选项：
+
+```
+proxy=<scheme>://<proxy_addr>[:port]  # 例如 socks5://proxy.epurs.com:1080
+proxy_username=
+proxy_password=
+```
+
+或者使用前文提到的国内 fedora 镜像源替换
