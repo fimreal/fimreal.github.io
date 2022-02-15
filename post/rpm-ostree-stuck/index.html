@@ -12,8 +12,8 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="Fimreal"><meta name=description content="FCOS rpm-ostree 使用避坑笔记"><meta name=keywords content="rpm-ostree,fcos">
-<meta name=generator content="Hugo 0.89.0 with theme even">
-<link rel=canonical href=https://blog.epurs.com/post/rpm-oostree-stuck/>
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://blog.epurs.com/post/rpm-ostree-stuck/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
 <link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
@@ -24,13 +24,13 @@
 <meta property="og:title" content="FCOS rpm-ostree 使用避坑笔记">
 <meta property="og:description" content="FCOS rpm-ostree 使用避坑笔记">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.epurs.com/post/rpm-oostree-stuck/"><meta property="article:section" content="post">
+<meta property="og:url" content="https://blog.epurs.com/post/rpm-ostree-stuck/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2021-10-21T11:47:46+08:00">
-<meta property="article:modified_time" content="2021-10-21T13:42:20+08:00">
+<meta property="article:modified_time" content="2022-02-15T16:07:52+08:00">
 <meta itemprop=name content="FCOS rpm-ostree 使用避坑笔记">
 <meta itemprop=description content="FCOS rpm-ostree 使用避坑笔记"><meta itemprop=datePublished content="2021-10-21T11:47:46+08:00">
-<meta itemprop=dateModified content="2021-10-21T13:42:20+08:00">
-<meta itemprop=wordCount content="866">
+<meta itemprop=dateModified content="2022-02-15T16:07:52+08:00">
+<meta itemprop=wordCount content="1583">
 <meta itemprop=keywords content="rpm-ostree,fcos,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="FCOS rpm-ostree 使用避坑笔记">
 <meta name=twitter:description content="FCOS rpm-ostree 使用避坑笔记"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -91,8 +91,8 @@
 <a href=/categories/rpm-ostree/> rpm-ostree </a>
 <a href=/categories/fcos/> fcos </a>
 </div>
-<span class=more-meta> 约 866 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
+<span class=more-meta> 约 1583 字 </span>
+<span class=more-meta> 预计阅读 4 分钟 </span>
 </div>
 </header>
 <div class=post-toc id=post-toc>
@@ -100,19 +100,25 @@
 <div class=post-toc-content>
 <nav id=TableOfContents>
 <ul>
-<li><a href=#1-yum-源镜像配置>1. yum 源镜像配置</a></li>
+<li><a href=#1-yumdnf-源镜像配置>1. yum/dnf 源镜像配置</a></li>
 <li><a href=#2-避免使用-archive-仓库>2. 避免使用 archive 仓库</a></li>
 <li><a href=#3-安装完-rpm-包如何不重启系统生效>3. 安装完 rpm 包，如何不重启系统生效</a></li>
 <li><a href=#4-安装更新失败卡死怎么办>4. 安装/更新失败，卡死怎么办</a></li>
+<li><a href=#5-国内更新卡住>5. 国内更新卡住</a>
+<ul>
+<li></li>
+</ul>
+</li>
+<li><a href=#6-rpm-ostree-代理>6. rpm-ostree 代理</a></li>
 </ul>
 </nav>
 </div>
 </div>
 <div class=post-content>
 <p>FCOS rpm-ostree 使用避坑笔记，应该会持续更新。</p>
-<h2 id=1-yum-源镜像配置>1. yum 源镜像配置</h2>
-<p>同为 fedora 系统，fcos 也使用 yum 源，只不过把包管理工具从 dnf 变成了具有事务能力的 rpm-ostree。</p>
-<p>yum 地址没有动态配置支持，如果在大陆使用，最好选择几个国内大学源保证下载速度。</p>
+<h2 id=1-yumdnf-源镜像配置>1. yum/dnf 源镜像配置</h2>
+<p>同为 fedora 系统，fcos 也使用 yum/dnf 源，只不过把包管理工具从 dnf 变成了具有事务能力的 rpm-ostree。</p>
+<p>由于仓库地址没有动态配置支持，如果在大陆使用，最好选择几个国内大学源保证下载速度。</p>
 <p>例如 USTC ：</p>
 <p><a href=http://mirrors.ustc.edu.cn/help/fedora.html>http://mirrors.ustc.edu.cn/help/fedora.html</a></p>
 <p>适用于刚安装完，备份加修改镜像源地址一键命令：</p>
@@ -189,7 +195,7 @@ Updating metadata for &#39;updates&#39;... done
 ...
 </code></pre></td></tr></table>
 </div>
-</div><p>最直接的办法是把该文件排除掉，确定需要的时候再把名字手动改回来</p>
+</div><p>最直接的办法是把该文件排除掉，需要的时候再把名字手动改回来。</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
@@ -198,7 +204,8 @@ Updating metadata for &#39;updates&#39;... done
 <pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>mv /etc/yum.repos.d/fedora-updates-archive.repo<span class=o>{</span>,.bak<span class=o>}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id=3-安装完-rpm-包如何不重启系统生效>3. 安装完 rpm 包，如何不重启系统生效</h2>
+</div><p>优雅点的做法是把配置文件中 <code>enabled=1</code> 置为0。</p>
+<h2 id=3-安装完-rpm-包如何不重启系统生效>3. 安装完 rpm 包，如何不重启系统生效</h2>
 <p>默认<code>rpm-ostree</code>安装完后会提示需要重启系统完成 commit，但还有一个简单的方法来跳过这一步直接使新安装的包生效，执行：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -260,6 +267,116 @@ AutomaticUpdatesDriver: Zincati
 </code></pre></td></tr></table>
 </div>
 </div><p><a href=https://discussion.fedoraproject.org/t/cant-cancel-rpm-ostree-null-transaction/25174/9>https://discussion.fedoraproject.org/t/cant-cancel-rpm-ostree-null-transaction/25174/9</a></p>
+<p>出现该问题通常是依赖找不到，或者自身机制导致无法更新新安装包，可以通过手动卸载解决。</p>
+<h2 id=5-国内更新卡住>5. 国内更新卡住</h2>
+<p>其实表现状态和上面 4 情况类似，通常是更新速度太慢超时，可以使用国内镜像源加速。</p>
+<p>例如使用上海交大镜像服务，修改文件 <code>/etc/ostree/remotes.d/fedora.conf</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=o>[</span>remote <span class=s2>&#34;fedora&#34;</span><span class=o>]</span>
+<span class=nv>url</span><span class=o>=</span>https://mirror.sjtu.edu.cn/fedora-ostree
+gpg-verify<span class=o>=</span><span class=nb>true</span>
+<span class=nv>gpgkeypath</span><span class=o>=</span>/etc/pki/rpm-gpg/
+<span class=c1># contenturl=mirrorlist=https://ostree.fedoraproject.org/mirrorlist</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>测试发现修改完后需要重启服务生效。除了修改 fedora.conf 文件内容，还有 fedora-compose.conf 仓库没找到国内镜像，可以参考问题6中代理配置方法解决。</p>
+<h4 id=更新常用命令>更新常用命令</h4>
+<p>查看版本状态：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>rpm-ostree status
+</code></pre></td></tr></table>
+</div>
+</div><p>查看更新到最新版本差异，由于有 zincati 自动升级管理在，手动执行时可能要添加 <code>--bypass-driver</code> ：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo rpm-ostree upgrade --check
+sudo rpm-ostree upgrade --preview
+</code></pre></td></tr></table>
+</div>
+</div><p>手动更新，由于有 zincati 自动升级管理在，手动执行时可能要添加 <code>--bypass-driver</code> ：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo rpm-ostree upgrade --download-only  <span class=c1># 仅下载</span>
+sudo rpm-ostree upgrade
+<span class=c1># systemctl reboot # 最后需要重启生效</span>
+<span class=c1># 安装并重启一步完成也行</span>
+sudo rpm-ostree upgrade --reboot
+</code></pre></td></tr></table>
+</div>
+</div><p>回滚操作：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo rpm-ostree rollback
+sudo rpm-ostree rollback --reboot <span class=c1># 重启生效</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>自动更新配置在 <code>/etc/rpm-ostreed.conf</code> ，<code>AutomaticUpdatePolicy</code> 默认值 <code>none</code> ，关闭自动更新，可选为 <code>check</code>、<code>stage</code>，分别为检查更新，和自动更新并在重启后生效。</p>
+<h2 id=6-rpm-ostree-代理>6. rpm-ostree 代理</h2>
+<p>关于配置自动更新代理的方法，网上搜到很多都不可用，其实可以直接的通过 systemd 对服务全局修改
+参考：https://github.com/coreos/rpm-ostree/issues/762#issuecomment-434256478</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>mkdir -p /etc/systemd/system/rpm-ostreed.service.d
+cat &gt; /etc/systemd/system/rpm-ostreed.service.d/http-proxy.conf <span class=s>&lt;&lt; EOF
+</span><span class=s>[Service]
+</span><span class=s>Environment=&#34;http_proxy=http://&lt;my-proxy&gt;&#34;
+</span><span class=s>EOF</span>
+systemctl daemon-reload
+systemctl restart rpm-ostreed.service
+</code></pre></td></tr></table>
+</div>
+</div><p>手动更新命令，可以使用配置参数
+参考：https://github.com/coreos/rpm-ostree/issues/762#issuecomment-299293470</p>
+<p>对于 <code>rpm-istree install</code> 命令代理，可以编辑 <code>/etc/yum.conf/</code> 或者 <code>/etc/dnf/dnf.conf</code> 文件，在要代理的 [] 下面添加选项：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>proxy=&lt;scheme&gt;://&lt;proxy_addr&gt;[:port]  # 例如 socks5://proxy.epurs.com:1080
+proxy_username=
+proxy_password=
+</code></pre></td></tr></table>
+</div>
+</div><p>或者使用前文提到的国内 fedora 镜像源替换</p>
 </div>
 <footer class=post-footer>
 <div class=post-tags>
@@ -267,7 +384,7 @@ AutomaticUpdatesDriver: Zincati
 <a href=/tags/fcos/>fcos</a>
 </div>
 <nav class=post-nav>
-<a class=prev href=/post/kubernettes-replicator/>
+<a class=prev href=/post/kubernetes-replicator/>
 <i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">使用 Kubernetes-Replicator 在不同命名空间同步 secret</span>
 <span class="prev-text nav-mobile">上一篇</span>
@@ -304,7 +421,7 @@ AutomaticUpdatesDriver: Zincati
 <span class=copyright-year>
 &copy;
 2018 -
-2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
 </span>
 </div>
 </footer>

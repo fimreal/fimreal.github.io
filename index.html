@@ -12,7 +12,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="Fimreal"><meta name=description content="个人小站，技术笔记"><meta name=keywords content="blog,Docker,运维,k8s,Linux,devops">
-<meta name=generator content="Hugo 0.89.0 with theme even">
+<meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://blog.epurs.com/>
 <link href=https://blog.epurs.com/index.xml rel=alternate type=application/rss+xml title=闲隅>
 <link href=https://blog.epurs.com/index.xml rel=feed type=application/rss+xml title=闲隅>
@@ -82,7 +82,25 @@
 <section id=posts class=posts>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/kubernettes-replicator/>使用 Kubernetes-Replicator 在不同命名空间同步 secret</a></h1>
+<h1 class=post-title><a class=post-link href=/post/k3s-automated/>k3s 自动化升级</a></h1>
+<div class=post-meta>
+<span class=post-time> 2022-02-15 </span>
+<span class=more-meta> 约 915 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+</div>
+</header>
+<div class=post-content>
+<div class=post-summary>
+<p>k3s 自动/手动升级方法及相关操作</p>
+</div>
+<div class=read-more>
+<a href=/post/k3s-automated/ class=read-more-link>阅读更多</a>
+</div>
+</div>
+</article>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title><a class=post-link href=/post/kubernetes-replicator/>使用 Kubernetes-Replicator 在不同命名空间同步 secret</a></h1>
 <div class=post-meta>
 <span class=post-time> 2021-11-03 </span>
 <div class=post-category>
@@ -97,21 +115,21 @@
 <p>kubernetes 最佳实践会教我们创建很多命名空间（namespace）来做服务隔离，但同时服务对应的 configmap 和 secret 也会因为命名空间被分割开。当我们需要对多个命名空间实则相同的对象，执行更新的配置时，同步配置着实有些麻烦。本文通过引入 kubernetes-replicator 来解决这个麻烦的问题。</p>
 </div>
 <div class=read-more>
-<a href=/post/kubernettes-replicator/ class=read-more-link>阅读更多</a>
+<a href=/post/kubernetes-replicator/ class=read-more-link>阅读更多</a>
 </div>
 </div>
 </article>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/rpm-oostree-stuck/>FCOS rpm-ostree 使用避坑笔记</a></h1>
+<h1 class=post-title><a class=post-link href=/post/rpm-ostree-stuck/>FCOS rpm-ostree 使用避坑笔记</a></h1>
 <div class=post-meta>
 <span class=post-time> 2021-10-21 </span>
 <div class=post-category>
 <a href=/categories/rpm-ostree/> rpm-ostree </a>
 <a href=/categories/fcos/> fcos </a>
 </div>
-<span class=more-meta> 约 866 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
+<span class=more-meta> 约 1583 字 </span>
+<span class=more-meta> 预计阅读 4 分钟 </span>
 </div>
 </header>
 <div class=post-content>
@@ -119,7 +137,7 @@
 <p>FCOS rpm-ostree 使用避坑笔记，应该会持续更新。</p>
 </div>
 <div class=read-more>
-<a href=/post/rpm-oostree-stuck/ class=read-more-link>阅读更多</a>
+<a href=/post/rpm-ostree-stuck/ class=read-more-link>阅读更多</a>
 </div>
 </div>
 </article>
@@ -164,28 +182,6 @@
 </div>
 </div>
 </article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/docker-nfs-volume/>Docker 创建 NFS Volume</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-10-15 </span>
-<div class=post-category>
-<a href=/categories/docker/> docker </a>
-<a href=/categories/nfs/> nfs </a>
-</div>
-<span class=more-meta> 约 290 字 </span>
-<span class=more-meta> 预计阅读 1 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>Docker 如何使用 NFS Volume，多个容器使用 NFS Volume 的便捷用法。</p>
-</div>
-<div class=read-more>
-<a href=/post/docker-nfs-volume/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
 </section>
 <nav class=pagination>
 <a class=next href=/page/2/>
@@ -213,7 +209,7 @@
 <span class=copyright-year>
 &copy;
 2018 -
-2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
 </span>
 </div>
 </footer>
