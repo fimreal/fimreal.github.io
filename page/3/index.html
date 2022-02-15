@@ -12,7 +12,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="Fimreal"><meta name=description content="个人小站，技术笔记"><meta name=keywords content="blog,Docker,运维,k8s,Linux,devops">
-<meta name=generator content="Hugo 0.89.0 with theme even">
+<meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://www.epurs.com/>
 <link href=https://www.epurs.com/index.xml rel=alternate type=application/rss+xml title=闲隅>
 <link href=https://www.epurs.com/index.xml rel=feed type=application/rss+xml title=闲隅>
@@ -80,6 +80,29 @@
 <div class=content-wrapper>
 <div id=content class=content>
 <section id=posts class=posts>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title><a class=post-link href=/post/exposing-a-port-on-a-live-container/>帮助已经运行的容器暴露端口</a></h1>
+<div class=post-meta>
+<span class=post-time> 2021-04-30 </span>
+<div class=post-category>
+<a href=/categories/docker/> Docker </a>
+<a href=/categories/container/> Container </a>
+<a href=/categories/socat/> socat </a>
+</div>
+<span class=more-meta> 约 1042 字 </span>
+<span class=more-meta> 预计阅读 3 分钟 </span>
+</div>
+</header>
+<div class=post-content>
+<div class=post-summary>
+<p>使用Docker时经常会碰到某些容器需要额外打开端口调试的情况，而 docker-proxy 不支持用户在命令行创建新的端口映射，我们需要额外一些小技巧来实现端口转发。</p>
+</div>
+<div class=read-more>
+<a href=/post/exposing-a-port-on-a-live-container/ class=read-more-link>阅读更多</a>
+</div>
+</div>
+</article>
 <article class=post>
 <header class=post-header>
 <h1 class=post-title><a class=post-link href=/post/deploy_rabbitmq_on_kubernetes/>Kubernetes 上部署 rabbitmq statefulset集群</a></h1>
@@ -165,28 +188,6 @@
 </div>
 </div>
 </article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/java_in_docker/>Docker 中 java 应用内存配置问题</a></h1>
-<div class=post-meta>
-<span class=post-time> 2019-10-12 </span>
-<div class=post-category>
-<a href=/categories/docker/> docker </a>
-</div>
-<span class=more-meta> 约 930 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>使用 Dockerhub <code>java:8</code> 为基础镜像创建 Springboot APP 时，会遇到很多内存配置的问题。首先容器内存使用 cgroup 技术隔离，当对容器作出限制时，低版本 java 找不到正确的内存配置，
-而 java8 默认会取总内存 1/4 作为堆内存配置来启动应用，可能会导致 OOM 频繁发生，并且不便于节约服务器资源。</p>
-</div>
-<div class=read-more>
-<a href=/post/java_in_docker/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
 </section>
 <nav class=pagination>
 <a class=prev href=/page/2/>
@@ -218,7 +219,7 @@
 <span class=copyright-year>
 &copy;
 2018 -
-2021<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
 <a class=theme-link href=http://beian.miit.gov.cn>京ICP备18059304号-1</a>
 <a href=https://webify.cloudbase.net/> 🚀 Powered by CloudBase Webify</a>
 </span>
