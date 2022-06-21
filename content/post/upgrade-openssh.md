@@ -1,10 +1,10 @@
 ---
-title: "Upgrade Openssh"
+title: "CentOS 7 制作 rpm 包离线更新 openssh"
 date: 2022-02-28T15:47:14+08:00
 lastmod: 2022-02-28T15:47:14+08:00
 draft: false
 keywords: ["openssh","rpm","CentOS 7"]
-description: "CentOS 7 制作 rpm 包更新 openssh"
+description: "CentOS 7 制作 rpm 包离线更新 openssh"
 tags: ["rpm"]
 categories: ["OS"]
 author: "Fimreal"
