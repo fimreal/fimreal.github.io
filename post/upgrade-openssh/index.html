@@ -1,0 +1,136 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>CentOS 7 制作 rpm 包离线更新 openssh - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="CentOS 7 制作 rpm 包离线更新 openssh"><meta name=keywords content="openssh,rpm,CentOS 7"><meta name=generator content="Hugo 0.101.0 with theme even"><link rel=canonical href=https://www.epurs.com/post/upgrade-openssh/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="CentOS 7 制作 rpm 包离线更新 openssh"><meta property="og:description" content="CentOS 7 制作 rpm 包离线更新 openssh"><meta property="og:type" content="article"><meta property="og:url" content="https://www.epurs.com/post/upgrade-openssh/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-02-28T15:47:14+08:00"><meta property="article:modified_time" content="2022-06-21T16:08:42+08:00"><meta itemprop=name content="CentOS 7 制作 rpm 包离线更新 openssh"><meta itemprop=description content="CentOS 7 制作 rpm 包离线更新 openssh"><meta itemprop=datePublished content="2022-02-28T15:47:14+08:00"><meta itemprop=dateModified content="2022-06-21T16:08:42+08:00"><meta itemprop=wordCount content="1308"><meta itemprop=keywords content="rpm,"><meta name=twitter:card content="summary"><meta name=twitter:title content="CentOS 7 制作 rpm 包离线更新 openssh"><meta name=twitter:description content="CentOS 7 制作 rpm 包离线更新 openssh"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>CentOS 7 制作 rpm 包离线更新 openssh</h1><div class=post-meta><span class=post-time>2022-02-28</span><div class=post-category><a href=/categories/os/>OS</a></div><span class=more-meta>约 1308 字</span>
+<span class=more-meta>预计阅读 3 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#基础环境>基础环境</a></li><li><a href=#备份环境>备份环境</a></li><li><a href=#制作-rpm-包>制作 rpm 包</a></li><li><a href=#更新-openssh-后遇到的问题>更新 openssh 后遇到的问题</a><ul><li></li></ul></li></ul></nav></div></div><div class=post-content><p>最近遇到一台内网服务器被扫描到需要修复 openssh 漏洞，系统装的 CentOS 7 自带 openssh 还在用着 7.6p1 的版本，由于没办法直接连接互联网，选择制作 rpm 安装包升级。</p><p>制作包以及升级安装过程比较简单，但过程中遇到的一些小问题觉着有必要记录下来。</p><h2 id=基础环境>基础环境</h2><p>CentOS 7 自带 OpenSSH 7.6p1 版本目前已知存在以下中高风险漏洞：</p><ul><li><p>CVE-2020-15778 影响范围：OpenSSH &lt;= 8.3</p></li><li><p>CVE-2021-41617 影响范围：OpenSSH 版本6.2 - 8.8</p></li><li><p>CVE-2020-14145 影响范围：OpenSSH 版本5.7 - 8.4</p></li><li><p>CVE-2016-20012 影响范围：OpenSSH &lt;= 8.7</p></li></ul><p>漏洞详情查询：<a href=http://www.cnnvd.org.cn/web/vulnerability/querylist.tag>http://www.cnnvd.org.cn/web/vulnerability/querylist.tag</a></p><p>服务器上修改过 ssh 配置文件。</p><h2 id=备份环境>备份环境</h2><p>ssh 建立连接创建 tty 后，只要不退出或者因为超时断开就可以保持会话，更新前多开几个窗口就可以大大提升出现故障恢复的可行性。</p><p>此环境配置文件修改过，加上 7.6p1 => 公版 8.8p1 ，会改动 pam 文件，一定要备份后操作。</p><p>备份包含三个地方，参考命令如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cp -a /etc/ssh /tmp/ssh.bak-<span class=sb>`</span>date +%F<span class=sb>`</span>
+</span></span><span class=line><span class=cl>cp -a /etc/pam.d/sshd /tmp/pam.sshd-<span class=sb>`</span>date +%F<span class=sb>`</span>
+</span></span><span class=line><span class=cl>cp -a .ssh /tmp/.ssh.bak-<span class=sb>`</span>date +%F<span class=sb>`</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=制作-rpm-包>制作 rpm 包</h2><p>新购买临时的 CentOS 7.6 云服务器，安装编译工具和 rpm 依赖：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>yum install rpm-build zlib-devel openssl-devel gcc perl-devel pam-devel xmkmf libXt-devel gtk2-devel make libXt-devel imake gtk2-devel
+</span></span></code></pre></td></tr></table></div></div><p>下载源码包</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>wget https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.8p1.tar.gz
+</span></span><span class=line><span class=cl>wget https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3/x11-ssh-askpass-1.2.4.1.tar.gz
+</span></span></code></pre></td></tr></table></div></div><p>创建 rpmbuild 目录，拷贝源码包</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir -p rpmbuild/SPECS/ rpmbuild/SOURCES/
+</span></span><span class=line><span class=cl>cp x11-ssh-askpass-1.2.4.1.tar.gz openssh-8.8p1.tar.gz rpmbuild/SOURCES/
+</span></span></code></pre></td></tr></table></div></div><p>解压打包配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>tar xf openssh-8.8p1.tar.gz openssh-8.8p1/contrib/redhat/openssh.spec -C rpmbuild/SPECS/
+</span></span></code></pre></td></tr></table></div></div><p>这时候开始编译会报错，提示库版本不对。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># rpmbuild -ba openssh.spec</span>
+</span></span><span class=line><span class=cl>error: Failed build dependencies:
+</span></span><span class=line><span class=cl>	openssl-devel &lt; 1.1 is needed by openssh-8.8p1-1.el7.x86_64
+</span></span></code></pre></td></tr></table></div></div><p>这里修改配置 <code>rpmbuild/SPECS/openssh.spec</code> 忽略，在 <code>BuildRequires: openssl-devel &lt; 1.1</code> 前添加 &ldquo;#&rdquo; 注释后，继续编译</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>cd</span> rpmbuild/SPECS/ <span class=o>&amp;&amp;</span> rpmbuild -ba openssh.spec
+</span></span></code></pre></td></tr></table></div></div><p>编译一长串后会生成文件在 <code>rpmbuild/RPMS/x86_64/</code> 下。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># ll -h</span>
+</span></span><span class=line><span class=cl>total 4.8M
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root 686K Feb <span class=m>24</span> 16:41 openssh-8.8p1-1.el7.x86_64.rpm
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root  44K Feb <span class=m>24</span> 16:41 openssh-askpass-8.8p1-1.el7.x86_64.rpm
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root  25K Feb <span class=m>24</span> 16:41 openssh-askpass-gnome-8.8p1-1.el7.x86_64.rpm
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root 574K Feb <span class=m>24</span> 16:41 openssh-clients-8.8p1-1.el7.x86_64.rpm
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root 3.1M Feb <span class=m>24</span> 16:41 openssh-debuginfo-8.8p1-1.el7.x86_64.rpm
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root 451K Feb <span class=m>24</span> 16:41 openssh-server-8.8p1-1.el7.x86_64.rpm
+</span></span></code></pre></td></tr></table></div></div><p>只需要拷贝升级需要的包，安装</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>yum localinstall *.rpm
+</span></span></code></pre></td></tr></table></div></div><p><strong>最后验证配置文件是否被修改，确认监听端口，是否限制 root 登陆等，没问题后重启 sshd</strong></p><h2 id=更新-openssh-后遇到的问题>更新 openssh 后遇到的问题</h2><h4 id=1-远程登陆不上sshd-日志显示no-matching-host-key-type-found-their-offer-ssh-rsassh-dss-preauth>1. 远程登陆不上，sshd 日志显示<code>no matching host key type found. Their offer: ssh-rsa,ssh-dss [preauth]</code></h4><p>服务端配置支持客户端验证的密钥格式就好了，通常旧的版本使用 rsa 格式。在 <code>/etc/ssh/sshd_config</code> 中添加：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>UsePAM yes
+</span></span><span class=line><span class=cl>PubkeyAuthentication yes
+</span></span><span class=line><span class=cl>PubkeyAcceptedKeyTypes=+ssh-rsa
+</span></span><span class=line><span class=cl>PubkeyAcceptedAlgorithms +ssh-rsa
+</span></span><span class=line><span class=cl>HostKeyAlgorithms +ssh-rsa
+</span></span></code></pre></td></tr></table></div></div><p>参考：<a href="https://bbs.archlinux.org/viewtopic.php?id=270005">https://bbs.archlinux.org/viewtopic.php?id=270005</a></p><p>如果只是作为客户端报错，可以给 ssh 命令添加参数<code>-oHostKeyAlgorithms=+ssh-dss</code>，或者在配置中添加</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Host xxx
+</span></span><span class=line><span class=cl>    HostKeyAlgorithms +ssh-rsa
+</span></span><span class=line><span class=cl>    PubkeyAcceptedKeyTypes +ssh-rsa
+</span></span></code></pre></td></tr></table></div></div><p>参考：<a href=https://askubuntu.com/questions/836048/ssh-returns-no-matching-host-key-type-found-their-offer-ssh-dss>https://askubuntu.com/questions/836048/ssh-returns-no-matching-host-key-type-found-their-offer-ssh-dss</a></p><p>附： fcos 中 redhat 的证书加密配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Ciphers aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes128-gcm@openssh.com,aes128-ctr
+</span></span><span class=line><span class=cl>MACs hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+</span></span><span class=line><span class=cl>GSSAPIKexAlgorithms gss-curve25519-sha256-,gss-nistp256-sha256-,gss-group14-sha256-,gss-group16-sha512-
+</span></span><span class=line><span class=cl>KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512
+</span></span><span class=line><span class=cl>HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512,rsa-sha2-512-cert-v01@openssh.com
+</span></span><span class=line><span class=cl>PubkeyAcceptedKeyTypes ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512,rsa-sha2-512-cert-v01@openssh.com
+</span></span><span class=line><span class=cl>CASignatureAlgorithms ecdsa-sha2-nistp256,sk-ecdsa-sha2-nistp256@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,sk-ssh-ed25519@openssh.com,rsa-sha2-256,rsa-sha2-512
+</span></span></code></pre></td></tr></table></div></div><h4 id=2-远程登陆报错sshd-日志显示-pam-unable-to-dlopenusrlib64securitypam_stackso-usrlib64securitypam_stackso-cannot-open-shared-object-file>2. 远程登陆报错，sshd 日志显示 <code>PAM unable to dlopen(/usr/lib64/security/pam_stack.so): /usr/lib64/security/pam_stack.so: cannot open shared object file</code></h4><p>pam 配置问题，8.8p1 版本 openssh 把 pam 文件更新了，可以用之前备份的还原。或者使用原始 CentOS 的配置覆盖，参考：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl># cat /etc/pam.d/sshd
+</span></span><span class=line><span class=cl>#%PAM-1.0
+</span></span><span class=line><span class=cl>auth       substack     password-auth
+</span></span><span class=line><span class=cl>auth       include      postlogin
+</span></span><span class=line><span class=cl>account    required     pam_sepermit.so
+</span></span><span class=line><span class=cl>account    required     pam_nologin.so
+</span></span><span class=line><span class=cl>account    include      password-auth
+</span></span><span class=line><span class=cl>password   include      password-auth
+</span></span><span class=line><span class=cl># pam_selinux.so close should be the first session rule
+</span></span><span class=line><span class=cl>session    required     pam_selinux.so close
+</span></span><span class=line><span class=cl>session    required     pam_loginuid.so
+</span></span><span class=line><span class=cl># pam_selinux.so open should only be followed by sessions to be executed in the user context
+</span></span><span class=line><span class=cl>session    required     pam_selinux.so open env_params
+</span></span><span class=line><span class=cl>session    required     pam_namespace.so
+</span></span><span class=line><span class=cl>session    optional     pam_keyinit.so force revoke
+</span></span><span class=line><span class=cl>session    optional     pam_motd.so
+</span></span><span class=line><span class=cl>session    include      password-auth
+</span></span><span class=line><span class=cl>session    include      postlogin
+</span></span></code></pre></td></tr></table></div></div><h4 id=3-etcssh-下出现rpmnew文件>3. <code>/etc/ssh/</code> 下出现<code>*.rpmnew</code>文件</h4><p>安装 rpm 包时会有报警，没有自动覆盖掉原来的配置文件，网上查了下可以不做修改。</p><p>可以把 moduli 文件替换成新的。谨慎点的话，可以把原有配置同步对比下，删掉 rpmnew 文件。</p></div><footer class=post-footer><div class=post-tags><a href=/tags/rpm/>rpm</a></div><nav class=post-nav><a class=prev href=/post/deploy-loki/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">k3s 中以微服务方式部署 loki</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/k3s-automated/><span class="next-text nav-default">k3s 自动化升级</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:"#vcomments",appId:"GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz",appKey:"cq9Rl1lkMWGfkEoq93b6t3bJ",notify:!0,verify:!0,avatar:"mp",placeholder:"Say something...",visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://www.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2018 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+<a class=theme-link href=http://beian.miit.gov.cn>京ICP备18059304号-1</a>
+<a href=https://webify.cloudbase.net/>🚀 Powered by CloudBase Webify</a></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-138489412-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){if(window.location.hostname==="localhost")return;var t,n,e=document.createElement("script");e.async=!0,n=window.location.protocol.split(":")[0],n==="https"?e.src="https://zz.bdstatic.com/linksubmit/push.js":e.src="http://push.zhanzhang.baidu.com/push.js",t=document.getElementsByTagName("script")[0],t.parentNode.insertBefore(e,t)})()</script></body></html>

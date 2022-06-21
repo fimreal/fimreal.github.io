@@ -1,0 +1,143 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>k3s 中以微服务方式部署 loki - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="k3s 中以微服务方式部署 loki"><meta name=keywords content="loki"><meta name=generator content="Hugo 0.101.0 with theme even"><link rel=canonical href=https://www.epurs.com/post/deploy-loki/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="k3s 中以微服务方式部署 loki"><meta property="og:description" content="k3s 中以微服务方式部署 loki"><meta property="og:type" content="article"><meta property="og:url" content="https://www.epurs.com/post/deploy-loki/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-06-21T15:26:16+08:00"><meta property="article:modified_time" content="2022-06-21T16:08:42+08:00"><meta itemprop=name content="k3s 中以微服务方式部署 loki"><meta itemprop=description content="k3s 中以微服务方式部署 loki"><meta itemprop=datePublished content="2022-06-21T15:26:16+08:00"><meta itemprop=dateModified content="2022-06-21T16:08:42+08:00"><meta itemprop=wordCount content="1281"><meta itemprop=keywords content="loki,"><meta name=twitter:card content="summary"><meta name=twitter:title content="k3s 中以微服务方式部署 loki"><meta name=twitter:description content="k3s 中以微服务方式部署 loki"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>k3s 中以微服务方式部署 loki</h1><div class=post-meta><span class=post-time>2022-06-21</span><div class=post-category><a href=/categories/loki/>loki</a></div><span class=more-meta>约 1281 字</span>
+<span class=more-meta>预计阅读 3 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1-使用-helm-安装-loki-组件>1. 使用 helm 安装 loki 组件</a><ul><li></li></ul></li><li><a href=#2-grafana-配置-loki>2. Grafana 配置 Loki</a></li><li><a href=#3-使用-loki-查询日志>3. 使用 Loki 查询日志</a><ul><li></li></ul></li></ul></nav></div></div><div class=post-content><p>loki 安装方式非常多，推荐的方式是按照官方文档说明，使用 helm 安装 loki-stack。</p><p>本文初衷是为了部署一套尽量轻量化的日志系统，对 k3s 集群内多实例服务日志进行收集过滤。为了缩小服务粒度让 k3s 羸弱的服务器节点承担的压力尽可能分散，故选择手动配置微服务方式部署 loki。</p><p>文中没有考虑过多的高可用性，需要读者自行添加。</p><h2 id=1-使用-helm-安装-loki-组件>1. 使用 helm 安装 loki 组件</h2><p>这里先创建 monitor 命名空间，按需修改。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nv>LOKI_NAMESPACE</span><span class=o>=</span><span class=s2>&#34;monitor&#34;</span>
+</span></span><span class=line><span class=cl>kubectl create ns <span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=11-添加-grafana-官方的-helm-repo>1.1 添加 Grafana 官方的 helm repo</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>helm repo add grafana https://grafana.github.io/helm-charts
+</span></span><span class=line><span class=cl>helm repo update
+</span></span></code></pre></td></tr></table></div></div><h4 id=12-grafana>1.2 Grafana</h4><p>使用 helm 安装 Grafana，这里用 longhorn 自动创建 pvc，也可以改为<code>persistence.existingClaim=</code>指定提前创建的 pvc 或者 template。</p><p>测试时删除部分配置，不使用持久化存储等，不影响部署体验。</p><p>==> <a href=https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md>可自定义 chart 配置项点这里查看</a> &lt;==</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 创建密码</span>
+</span></span><span class=line><span class=cl><span class=nv>secret</span><span class=o>=</span><span class=s2>&#34;grafana&#34;</span>
+</span></span><span class=line><span class=cl>kubectl create secret generic <span class=s2>&#34;</span><span class=nv>$secret</span><span class=s2>&#34;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--namespace <span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--from-literal<span class=o>=</span>admin-user<span class=o>=</span>admin <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--from-literal<span class=o>=</span>admin-password<span class=o>=</span><span class=m>12345678</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>helm upgrade --install grafana <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--namespace<span class=o>=</span><span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set admin.existingSecret<span class=o>=</span><span class=si>${</span><span class=nv>secret</span><span class=si>}</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set persistence.enabled<span class=o>=</span><span class=nb>true</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set persistence.storageClassName<span class=o>=</span>longhorn <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set persistence.accessModes<span class=o>={</span>ReadWriteOnce<span class=o>}</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set persistence.size<span class=o>=</span>500Mi <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>grafana/grafana
+</span></span></code></pre></td></tr></table></div></div><p>手动配置部署 Grafana 参考：</p><p><a href=https://grafana.com/docs/grafana/next/setup-grafana/installation/kubernetes/>https://grafana.com/docs/grafana/next/setup-grafana/installation/kubernetes/</a></p><p>可使用以下命令转发页面到本地 http://127.0.0.1:3000 ，验证部署。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>export</span> <span class=nv>POD_NAME</span><span class=o>=</span><span class=k>$(</span>kubectl get pods --namespace <span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span> -l <span class=s2>&#34;app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana&#34;</span> -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&#34;{.items[0].metadata.name}&#34;</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>kubectl --namespace <span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span> port-forward <span class=nv>$POD_NAME</span> <span class=m>3000</span>
+</span></span></code></pre></td></tr></table></div></div><p>如果是按照上面步骤 helm 安装的，可以使用账号/密码： admin/12345678 登陆。忘记密码可使用命令获取：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubectl get secret --namespace monitor grafana -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&#34;{.data.admin-password}&#34;</span> <span class=p>|</span> base64 --decode <span class=p>;</span> <span class=nb>echo</span>
+</span></span><span class=line><span class=cl><span class=c1># 或者进入 POD 获取到环境变量 GF_SECURITY_ADMIN_PASSWORD</span>
+</span></span></code></pre></td></tr></table></div></div><p>（可选）创建 Ingress</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># ---------------  ing -------------- ##</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nn>---</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>networking.k8s.io/v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Ingress</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>grafana</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>monitor</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>kubernetes.io/ingress.class</span><span class=p>:</span><span class=w> </span><span class=l>traefik</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>rules</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span>- <span class=nt>host</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;grafana.k.epurs.com&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>http</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>paths</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>pathType</span><span class=p>:</span><span class=w> </span><span class=l>Prefix</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>backend</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>service</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>grafana</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>port</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=nt>number</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>tls</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>secretName</span><span class=p>:</span><span class=w> </span><span class=l>epurs-com</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=13-loki>1.3 Loki</h4><p>安装时配置添加上自动删除 92 天前日志。</p><p>持久化配置要求存储 10Gi 以上。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>helm upgrade --install loki <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--namespace<span class=o>=</span><span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set persistence.enabled<span class=o>=</span><span class=nb>true</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set persistence.size<span class=o>=</span>20Gi <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set persistence.storageClassName<span class=o>=</span>longhorn <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set config.compactor.retention_enabled<span class=o>=</span><span class=nb>true</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set config.compactor.retention_delete_delay<span class=o>=</span>2208h <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>grafana/loki
+</span></span></code></pre></td></tr></table></div></div><p>这里不考虑暴露 Loki 到公网，使用 https 及账号密码连接的情况，如有需要请查阅官方文档说明，配置不算复杂，用的场景不多，这里不做说明。</p><h4 id=14-fluent-bit>1.4 Fluent-Bit</h4><p>Fluent-Bit 是轻量化的 Fluentd，即使相比于 promtail 占用资源也非常少，同时能轻松扩展实现 Fluent 高级配置功能，非常好用。</p><p>Grafana helm repo 中已经内置了 Fluent-Bit chart，只需要传入参数即可实现一键启动 DaemonSet。默认会收集宿主机上 <code>host containers log</code>三种类型日志。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>helm upgrade --install fluent-bit grafana/fluent-bit <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--namespace<span class=o>=</span><span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set loki.serviceName<span class=o>=</span>loki.<span class=si>${</span><span class=nv>LOKI_NAMESPACE</span><span class=si>}</span>.svc.cluster.local <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--set loki.servicePort<span class=o>=</span><span class=m>3100</span>
+</span></span></code></pre></td></tr></table></div></div><p>==> <a href=https://github.com/grafana/helm-charts/tree/main/charts/fluent-bit>自定义 Fluent Bit 配置项点这里查看</a> &lt;==</p><p>非 k3s/k8s 内安装可参考：https://grafana.com/docs/loki/latest/clients/fluentbit/</p><h2 id=2-grafana-配置-loki>2. Grafana 配置 Loki</h2><p>打开： http://&lt;grafana_url>/datasources/new</p><p>选择创建 Loki</p><p><img src=https://od.epurs.com/images/2022/06/21/4QpacQz2Si/%E5%88%9B%E5%BB%BAloki.png alt=img></p><p>填入地址（替换掉变量）：http://loki.${LOKI_NAMESPACE}.svc.cluster.local:3100</p><p><img src=https://od.epurs.com/images/2022/06/21/laVa2Ga8ve/loki%E5%9C%B0%E5%9D%80.png? alt=img></p><p>其他不需要改动，点击 Save & test 保存配置。</p><p>打开页面：http://&lt;grafana_url>/explore?%22datasource%22:%22Loki%22</p><p>即可看到 loki</p><h2 id=3-使用-loki-查询日志>3. 使用 Loki 查询日志</h2><h4 id=31-通过-label-对日志源筛选>3.1 通过 Label 对日志源筛选</h4><p>在 Loki 页面，点击 Log browser 按条件过滤，例如选择使用 app Label 选择，选到需要的 app 名字，点击 Show logs 查看日志。</p><p><img src=https://od.epurs.com/images/2022/06/21/7nZtXldBKY/%E6%97%A5%E5%BF%97%E9%80%89%E6%8B%A9.png alt=img></p><p>生成查询语法用<code>{}</code>括起来。例如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=o>{</span><span class=nv>container</span><span class=o>=</span><span class=s2>&#34;traefik&#34;</span>,namespace<span class=o>=</span><span class=s2>&#34;kube-system&#34;</span><span class=o>}</span> 
+</span></span></code></pre></td></tr></table></div></div><p>查询结果如下图：</p><p><img src=https://od.epurs.com/images/2022/06/21/kIpsE1YRFl/%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A2.png alt=img></p><p>基础语法使用如下，用“,”隔开多个条件</p><ul><li>=</li><li>!= 不包含</li><li>=~ 正则匹配</li><li>!=</li></ul><h4 id=32-简单日志查询语法>3.2 简单日志查询语法</h4><p>用在<code>{}</code>之后，空格隔开，可以添加多个。</p><ul><li>| = &ldquo;&rdquo; 匹配包含字符串的行</li><li>! = &ldquo;&rdquo; 匹配不包含字符串的行</li><li>| ~ &ldquo;&rdquo; 匹配符合正则表达式的行</li><li>! ~ &ldquo;&rdquo; 匹配不符合正则表达式的行</li></ul><p>例如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=o>{</span><span class=nv>container</span><span class=o>=</span><span class=s2>&#34;traefik&#34;</span>,namespace<span class=o>=</span><span class=s2>&#34;kube-system&#34;</span><span class=o>}</span> !~ <span class=s2>&#34;/ping&#34;</span> !~<span class=s2>&#34;machine&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://od.epurs.com/images/2022/06/21/ZInO7Q6528/%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A22.png alt=img></p></div><footer class=post-footer><div class=post-tags><a href=/tags/loki/>loki</a></div><nav class=post-nav><a class=next href=/post/upgrade-openssh/><span class="next-text nav-default">CentOS 7 制作 rpm 包离线更新 openssh</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:"#vcomments",appId:"GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz",appKey:"cq9Rl1lkMWGfkEoq93b6t3bJ",notify:!0,verify:!0,avatar:"mp",placeholder:"Say something...",visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://www.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2018 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
+<a class=theme-link href=http://beian.miit.gov.cn>京ICP备18059304号-1</a>
+<a href=https://webify.cloudbase.net/>🚀 Powered by CloudBase Webify</a></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-138489412-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){if(window.location.hostname==="localhost")return;var t,n,e=document.createElement("script");e.async=!0,n=window.location.protocol.split(":")[0],n==="https"?e.src="https://zz.bdstatic.com/linksubmit/push.js":e.src="http://push.zhanzhang.baidu.com/push.js",t=document.getElementsByTagName("script")[0],t.parentNode.insertBefore(e,t)})()</script></body></html>

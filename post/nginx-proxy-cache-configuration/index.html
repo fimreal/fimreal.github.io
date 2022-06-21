@@ -1,120 +1,8 @@
-<!doctype html><html lang=zh-cn>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本 - 闲隅</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="Fimreal"><meta name=description content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享"><meta name=keywords content="nginx,缓存">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://www.epurs.com/post/nginx-proxy-cache-configuration/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本">
-<meta property="og:description" content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.epurs.com/post/nginx-proxy-cache-configuration/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2019-05-09T02:32:34+00:00">
-<meta property="article:modified_time" content="2019-07-26T12:15:41+00:00">
-<meta itemprop=name content="nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本">
-<meta itemprop=description content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享"><meta itemprop=datePublished content="2019-05-09T02:32:34+00:00">
-<meta itemprop=dateModified content="2019-07-26T12:15:41+00:00">
-<meta itemprop=wordCount content="1349">
-<meta itemprop=keywords content="nginx,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本">
-<meta name=twitter:description content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>闲隅</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本 - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享"><meta name=keywords content="nginx,缓存"><meta name=generator content="Hugo 0.101.0 with theme even"><link rel=canonical href=https://www.epurs.com/post/nginx-proxy-cache-configuration/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本"><meta property="og:description" content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享"><meta property="og:type" content="article"><meta property="og:url" content="https://www.epurs.com/post/nginx-proxy-cache-configuration/"><meta property="article:section" content="post"><meta property="article:published_time" content="2019-05-09T02:32:34+00:00"><meta property="article:modified_time" content="2019-07-26T12:15:41+00:00"><meta itemprop=name content="nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本"><meta itemprop=description content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享"><meta itemprop=datePublished content="2019-05-09T02:32:34+00:00"><meta itemprop=dateModified content="2019-07-26T12:15:41+00:00"><meta itemprop=wordCount content="1351"><meta itemprop=keywords content="nginx,"><meta name=twitter:card content="summary"><meta name=twitter:title content="nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本"><meta name=twitter:description content="nginx 缓存 proxy_cache 配置办法，及手动挡清理缓存脚本分享"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>主页</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>归档</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>标签</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>分类</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>闲隅</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>主页</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>归档</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>标签</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>分类</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本</h1>
-<div class=post-meta>
-<span class=post-time> 2019-05-09 </span>
-<div class=post-category>
-<a href=/categories/web/> web </a>
-</div>
-<span class=more-meta> 约 1349 字 </span>
-<span class=more-meta> 预计阅读 3 分钟 </span>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>文章目录</h2>
-<div class=post-toc-content>
-<nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<p>nginx 缓存 proxy_cache 配置可以减轻后端服务接口压力，提升访问速度，甚至可以当作 CDN 服务器来使用。文中略去概念性内容，简单粗暴的只记录关键配置办法，附送手动清理缓存脚本，开袋即食。</p>
-<h4 id=1-添加-proxy_cache-缓存位置等配置>1. 添加 <code>proxy_cache</code> 缓存位置等配置</h4>
-<p>在 <code>nginx/conf.d</code> 目录下创建新的配置文件 <code>cache.conf</code> 内容如下：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>nginx 配置 proxy_cache 缓存功能，附带清理缓存脚本</h1><div class=post-meta><span class=post-time>2019-05-09</span><div class=post-category><a href=/categories/web/>web</a></div><span class=more-meta>约 1351 字</span>
+<span class=more-meta>预计阅读 3 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><ul><li></li></ul></li></ul></nav></div></div><div class=post-content><p>nginx 缓存 proxy_cache 配置可以减轻后端服务接口压力，提升访问速度，甚至可以当作 CDN 服务器来使用。文中略去概念性内容，简单粗暴的只记录关键配置办法，附送手动清理缓存脚本，开袋即食。</p><h4 id=1-添加-proxy_cache-缓存位置等配置>1. 添加 <code>proxy_cache</code> 缓存位置等配置</h4><p>在 <code>nginx/conf.d</code> 目录下创建新的配置文件 <code>cache.conf</code> 内容如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -125,26 +13,18 @@
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=c1># global proxy_cache configuration
-</span><span class=c1></span><span class=k>proxy_temp_path</span> <span class=s>/tmp/nginx_temp</span><span class=p>;</span>
-<span class=k>proxy_cache_path</span> <span class=s>/tmp/nginx_cache</span> <span class=s>levels=1:2</span> <span class=s>keys_zone=cache_zone1:50m</span> <span class=s>inactive=1d</span> <span class=s>max_size=1g</span><span class=p>;</span>
-<span class=k>proxy_connect_timeout</span> <span class=mi>5</span><span class=p>;</span>
-<span class=k>proxy_read_timeout</span> <span class=mi>60</span><span class=p>;</span>
-<span class=k>proxy_send_timeout</span> <span class=mi>10</span><span class=p>;</span>
-<span class=k>proxy_buffer_size</span> <span class=mi>16k</span><span class=p>;</span>
-<span class=k>proxy_buffers</span> <span class=mi>4</span> <span class=mi>64k</span><span class=p>;</span>
-<span class=k>proxy_busy_buffers_size</span> <span class=mi>128k</span><span class=p>;</span>
-<span class=k>proxy_temp_file_write_size</span> <span class=mi>128k</span><span class=p>;</span>
-<span class=k>proxy_next_upstream</span> <span class=s>error</span> <span class=s>timeout</span> <span class=s>invalid_header</span> <span class=s>http_500</span> <span class=s>http_502</span> <span class=s>http_503</span> <span class=s>http_404</span><span class=p>;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=2-在-location-模块中配置启用-proxy_cache>2. 在 <code>location</code> 模块中配置启用 <code>proxy_cache</code></h4>
-<p>启用 <code>proxy_cache</code> 反向代理配置参考：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=c1># global proxy_cache configuration
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>proxy_temp_path</span> <span class=s>/tmp/nginx_temp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_cache_path</span> <span class=s>/tmp/nginx_cache</span> <span class=s>levels=1:2</span> <span class=s>keys_zone=cache_zone1:50m</span> <span class=s>inactive=1d</span> <span class=s>max_size=1g</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_connect_timeout</span> <span class=mi>5</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_read_timeout</span> <span class=mi>60</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_send_timeout</span> <span class=mi>10</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_buffer_size</span> <span class=mi>16k</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_buffers</span> <span class=mi>4</span> <span class=mi>64k</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_busy_buffers_size</span> <span class=mi>128k</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_temp_file_write_size</span> <span class=mi>128k</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_next_upstream</span> <span class=s>error</span> <span class=s>timeout</span> <span class=s>invalid_header</span> <span class=s>http_500</span> <span class=s>http_502</span> <span class=s>http_503</span> <span class=s>http_404</span><span class=p>;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=2-在-location-模块中配置启用-proxy_cache>2. 在 <code>location</code> 模块中配置启用 <code>proxy_cache</code></h4><p>启用 <code>proxy_cache</code> 反向代理配置参考：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -159,32 +39,22 @@
 </span><span class=lnt>13
 </span><span class=lnt>14
 </span><span class=lnt>15
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=k>location</span> <span class=p>~</span> <span class=sr>.*\.(gif|jpg|png|html|htm|css|js|ico|swf|pdf)$</span> <span class=p>{</span>
-  	<span class=kn>proxy_redirect</span> <span class=no>off</span><span class=p>;</span>
-    <span class=kn>proxy_set_header</span>         <span class=s>Host</span> <span class=nv>$host</span><span class=p>;</span>
-    <span class=kn>proxy_set_header</span>         <span class=s>X-real-ip</span> <span class=nv>$remote_addr</span><span class=p>;</span>
-    <span class=kn>proxy_set_header</span>         <span class=s>X-Forwarded-For</span> <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
-    <span class=kn>proxy_pass</span>               <span class=s>http://somewhere</span><span class=p>;</span>
-
-    <span class=kn>proxy_buffering</span>          <span class=no>on</span><span class=p>;</span> <span class=c1># 避免全局配置关闭代理缓存
-</span><span class=c1></span>    <span class=kn>proxy_cache</span>              <span class=s>cache_zone1</span><span class=p>;</span>   <span class=c1># 定义的 cache_zone 名称
-</span><span class=c1></span>    <span class=kn>proxy_cache_key</span>          <span class=s>&#34;</span><span class=nv>$host$request_uri&#34;</span><span class=p>;</span>   <span class=c1># 定义缓存存放目录的子目录命名规则
-</span><span class=c1></span>    <span class=kn>add_header</span> <span class=s>Cache</span>         <span class=s>&#34;</span><span class=nv>$upstream_cache_status&#34;</span><span class=p>;</span> <span class=c1># 增加缓存头信息，便于判断是否命中
-</span><span class=c1></span>    <span class=kn>proxy_cache_valid</span>        <span class=mi>200</span> <span class=mi>304</span> <span class=mi>301</span> <span class=mi>302</span> <span class=s>2h</span><span class=p>;</span>
-    <span class=kn>proxy_cache_valid</span>        <span class=mi>404</span> <span class=mi>1m</span><span class=p>;</span>
-    <span class=kn>proxy_cache_valid</span>        <span class=s>any</span> <span class=mi>5m</span><span class=p>;</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=3-缓存存储生成文件解释>3. 缓存存储生成文件解释</h4>
-<p>经由以上配置设置后，测试访问会在缓存目录生成两个目录 <code>nginx_temp</code>，<code>nginx_cache</code>。前一个是临时缓存目录，第二个是落地在磁盘的缓存。</p>
-<p>理解落地在磁盘中的缓存目录结构生成方式可以帮助我们做一些额外的事情，比如手动清除目标地址缓存。</p>
-<p>查看内容：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>location</span> <span class=p>~</span> <span class=sr>.*\.(gif|jpg|png|html|htm|css|js|ico|swf|pdf)$</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  	<span class=kn>proxy_redirect</span> <span class=no>off</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_set_header</span>         <span class=s>Host</span> <span class=nv>$host</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_set_header</span>         <span class=s>X-real-ip</span> <span class=nv>$remote_addr</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_set_header</span>         <span class=s>X-Forwarded-For</span> <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_pass</span>               <span class=s>http://somewhere</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_buffering</span>          <span class=no>on</span><span class=p>;</span> <span class=c1># 避免全局配置关闭代理缓存
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>proxy_cache</span>              <span class=s>cache_zone1</span><span class=p>;</span>   <span class=c1># 定义的 cache_zone 名称
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>proxy_cache_key</span>          <span class=s>&#34;</span><span class=nv>$host$request_uri&#34;</span><span class=p>;</span>   <span class=c1># 定义缓存存放目录的子目录命名规则
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>add_header</span> <span class=s>Cache</span>         <span class=s>&#34;</span><span class=nv>$upstream_cache_status&#34;</span><span class=p>;</span> <span class=c1># 增加缓存头信息，便于判断是否命中
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>proxy_cache_valid</span>        <span class=mi>200</span> <span class=mi>304</span> <span class=mi>301</span> <span class=mi>302</span> <span class=s>2h</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_cache_valid</span>        <span class=mi>404</span> <span class=mi>1m</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_cache_valid</span>        <span class=s>any</span> <span class=mi>5m</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=3-缓存存储生成文件解释>3. 缓存存储生成文件解释</h4><p>经由以上配置设置后，测试访问会在缓存目录生成两个目录 <code>nginx_temp</code>，<code>nginx_cache</code>。前一个是临时缓存目录，第二个是落地在磁盘的缓存。</p><p>理解落地在磁盘中的缓存目录结构生成方式可以帮助我们做一些额外的事情，比如手动清除目标地址缓存。</p><p>查看内容：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -195,27 +65,18 @@
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>root@8b330add4313:/tmp# head nginx_cache/5/91/36b84c7d2e40d482a****1aba75d7915
-f�<span class=se>\�</span>���������<span class=se>\k</span>���~$
-KEY: <span class=o>[</span> 此处和谐掉 uri <span class=o>]</span>
-HTTP/1.1 <span class=m>200</span>
-X-Application-Context: eurekaserver:test:9099
-Date: Thu, <span class=m>09</span> May <span class=m>2019</span> 02:56:38 GMT
-Content-Type: application/json<span class=p>;</span><span class=nv>charset</span><span class=o>=</span>UTF-8
-Connection: close
-
-<span class=o>{</span><span class=s2>&#34;tree&#34;</span>:<span class=o>{</span><span class=s2>&#34;children&#34;</span>:<span class=o>[{</span><span class=s2>&#34;children&#34;</span>:<span class=o>[]</span>,<span class=s2>&#34;name&#34;</span>:<span class=s2>&#34;sadsad&#34;</span><span class=o>}</span>,<span class=o>{</span><span class=s2>&#34;children&#34;</span>:<span class=o>[]</span>,<span class=s2>&#34;name&#34;</span>:<span class=s2>&#34;adasdasd&#34;</span><span class=o>}]</span>,<span class=s2>&#34;name&#34;</span>:<span class=s2>&#34;dasdasd&#34;</span><span class=o>}</span>,<span class=s2>&#34;billing_address&#34;</span>:<span class=o>{</span><span class=s2>&#34;street_address&#34;</span>:<span class=s2>&#34;随风倒十分&#34;</span>,<span class=s2>&#34;city&#34;</span>:<span class=s2>&#34;士大夫士大夫&#34;</span>,<span class=s2>&#34;state&#34;</span>:<span class=s2>&#34;士大夫士大夫&#34;</span><span class=o>}</span>,<span class=s2>&#34;shipping_address&#34;</span>:<span class=o>{</span><span class=s2>&#34;street_address&#34;</span>:<span class=s2>&#34;打发士大夫&#34;</span>,<span class=s2>&#34;city&#34;</span>:<span class=s2>&#34;十分士大夫&#34;</span>,<span class=s2>&#34;state&#34;</span>:<span class=s2>&#34;士大夫胜多负少&#34;</span><span class=o>}}</span>
-  ... ...
-</code></pre></td></tr></table>
-</div>
-</div><p>其中文件名 <code>36b84c7d2e40d482a****1aba75d7915</code> 是记录中 KEY 值的 MD5 码，<code>/5/91/</code> 中前面的 “5” 是 MD5 码最后一位，“91” 则是 倒数第 三二 位。</p>
-<h4 id=4-nginx-proxy_cache-利用脚本手动清理缓存>4. nginx <code>proxy_cache</code> 利用脚本手动清理缓存</h4>
-<p>由于某些需求，我们可能需要手动把 nginx 生成的缓存文件删除（据说为了减小磁盘 io 压力，nginx 只会根据设置的过期时间标记缓存过期，而文件还会继续占据空间），根据上一节给出的缓存文件生成原理， <a href=https://wuyanteng.github.io/2017/09/17/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%81%9Acache%E7%BC%93%E5%AD%98-%E5%AE%9E%E7%8E%B0CDN%E5%8A%9F%E8%83%BD/>参考博文</a> 中提供的一个清除缓存的脚本，稍作精简，成品如下：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>root@8b330add4313:/tmp# head nginx_cache/5/91/36b84c7d2e40d482a****1aba75d7915
+</span></span><span class=line><span class=cl>f�<span class=se>\�</span>���������<span class=se>\k</span>���~$
+</span></span><span class=line><span class=cl>KEY: <span class=o>[</span> 此处和谐掉 uri <span class=o>]</span>
+</span></span><span class=line><span class=cl>HTTP/1.1 <span class=m>200</span>
+</span></span><span class=line><span class=cl>X-Application-Context: eurekaserver:test:9099
+</span></span><span class=line><span class=cl>Date: Thu, <span class=m>09</span> May <span class=m>2019</span> 02:56:38 GMT
+</span></span><span class=line><span class=cl>Content-Type: application/json<span class=p>;</span><span class=nv>charset</span><span class=o>=</span>UTF-8
+</span></span><span class=line><span class=cl>Connection: close
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>{</span><span class=s2>&#34;tree&#34;</span>:<span class=o>{</span><span class=s2>&#34;children&#34;</span>:<span class=o>[{</span><span class=s2>&#34;children&#34;</span>:<span class=o>[]</span>,<span class=s2>&#34;name&#34;</span>:<span class=s2>&#34;sadsad&#34;</span><span class=o>}</span>,<span class=o>{</span><span class=s2>&#34;children&#34;</span>:<span class=o>[]</span>,<span class=s2>&#34;name&#34;</span>:<span class=s2>&#34;adasdasd&#34;</span><span class=o>}]</span>,<span class=s2>&#34;name&#34;</span>:<span class=s2>&#34;dasdasd&#34;</span><span class=o>}</span>,<span class=s2>&#34;billing_address&#34;</span>:<span class=o>{</span><span class=s2>&#34;street_address&#34;</span>:<span class=s2>&#34;随风倒十分&#34;</span>,<span class=s2>&#34;city&#34;</span>:<span class=s2>&#34;士大夫士大夫&#34;</span>,<span class=s2>&#34;state&#34;</span>:<span class=s2>&#34;士大夫士大夫&#34;</span><span class=o>}</span>,<span class=s2>&#34;shipping_address&#34;</span>:<span class=o>{</span><span class=s2>&#34;street_address&#34;</span>:<span class=s2>&#34;打发士大夫&#34;</span>,<span class=s2>&#34;city&#34;</span>:<span class=s2>&#34;十分士大夫&#34;</span>,<span class=s2>&#34;state&#34;</span>:<span class=s2>&#34;士大夫胜多负少&#34;</span><span class=o>}}</span>
+</span></span><span class=line><span class=cl>  ... ...
+</span></span></code></pre></td></tr></table></div></div><p>其中文件名 <code>36b84c7d2e40d482a****1aba75d7915</code> 是记录中 KEY 值的 MD5 码，<code>/5/91/</code> 中前面的 “5” 是 MD5 码最后一位，“91” 则是 倒数第 三二 位。</p><h4 id=4-nginx-proxy_cache-利用脚本手动清理缓存>4. nginx <code>proxy_cache</code> 利用脚本手动清理缓存</h4><p>由于某些需求，我们可能需要手动把 nginx 生成的缓存文件删除（据说为了减小磁盘 io 压力，nginx 只会根据设置的过期时间标记缓存过期，而文件还会继续占据空间），根据上一节给出的缓存文件生成原理， <a href=https://wuyanteng.github.io/2017/09/17/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%81%9Acache%E7%BC%93%E5%AD%98-%E5%AE%9E%E7%8E%B0CDN%E5%8A%9F%E8%83%BD/>参考博文</a> 中提供的一个清除缓存的脚本，稍作精简，成品如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -239,97 +100,49 @@ Connection: close
 </span><span class=lnt>22
 </span><span class=lnt>23
 </span><span class=lnt>24
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=cp>#!/usr/bin/env sh
-</span><span class=cp></span>
-cache_purge<span class=o>(){</span>
-<span class=k>while</span> <span class=nb>read</span> PURGE_URL
-<span class=k>do</span>
-    <span class=nv>URL_NAME</span><span class=o>=</span><span class=k>$(</span><span class=nb>echo</span> -n <span class=nv>$PURGE_URL</span> <span class=p>|</span> md5sum <span class=p>|</span> tr -dc 0-z<span class=k>)</span>
-    <span class=nv>FILE_NAME</span><span class=o>=</span><span class=k>$(</span>awk <span class=s1>&#39;{print &#34;/tmp/nginx_cache/&#34;substr($0,length($0),1)&#34;/&#34;substr($0,length($0)-2,2)&#34;/&#34;$0}&#39;</span> <span class=o>&lt;&lt;&lt;</span><span class=nv>$URL_NAME</span><span class=k>)</span>
-    rm -rf <span class=nv>$FILE_NAME</span> <span class=o>&amp;&amp;</span> <span class=nb>echo</span> <span class=s2>&#34;</span><span class=nv>$PURGE_URL</span><span class=s2> deleted!&#34;</span>
-<span class=k>done</span>
-<span class=o>}</span>
-
-main <span class=o>(){</span>
-    <span class=k>if</span> <span class=o>[</span> <span class=s2>&#34;</span><span class=nv>$#</span><span class=s2>&#34;</span> -ne <span class=m>1</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
-      <span class=nb>echo</span> $<span class=s2>&#34;Usage: </span><span class=nv>$0</span><span class=s2> &lt; url_file | &#39;url&#39; &gt;&#34;</span>
-      <span class=nb>exit</span> <span class=m>1</span>
-    <span class=k>fi</span>
-    <span class=k>if</span> <span class=o>[</span> -f <span class=nv>$1</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
-      cache_purge &lt;<span class=nv>$1</span>
-    <span class=k>else</span>
-      cache_purge <span class=o>&lt;&lt;&lt;</span><span class=nv>$1</span>
-    <span class=k>fi</span>
-<span class=o>}</span>
-
-main <span class=nv>$1</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>使用方法很简单，脚本添加执行权限，后面跟上一个参数，可以为需要的清理 <code>uri</code> ，或者内容是一行一个 <code>uri</code> 列表的文件。</p>
-<p>除了脚本的办法，还有很多网友推荐的使用第三方扩展模块 <a href=https://www.lvtao.net/web/nginx-cache-purge.html>ngx_cache_purge</a> 来管理删除缓存，缺点需要额外编译 nginx ，今后有必要使用的话会制作 Docker 镜像。</p>
-<h4 id=reference>Reference</h4>
-<p><a href=https://wuyanteng.github.io/2017/09/17/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%81%9Acache%E7%BC%93%E5%AD%98-%E5%AE%9E%E7%8E%B0CDN%E5%8A%9F%E8%83%BD/>使用Nginx反向代理做cache缓存-实现CDN功能</a></p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/nginx/>nginx</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/nginx-proxy-cache-regular-configuration/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=cp>#!/usr/bin/env sh
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl>cache_purge<span class=o>(){</span>
+</span></span><span class=line><span class=cl><span class=k>while</span> <span class=nb>read</span> PURGE_URL
+</span></span><span class=line><span class=cl><span class=k>do</span>
+</span></span><span class=line><span class=cl>    <span class=nv>URL_NAME</span><span class=o>=</span><span class=k>$(</span><span class=nb>echo</span> -n <span class=nv>$PURGE_URL</span> <span class=p>|</span> md5sum <span class=p>|</span> tr -dc 0-z<span class=k>)</span>
+</span></span><span class=line><span class=cl>    <span class=nv>FILE_NAME</span><span class=o>=</span><span class=k>$(</span>awk <span class=s1>&#39;{print &#34;/tmp/nginx_cache/&#34;substr($0,length($0),1)&#34;/&#34;substr($0,length($0)-2,2)&#34;/&#34;$0}&#39;</span> <span class=o>&lt;&lt;&lt;</span><span class=nv>$URL_NAME</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>    rm -rf <span class=nv>$FILE_NAME</span> <span class=o>&amp;&amp;</span> <span class=nb>echo</span> <span class=s2>&#34;</span><span class=nv>$PURGE_URL</span><span class=s2> deleted!&#34;</span>
+</span></span><span class=line><span class=cl><span class=k>done</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>main <span class=o>(){</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> <span class=s2>&#34;</span><span class=nv>$#</span><span class=s2>&#34;</span> -ne <span class=m>1</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>      <span class=nb>echo</span> $<span class=s2>&#34;Usage: </span><span class=nv>$0</span><span class=s2> &lt; url_file | &#39;url&#39; &gt;&#34;</span>
+</span></span><span class=line><span class=cl>      <span class=nb>exit</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[</span> -f <span class=nv>$1</span> <span class=o>]</span><span class=p>;</span><span class=k>then</span>
+</span></span><span class=line><span class=cl>      cache_purge &lt;<span class=nv>$1</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span>
+</span></span><span class=line><span class=cl>      cache_purge <span class=o>&lt;&lt;&lt;</span><span class=nv>$1</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>main <span class=nv>$1</span>
+</span></span></code></pre></td></tr></table></div></div><p>使用方法很简单，脚本添加执行权限，后面跟上一个参数，可以为需要的清理 <code>uri</code> ，或者内容是一行一个 <code>uri</code> 列表的文件。</p><p>除了脚本的办法，还有很多网友推荐的使用第三方扩展模块 <a href=https://www.lvtao.net/web/nginx-cache-purge.html>ngx_cache_purge</a> 来管理删除缓存，缺点需要额外编译 nginx ，今后有必要使用的话会制作 Docker 镜像。</p><h4 id=reference>Reference</h4><p><a href=https://wuyanteng.github.io/2017/09/17/%E4%BD%BF%E7%94%A8Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%81%9Acache%E7%BC%93%E5%AD%98-%E5%AE%9E%E7%8E%B0CDN%E5%8A%9F%E8%83%BD/>使用Nginx反向代理做cache缓存-实现CDN功能</a></p></div><footer class=post-footer><div class=post-tags><a href=/tags/nginx/>nginx</a></div><nav class=post-nav><a class=prev href=/post/nginx-proxy-cache-regular-configuration/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">nginx location 规则使用正则时改写 request_uri 报错</span>
-<span class="prev-text nav-mobile">上一篇</span>
-</a>
-<a class=next href=/post/websocket-configuration-with-nginx/>
-<span class="next-text nav-default">nginx 使用 websocket 的配置参数</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/websocket-configuration-with-nginx/><span class="next-text nav-default">nginx 使用 websocket 的配置参数</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=vcomments></div>
-<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
 <script src=//unpkg.com/valine/dist/Valine.min.js></script>
-<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!0,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
-<a href=https://www.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
-</span>
+<script type=text/javascript>new Valine({el:"#vcomments",appId:"GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz",appKey:"cq9Rl1lkMWGfkEoq93b6t3bJ",notify:!0,verify:!0,avatar:"mp",placeholder:"Say something...",visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://www.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
 <span class=division>|</span>
-<span class=theme-info>
-主题 -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<span class=copyright-year>
-&copy;
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
 2018 -
 2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
 <a class=theme-link href=http://beian.miit.gov.cn>京ICP备18059304号-1</a>
-<a href=https://webify.cloudbase.net/> 🚀 Powered by CloudBase Webify</a>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<a href=https://webify.cloudbase.net/>🚀 Powered by CloudBase Webify</a></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<script id=baidu_push>(function(){var a,c,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.async=!0,c=window.location.protocol.split(':')[0],c==='https'?a.src='https://zz.bdstatic.com/linksubmit/push.js':a.src='http://push.zhanzhang.baidu.com/push.js',b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script>
-</body>
-</html>
+<script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-138489412-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){if(window.location.hostname==="localhost")return;var t,n,e=document.createElement("script");e.async=!0,n=window.location.protocol.split(":")[0],n==="https"?e.src="https://zz.bdstatic.com/linksubmit/push.js":e.src="http://push.zhanzhang.baidu.com/push.js",t=document.getElementsByTagName("script")[0],t.parentNode.insertBefore(e,t)})()</script></body></html>
