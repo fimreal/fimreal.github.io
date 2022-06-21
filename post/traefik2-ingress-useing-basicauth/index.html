@@ -1,124 +1,10 @@
-<!doctype html><html lang=zh-cn>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Traefik2 Ingress 使用 Basicauth - 闲隅</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="Fimreal"><meta name=description content="Traefik2.x Ingress 使用 BasicAuth"><meta name=keywords content="Traefik,kubernetes,ingress">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://blog.epurs.com/post/traefik2-ingress-useing-basicauth/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Traefik2 Ingress 使用 Basicauth">
-<meta property="og:description" content="Traefik2.x Ingress 使用 BasicAuth">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.epurs.com/post/traefik2-ingress-useing-basicauth/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2021-10-14T18:15:28+08:00">
-<meta property="article:modified_time" content="2021-10-15T09:39:33+08:00">
-<meta itemprop=name content="Traefik2 Ingress 使用 Basicauth">
-<meta itemprop=description content="Traefik2.x Ingress 使用 BasicAuth"><meta itemprop=datePublished content="2021-10-14T18:15:28+08:00">
-<meta itemprop=dateModified content="2021-10-15T09:39:33+08:00">
-<meta itemprop=wordCount content="565">
-<meta itemprop=keywords content="Traefik,kubernetes,ingress,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Traefik2 Ingress 使用 Basicauth">
-<meta name=twitter:description content="Traefik2.x Ingress 使用 BasicAuth"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>闲隅</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Traefik2 Ingress 使用 Basicauth - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="Traefik2.x Ingress 使用 BasicAuth"><meta name=keywords content="Traefik,kubernetes,ingress"><meta name=generator content="Hugo 0.101.0 with theme even"><link rel=canonical href=https://blog.epurs.com/post/traefik2-ingress-useing-basicauth/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Traefik2 Ingress 使用 Basicauth"><meta property="og:description" content="Traefik2.x Ingress 使用 BasicAuth"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.epurs.com/post/traefik2-ingress-useing-basicauth/"><meta property="article:section" content="post"><meta property="article:published_time" content="2021-10-14T18:15:28+08:00"><meta property="article:modified_time" content="2021-10-15T09:39:33+08:00"><meta itemprop=name content="Traefik2 Ingress 使用 Basicauth"><meta itemprop=description content="Traefik2.x Ingress 使用 BasicAuth"><meta itemprop=datePublished content="2021-10-14T18:15:28+08:00"><meta itemprop=dateModified content="2021-10-15T09:39:33+08:00"><meta itemprop=wordCount content="457"><meta itemprop=keywords content="Traefik,kubernetes,ingress,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Traefik2 Ingress 使用 Basicauth"><meta name=twitter:description content="Traefik2.x Ingress 使用 BasicAuth"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>主页</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>归档</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>标签</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>分类</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>闲隅</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>主页</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>归档</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>标签</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>分类</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Traefik2 Ingress 使用 Basicauth</h1>
-<div class=post-meta>
-<span class=post-time> 2021-10-14 </span>
-<div class=post-category>
-<a href=/categories/traefik/> Traefik </a>
-<a href=/categories/kubernetes/> kubernetes </a>
-<a href=/categories/ingress/> ingress </a>
-</div>
-<span class=more-meta> 约 565 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>文章目录</h2>
-<div class=post-toc-content>
-<nav id=TableOfContents>
-<ul>
-<li><a href=#1-创建-middleware>1. 创建 Middleware</a></li>
-<li><a href=#2-创建-ingress-并启用-middleware>2. 创建 Ingress 并启用 Middleware</a></li>
-<li><a href=#最后>最后</a></li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<p>网上搜不到资料，反复尝试才确认 Traefik 2.x 版本做 ingress 配置 basic authorization 的正确方式。</p>
-<h2 id=1-创建-middleware>1. 创建 Middleware</h2>
-<blockquote>
-<p>Ref.</p>
-<p><a href=https://doc.traefik.io/traefik/v2.4/middlewares/basicauth/>https://doc.traefik.io/traefik/v2.4/middlewares/basicauth/</a></p>
-</blockquote>
-<p>参考下面 yaml 创建用于验证的用户列表，用户密码生成方法使用：<code>htpasswd -nb user password | openssl base64</code></p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Traefik2 Ingress 使用 Basicauth</h1><div class=post-meta><span class=post-time>2021-10-14</span><div class=post-category><a href=/categories/traefik/>Traefik</a>
+<a href=/categories/kubernetes/>kubernetes</a>
+<a href=/categories/ingress/>ingress</a></div><span class=more-meta>约 457 字</span>
+<span class=more-meta>预计阅读 1 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1-创建-middleware>1. 创建 Middleware</a></li><li><a href=#2-创建-ingress-并启用-middleware>2. 创建 Ingress 并启用 Middleware</a></li><li><a href=#最后>最后</a></li></ul></nav></div></div><div class=post-content><p>网上搜不到资料，反复尝试才确认 Traefik 2.x 版本做 ingress 配置 basic authorization 的正确方式。</p><h2 id=1-创建-middleware>1. 创建 Middleware</h2><blockquote><p>Ref.</p><p><a href=https://doc.traefik.io/traefik/v2.4/middlewares/basicauth/>https://doc.traefik.io/traefik/v2.4/middlewares/basicauth/</a></p></blockquote><p>参考下面 yaml 创建用于验证的用户列表，用户密码生成方法使用：<code>htpasswd -nb user password | openssl base64</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -148,46 +34,37 @@
 </span><span class=lnt>28
 </span><span class=lnt>29
 </span><span class=lnt>30
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># Declaring the user list</span><span class=w>
-</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>traefik.containo.us/v1alpha1</span><span class=w>
-</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Middleware</span><span class=w>
-</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>httppasswd</span><span class=w>
-</span><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>basicAuth</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=c># 指定使用的密码文件，k8s 内使用 secret</span><span class=w>
-</span><span class=w>    </span><span class=nt>secret</span><span class=p>:</span><span class=w> </span><span class=l>httppasswd</span><span class=w>
-</span><span class=w>  </span><span class=c># 不传入后端服务</span><span class=w>
-</span><span class=w>    </span><span class=nt>removeHeader</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
-</span><span class=w>  </span><span class=c># 可选，不必要的配置</span><span class=w>
-</span><span class=w>  </span><span class=c># headerField: X-WebAuth-User</span><span class=w>
-</span><span class=w>  </span><span class=c># realm: MyRealm</span><span class=w>
-</span><span class=w>
-</span><span class=w></span><span class=nn>---</span><span class=w>
-</span><span class=w></span><span class=c># Note: in a kubernetes secret the string (e.g. generated by htpasswd) must be base64-encoded first.</span><span class=w>
-</span><span class=w></span><span class=c># To create an encoded user:password pair, the following command can be used:</span><span class=w>
-</span><span class=w></span><span class=c># htpasswd -nb user password | openssl base64</span><span class=w>
-</span><span class=w>
-</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
-</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
-</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>httppasswd</span><span class=w>
-</span><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
-</span><span class=w>
-</span><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
-</span><span class=w></span><span class=c># 可以存在很多个，按行区分</span><span class=w>
-</span><span class=w>  </span><span class=nt>users</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
-</span><span class=sd>    </span><span class=w>    </span><span class=l>dXNlcjokYXByMSRncEhhOEdRTyR2TzNTTDZlcmRFRE81SGRmckh1OEowCgo=</span><span class=w>
-</span></code></pre></td></tr></table>
-</div>
-</div><h2 id=2-创建-ingress-并启用-middleware>2. 创建 Ingress 并启用 Middleware</h2>
-<p>traefik 在单独当作网关转发时，有自己独立的语法，如果作为 Ingress 存在，可以添加<code>annotations</code> 实现配置</p>
-<p>Ingress 创建参考：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># Declaring the user list</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>traefik.containo.us/v1alpha1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Middleware</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>httppasswd</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>basicAuth</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># 指定使用的密码文件，k8s 内使用 secret</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>secret</span><span class=p>:</span><span class=w> </span><span class=l>httppasswd</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># 不传入后端服务</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>removeHeader</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># 可选，不必要的配置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># headerField: X-WebAuth-User</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># realm: MyRealm</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nn>---</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c># Note: in a kubernetes secret the string (e.g. generated by htpasswd) must be base64-encoded first.</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c># To create an encoded user:password pair, the following command can be used:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c># htpasswd -nb user password | openssl base64</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Secret</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>httppasswd</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c># 可以存在很多个，按行区分</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>users</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>    </span><span class=w>    </span><span class=l>dXNlcjokYXByMSRncEhhOEdRTyR2TzNTTDZlcmRFRE81SGRmckh1OEowCgo=</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=2-创建-ingress-并启用-middleware>2. 创建 Ingress 并启用 Middleware</h2><p>traefik 在单独当作网关转发时，有自己独立的语法，如果作为 Ingress 存在，可以添加<code>annotations</code> 实现配置</p><p>Ingress 创建参考：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -211,96 +88,49 @@
 </span><span class=lnt>22
 </span><span class=lnt>23
 </span><span class=lnt>24
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>networking.k8s.io/v1</span><span class=w>
-</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Ingress</span><span class=w>
-</span><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>gotour</span><span class=w>
-</span><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
-</span><span class=w>    </span><span class=nt>kubernetes.io/ingress.class</span><span class=p>:</span><span class=w> </span><span class=l>traefik</span><span class=w>
-</span><span class=w>    </span><span class=nt>traefik.ingress.kubernetes.io/router.priority</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;40&#34;</span><span class=w>
-</span><span class=w>    </span><span class=c># 填入要启用的 Middleware，格式为 {namespace}-{Middleware name}@kubernetescrd</span><span class=w>
-</span><span class=w>    </span><span class=c># 如果不确定，可以登陆 traefik:9000/dashboard/ 里查看名称。</span><span class=w>
-</span><span class=w>    </span><span class=nt>traefik.ingress.kubernetes.io/router.middlewares</span><span class=p>:</span><span class=w> </span><span class=l>default-httppasswd@kubernetescrd</span><span class=w>
-</span><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>rules</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span>- <span class=nt>host</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;gotour.epurs.com&#34;</span><span class=w>
-</span><span class=w>    </span><span class=nt>http</span><span class=p>:</span><span class=w>
-</span><span class=w>      </span><span class=nt>paths</span><span class=p>:</span><span class=w>
-</span><span class=w>      </span>- <span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/</span><span class=w>
-</span><span class=w>        </span><span class=nt>pathType</span><span class=p>:</span><span class=w> </span><span class=l>Prefix</span><span class=w>
-</span><span class=w>        </span><span class=nt>backend</span><span class=p>:</span><span class=w>
-</span><span class=w>          </span><span class=nt>service</span><span class=p>:</span><span class=w>
-</span><span class=w>            </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>gotour</span><span class=w>
-</span><span class=w>            </span><span class=nt>port</span><span class=p>:</span><span class=w>
-</span><span class=w>              </span><span class=nt>number</span><span class=p>:</span><span class=w> </span><span class=m>9999</span><span class=w>
-</span><span class=w>  </span><span class=nt>tls</span><span class=p>:</span><span class=w>
-</span><span class=w>    </span>- <span class=nt>secretName</span><span class=p>:</span><span class=w> </span><span class=l>epurs-com</span><span class=w>
-</span></code></pre></td></tr></table>
-</div>
-</div><h2 id=最后>最后</h2>
-<p>apply 上面两个文件，使生效就可以了。</p>
-<p>traefik ingress 相比于 nginx ingress 缺少了很多 web 服务器的高级特性，但作为 k3s 开箱即用的组件，有很不错的前景。</p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/traefik/>Traefik</a>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>networking.k8s.io/v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Ingress</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>gotour</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>annotations</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>kubernetes.io/ingress.class</span><span class=p>:</span><span class=w> </span><span class=l>traefik</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>traefik.ingress.kubernetes.io/router.priority</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;40&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c># 填入要启用的 Middleware，格式为 {namespace}-{Middleware name}@kubernetescrd</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c># 如果不确定，可以登陆 traefik:9000/dashboard/ 里查看名称。</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>traefik.ingress.kubernetes.io/router.middlewares</span><span class=p>:</span><span class=w> </span><span class=l>default-httppasswd@kubernetescrd</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>rules</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span>- <span class=nt>host</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;gotour.epurs.com&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>http</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>paths</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>pathType</span><span class=p>:</span><span class=w> </span><span class=l>Prefix</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>backend</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>service</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>gotour</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>port</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=nt>number</span><span class=p>:</span><span class=w> </span><span class=m>9999</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>tls</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>secretName</span><span class=p>:</span><span class=w> </span><span class=l>epurs-com</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=最后>最后</h2><p>apply 上面两个文件，使生效就可以了。</p><p>traefik ingress 相比于 nginx ingress 缺少了很多 web 服务器的高级特性，但作为 k3s 开箱即用的组件，有很不错的前景。</p></div><footer class=post-footer><div class=post-tags><a href=/tags/traefik/>Traefik</a>
 <a href=/tags/kubernetes/>kubernetes</a>
-<a href=/tags/ingress/>ingress</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/nginx-tcp-proxy/>
-<i class="iconfont icon-left"></i>
+<a href=/tags/ingress/>ingress</a></div><nav class=post-nav><a class=prev href=/post/nginx-tcp-proxy/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">Nginx Tcp 代理添加 IP 限制</span>
-<span class="prev-text nav-mobile">上一篇</span>
-</a>
-<a class=next href=/post/fcos-fcct/>
-<span class="next-text nav-default">从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/fcos-fcct/><span class="next-text nav-default">从 CoreOS 迁移到 Fedora CoreOS 之 用 fcct 初始化 fcos</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=vcomments></div>
-<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
 <script src=//unpkg.com/valine/dist/Valine.min.js></script>
-<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!0,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
-<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
-</span>
+<script type=text/javascript>new Valine({el:"#vcomments",appId:"GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz",appKey:"cq9Rl1lkMWGfkEoq93b6t3bJ",notify:!0,verify:!0,avatar:"mp",placeholder:"Say something...",visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
 <span class=division>|</span>
-<span class=theme-info>
-主题 -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<span class=copyright-year>
-&copy;
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
 2018 -
-2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<script id=baidu_push>(function(){var a,c,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.async=!0,c=window.location.protocol.split(':')[0],c==='https'?a.src='https://zz.bdstatic.com/linksubmit/push.js':a.src='http://push.zhanzhang.baidu.com/push.js',b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script>
-</body>
-</html>
+<script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-138489412-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){if(window.location.hostname==="localhost")return;var t,n,e=document.createElement("script");e.async=!0,n=window.location.protocol.split(":")[0],n==="https"?e.src="https://zz.bdstatic.com/linksubmit/push.js":e.src="http://push.zhanzhang.baidu.com/push.js",t=document.getElementsByTagName("script")[0],t.parentNode.insertBefore(e,t)})()</script></body></html>

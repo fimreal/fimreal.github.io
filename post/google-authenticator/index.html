@@ -1,172 +1,19 @@
-<!doctype html><html lang=zh-cn>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>使用 google_authenticator 生成动态密码加固 ssh 登陆 - 闲隅</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="Fimreal"><meta name=description content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta name=keywords content="Two Factors Authentication,sshd,secure">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://blog.epurs.com/post/google-authenticator/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="使用 google_authenticator 生成动态密码加固 ssh 登陆">
-<meta property="og:description" content="使用 google_authenticator 生成动态密码加固 ssh 登陆">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.epurs.com/post/google-authenticator/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2019-06-06T02:40:00+00:00">
-<meta property="article:modified_time" content="2019-08-19T14:35:05+08:00">
-<meta itemprop=name content="使用 google_authenticator 生成动态密码加固 ssh 登陆">
-<meta itemprop=description content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta itemprop=datePublished content="2019-06-06T02:40:00+00:00">
-<meta itemprop=dateModified content="2019-08-19T14:35:05+08:00">
-<meta itemprop=wordCount content="2445">
-<meta itemprop=keywords content="sshd,secure,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="使用 google_authenticator 生成动态密码加固 ssh 登陆">
-<meta name=twitter:description content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>闲隅</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>使用 google_authenticator 生成动态密码加固 ssh 登陆 - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta name=keywords content="Two Factors Authentication,sshd,secure"><meta name=generator content="Hugo 0.101.0 with theme even"><link rel=canonical href=https://blog.epurs.com/post/google-authenticator/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta property="og:description" content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.epurs.com/post/google-authenticator/"><meta property="article:section" content="post"><meta property="article:published_time" content="2019-06-06T02:40:00+00:00"><meta property="article:modified_time" content="2019-08-19T14:35:05+08:00"><meta itemprop=name content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta itemprop=description content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta itemprop=datePublished content="2019-06-06T02:40:00+00:00"><meta itemprop=dateModified content="2019-08-19T14:35:05+08:00"><meta itemprop=wordCount content="2445"><meta itemprop=keywords content="sshd,secure,"><meta name=twitter:card content="summary"><meta name=twitter:title content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><meta name=twitter:description content="使用 google_authenticator 生成动态密码加固 ssh 登陆"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>主页</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>归档</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>标签</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>分类</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>闲隅</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>主页</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>归档</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>标签</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>分类</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>使用 google_authenticator 生成动态密码加固 ssh 登陆</h1>
-<div class=post-meta>
-<span class=post-time> 2019-06-06 </span>
-<div class=post-category>
-<a href=/categories/linux/> Linux </a>
-</div>
-<span class=more-meta> 约 2445 字 </span>
-<span class=more-meta> 预计阅读 5 分钟 </span>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>文章目录</h2>
-<div class=post-toc-content>
-<nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li><a href=#前言>前言</a></li>
-<li><a href=#准备环境>准备环境</a></li>
-<li><a href=#安装-google-authenticator>安装 google-authenticator</a></li>
-<li><a href=#初始化配置>初始化配置</a></li>
-<li><a href=#手机端配置>手机端配置</a></li>
-<li><a href=#验证测试>验证测试</a></li>
-<li><a href=#扩展配置>扩展配置</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<p>利用 google 动态口令生成密码给 sshd 做两步验证实现安全加密。
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>使用 google_authenticator 生成动态密码加固 ssh 登陆</h1><div class=post-meta><span class=post-time>2019-06-06</span><div class=post-category><a href=/categories/linux/>Linux</a></div><span class=more-meta>约 2445 字</span>
+<span class=more-meta>预计阅读 5 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><ul><li><a href=#前言>前言</a></li><li><a href=#准备环境>准备环境</a></li><li><a href=#安装-google-authenticator>安装 google-authenticator</a></li><li><a href=#初始化配置>初始化配置</a></li><li><a href=#手机端配置>手机端配置</a></li><li><a href=#验证测试>验证测试</a></li><li><a href=#扩展配置>扩展配置</a></li></ul></li></ul></nav></div></div><div class=post-content><p>利用 google 动态口令生成密码给 sshd 做两步验证实现安全加密。
 又或者甩掉固定的密码，来使用手机 app 生成的动态密码登陆服务器。
-这只是一些 <code>pam</code> 配置实现的小技巧。</p>
-<h3 id=前言>前言</h3>
-<p>早起看到群里发公众号推运维小知识， 介绍用 Google Authenticator（谷歌身份验证器）这个工具来加固 sshd 验证。这个加固办法其实出现的时间比较早了，目的是为了解决中间人攻击问题，谷歌身份验证器是一个可以基于时间来生成密码用于验证的手机端/网页端 app，可以避免同一密码被多次使用。</p>
-<p>这么有趣的功能当然要好好把玩一下。但是要注意，文中出现所有命令都不保证<strong>幂等</strong>性，建议读懂意思后通过编辑器修改。</p>
-<h3 id=准备环境>准备环境</h3>
-<p>这里使用 CoreOS 服务器，来测试安装体验。</p>
-<p>测试计划主要用到两种 Liunx 环境，<code>Ubuntu(debian)</code> 和 <code>Fedore(rhel/centos)</code> ，这里 <code>Fedore</code> 可以视作 <code>CentOS</code> ，全文除了安装，配置上各大型版几乎没有区别。其中 <code>Ubuntu</code> 使用 Docker 镜像创建， <code>Fedore</code> 使用 CoreOS 自带的 <code>toolbox</code> 环境，用来测试。</p>
-<h3 id=安装-google-authenticator>安装 google-authenticator</h3>
-<p>这里安装只做最简配置，如果 <code>Fedore</code> 想要使用二维码手机扫描，则需要安装 <code>qrencode</code>，默认 <code>ubuntu</code> 会自己装上。</p>
-<p><strong>Fedore</strong></p>
-<p>使用 dnf 安装 google-authenticator 即可。
-dnf 是 yum 升级版，向后兼容 yum 子命令，Fedore 中 yum 被软链接指向 dnf-3，在 CentOS7 中配置相同。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>dnf install google-authenticator openssh-server -y
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>Ubuntu</strong></p>
-<p>默认容器启动 ubuntu-18.04 版本，debian 系安装包都是一致的。</p>
-<p>换用支持 <code>http</code> 的中科大源，安装：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+这只是一些 <code>pam</code> 配置实现的小技巧。</p><h3 id=前言>前言</h3><p>早起看到群里发公众号推运维小知识， 介绍用 Google Authenticator（谷歌身份验证器）这个工具来加固 sshd 验证。这个加固办法其实出现的时间比较早了，目的是为了解决中间人攻击问题，谷歌身份验证器是一个可以基于时间来生成密码用于验证的手机端/网页端 app，可以避免同一密码被多次使用。</p><p>这么有趣的功能当然要好好把玩一下。但是要注意，文中出现所有命令都不保证<strong>幂等</strong>性，建议读懂意思后通过编辑器修改。</p><h3 id=准备环境>准备环境</h3><p>这里使用 CoreOS 服务器，来测试安装体验。</p><p>测试计划主要用到两种 Liunx 环境，<code>Ubuntu(debian)</code> 和 <code>Fedore(rhel/centos)</code> ，这里 <code>Fedore</code> 可以视作 <code>CentOS</code> ，全文除了安装，配置上各大型版几乎没有区别。其中 <code>Ubuntu</code> 使用 Docker 镜像创建， <code>Fedore</code> 使用 CoreOS 自带的 <code>toolbox</code> 环境，用来测试。</p><h3 id=安装-google-authenticator>安装 google-authenticator</h3><p>这里安装只做最简配置，如果 <code>Fedore</code> 想要使用二维码手机扫描，则需要安装 <code>qrencode</code>，默认 <code>ubuntu</code> 会自己装上。</p><p><strong>Fedore</strong></p><p>使用 dnf 安装 google-authenticator 即可。
+dnf 是 yum 升级版，向后兼容 yum 子命令，Fedore 中 yum 被软链接指向 dnf-3，在 CentOS7 中配置相同。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>dnf install google-authenticator openssh-server -y
+</span></span></code></pre></td></tr></table></div></div><p><strong>Ubuntu</strong></p><p>默认容器启动 ubuntu-18.04 版本，debian 系安装包都是一致的。</p><p>换用支持 <code>http</code> 的中科大源，安装：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sed -i.bak <span class=s1>&#39;s/archive.ubuntu.com/mirrors.ustc.edu.cn/g&#39;</span> /etc/apt/sources.list
-apt update <span class=o>&amp;&amp;</span> apt install libpam-google-authenticator openssh-server -y
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>Alpine</strong></p>
-<p>Alpine Linux 的 apk 源中也有包，略麻烦一点，安装办法可以参考 <a href=https://wiki.alpinelinux.org/wiki/Two_Factors_Authentication_With_OpenSSH>wiki</a></p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>apk add google-authenticator openssh-server-pam
-</code></pre></td></tr></table>
-</div>
-</div><p><strong>Arch/Manjaro</strong></p>
-<p>应该不用多说，可以参考 [wiki](<a href=https://wiki.archlinux.org/index.php/Google_Authenticator_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>https://wiki.archlinux.org/index.php/Google_Authenticator_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)</a></p>
-<h3 id=初始化配置>初始化配置</h3>
-<p>在 <code>Ubuntu</code> 容器内执行初始化，与 <code>Fedore</code> 初始化配置过程一样：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed -i.bak <span class=s1>&#39;s/archive.ubuntu.com/mirrors.ustc.edu.cn/g&#39;</span> /etc/apt/sources.list
+</span></span><span class=line><span class=cl>apt update <span class=o>&amp;&amp;</span> apt install libpam-google-authenticator openssh-server -y
+</span></span></code></pre></td></tr></table></div></div><p><strong>Alpine</strong></p><p>Alpine Linux 的 apk 源中也有包，略麻烦一点，安装办法可以参考 <a href=https://wiki.alpinelinux.org/wiki/Two_Factors_Authentication_With_OpenSSH>wiki</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>apk add google-authenticator openssh-server-pam
+</span></span></code></pre></td></tr></table></div></div><p><strong>Arch/Manjaro</strong></p><p>应该不用多说，可以参考 [wiki](<a href=https://wiki.archlinux.org/index.php/Google_Authenticator_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>https://wiki.archlinux.org/index.php/Google_Authenticator_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)</a></p><h3 id=初始化配置>初始化配置</h3><p>在 <code>Ubuntu</code> 容器内执行初始化，与 <code>Fedore</code> 初始化配置过程一样：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -204,108 +51,59 @@ apt update <span class=o>&amp;&amp;</span> apt install libpam-google-authenticat
 </span><span class=lnt>36
 </span><span class=lnt>37
 </span><span class=lnt>38
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>root@2a52e5dc9569:/# google-authenticator
-
-Do you want authentication tokens to be time-based <span class=o>(</span>y/n<span class=o>)</span> y
- &lt;这里是自动生成的二维码及链接，可以扫码绑定手机 app &gt;
-Your new secret key is: 2MX4BZPDXZONH6SVUPMUC3SO5M    <span class=o>(</span>用于绑定手机 app 的密钥<span class=o>)</span>
-Your verification code is <span class=m>768806</span>                      <span class=o>(</span>验证码<span class=o>)</span>
-Your emergency scratch codes are:                     <span class=o>(</span>备用令牌码，用一个少一个<span class=o>)</span>
-  <span class=m>43344880</span>
-  <span class=m>98680948</span>
-  <span class=m>43923070</span>
-  <span class=m>26622686</span>
-  <span class=m>60782611</span>
-
-Do you want me to update your <span class=s2>&#34;/root/.google_authenticator&#34;</span> file? <span class=o>(</span>y/n<span class=o>)</span> y
-<span class=o>(</span>是否覆盖 <span class=s2>&#34;/root/.google_authenticator&#34;</span> 文件，如果之前生成过文件需要谨慎确认<span class=o>)</span>
-
-Do you want to disallow multiple uses of the same authentication
-token? This restricts you to one login about every 30s, but it increases
-your chances to notice or even prevent man-in-the-middle attacks <span class=o>(</span>y/n<span class=o>)</span> y
-<span class=o>(</span>是否拒绝多次使用使用相同的令牌？这将限制你每30s仅能登录一次，但会提醒/阻止中间人攻击。<span class=o>)</span>
-
-By default, a new token is generated every <span class=m>30</span> seconds by the mobile app.
-In order to compensate <span class=k>for</span> possible time-skew between the client and the server,
-we allow an extra token before and after the current time. This allows <span class=k>for</span> a
-<span class=nb>time</span> skew of up to <span class=m>30</span> seconds between authentication server and client. If you
-experience problems with poor <span class=nb>time</span> synchronization, you can increase the window
-from its default size of <span class=m>3</span> permitted codes <span class=o>(</span>one previous code, the current
-code, the next code<span class=o>)</span> to <span class=m>17</span> permitted codes <span class=o>(</span>the <span class=m>8</span> previous codes, the current
-code, and the <span class=m>8</span> next codes<span class=o>)</span>. This will permit <span class=k>for</span> a <span class=nb>time</span> skew of up to <span class=m>4</span> minutes
-between client and server.
-Do you want to <span class=k>do</span> so? <span class=o>(</span>y/n<span class=o>)</span> n
-<span class=o>(</span>是否将窗口时间由1分30秒增加到约4分钟？这将缓解时间同步问题。<span class=o>)</span>
-
-If the computer that you are logging into isn<span class=err>&#39;</span>t hardened against brute-force
-login attempts, you can <span class=nb>enable</span> rate-limiting <span class=k>for</span> the authentication module.
-By default, this limits attackers to no more than <span class=m>3</span> login attempts every 30s.
-Do you want to <span class=nb>enable</span> rate-limiting? <span class=o>(</span>y/n<span class=o>)</span> y
-<span class=o>(</span>是否启用此模块的登录频率限制，登录者将会被限制为最多在30秒内登录3次。<span class=o>)</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>上面这步会在 <code>/root/.google_authenticator</code> 生成验证文件。</p>
-<p>然后再打开 <code>sshd</code> 配置中 <code>pam</code> 模块，并启用交互式登陆，其实就是打开 <code>ChallengeResponseAuthentication</code> 和 <code>UsePAM</code> 选项。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sed -i.bak <span class=s1>&#39;1i UsePAM yes\nChallengeResponseAuthentication yes&#39;</span> /etc/ssh/sshd_config
-</code></pre></td></tr></table>
-</div>
-</div><p>添加新的 pam 支持，除了 <code>Alpine Linux</code> 默认都会有 <code>/etc/pam.d/sshd</code> 配置文件，这里直接把 google_authenticator 放在第一行加载即可。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sed -i.bak <span class=s1>&#39;1i auth            sufficient      pam_google_authenticator.so&#39;</span> /etc/pam.d/sshd
-</code></pre></td></tr></table>
-</div>
-</div><p>补充说明：<code>sufficient</code> 配置，指明可以使用 <code>google_authenticator</code> 进行验证登陆，验证成功后，如果需要配置两步验证，把 <code>sufficient</code> 改为 <code>required</code> 即可。</p>
-<p>pam 控制命令简单说明：</p>
-<ul>
-<li><strong>required</strong> 必须要验证的模块。在所有步骤验证完毕后返回验证信息。</li>
-<li><strong>requisite</strong> 必须要验证的模块。出错立刻返回错误信息。</li>
-<li><strong>sufficient</strong> 验证成功即通过的模块。成功后不会立即返回成功信息。</li>
-<li><strong>optional</strong> 失败时会忽略的模块。</li>
-<li><strong>include</strong> 验证时加载其他配置文件。</li>
-<li><strong>substack</strong></li>
-</ul>
-<h3 id=手机端配置>手机端配置</h3>
-<p>这里不考虑安装 <code>qrencode</code> 的情况，差别只在于绑定手机 app 的方法，一个是手动输入，一个是扫码而已。</p>
-<p>手机端下载安装： IOS 在 Appstore 搜索 &ldquo;Authenticator&rdquo;；Android 搜索 &ldquo;谷歌动态口令&rdquo; 。</p>
-<p>安装打开后，点击右上角 “+” ，选择 扫描二维码或者输入验证码</p>
-<p><img src=https://od.epurs.com/images/2019/06/06/OrQR5XLo5p/google_authentication_0.png alt></p>
-<p>在系统中可以查看 <code>/root/.google_authenticator</code> 文件找到配置的验证码</p>
-<p>手机端输入后保存</p>
-<p><img src=https://od.epurs.com/images/2019/06/06/yKcQVHE4DR/google_authentication_1.png alt></p>
-<h3 id=验证测试>验证测试</h3>
-<p>上述配置完成后，手动打开 <code>sshd</code> 服务，验证验证连接过程是否符合我们的需求。</p>
-<p>由于容器环境新安装的 <code>sshd</code> 服务还没有自动初始化配置，需要额外执行一些步骤。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>root@2a52e5dc9569:/# google-authenticator
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Do you want authentication tokens to be time-based <span class=o>(</span>y/n<span class=o>)</span> y
+</span></span><span class=line><span class=cl> &lt;这里是自动生成的二维码及链接，可以扫码绑定手机 app &gt;
+</span></span><span class=line><span class=cl>Your new secret key is: 2MX4BZPDXZONH6SVUPMUC3SO5M    <span class=o>(</span>用于绑定手机 app 的密钥<span class=o>)</span>
+</span></span><span class=line><span class=cl>Your verification code is <span class=m>768806</span>                      <span class=o>(</span>验证码<span class=o>)</span>
+</span></span><span class=line><span class=cl>Your emergency scratch codes are:                     <span class=o>(</span>备用令牌码，用一个少一个<span class=o>)</span>
+</span></span><span class=line><span class=cl>  <span class=m>43344880</span>
+</span></span><span class=line><span class=cl>  <span class=m>98680948</span>
+</span></span><span class=line><span class=cl>  <span class=m>43923070</span>
+</span></span><span class=line><span class=cl>  <span class=m>26622686</span>
+</span></span><span class=line><span class=cl>  <span class=m>60782611</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Do you want me to update your <span class=s2>&#34;/root/.google_authenticator&#34;</span> file? <span class=o>(</span>y/n<span class=o>)</span> y
+</span></span><span class=line><span class=cl><span class=o>(</span>是否覆盖 <span class=s2>&#34;/root/.google_authenticator&#34;</span> 文件，如果之前生成过文件需要谨慎确认<span class=o>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Do you want to disallow multiple uses of the same authentication
+</span></span><span class=line><span class=cl>token? This restricts you to one login about every 30s, but it increases
+</span></span><span class=line><span class=cl>your chances to notice or even prevent man-in-the-middle attacks <span class=o>(</span>y/n<span class=o>)</span> y
+</span></span><span class=line><span class=cl><span class=o>(</span>是否拒绝多次使用使用相同的令牌？这将限制你每30s仅能登录一次，但会提醒/阻止中间人攻击。<span class=o>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>By default, a new token is generated every <span class=m>30</span> seconds by the mobile app.
+</span></span><span class=line><span class=cl>In order to compensate <span class=k>for</span> possible time-skew between the client and the server,
+</span></span><span class=line><span class=cl>we allow an extra token before and after the current time. This allows <span class=k>for</span> a
+</span></span><span class=line><span class=cl><span class=nb>time</span> skew of up to <span class=m>30</span> seconds between authentication server and client. If you
+</span></span><span class=line><span class=cl>experience problems with poor <span class=nb>time</span> synchronization, you can increase the window
+</span></span><span class=line><span class=cl>from its default size of <span class=m>3</span> permitted codes <span class=o>(</span>one previous code, the current
+</span></span><span class=line><span class=cl>code, the next code<span class=o>)</span> to <span class=m>17</span> permitted codes <span class=o>(</span>the <span class=m>8</span> previous codes, the current
+</span></span><span class=line><span class=cl>code, and the <span class=m>8</span> next codes<span class=o>)</span>. This will permit <span class=k>for</span> a <span class=nb>time</span> skew of up to <span class=m>4</span> minutes
+</span></span><span class=line><span class=cl>between client and server.
+</span></span><span class=line><span class=cl>Do you want to <span class=k>do</span> so? <span class=o>(</span>y/n<span class=o>)</span> n
+</span></span><span class=line><span class=cl><span class=o>(</span>是否将窗口时间由1分30秒增加到约4分钟？这将缓解时间同步问题。<span class=o>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>If the computer that you are logging into isn<span class=err>&#39;</span>t hardened against brute-force
+</span></span><span class=line><span class=cl>login attempts, you can <span class=nb>enable</span> rate-limiting <span class=k>for</span> the authentication module.
+</span></span><span class=line><span class=cl>By default, this limits attackers to no more than <span class=m>3</span> login attempts every 30s.
+</span></span><span class=line><span class=cl>Do you want to <span class=nb>enable</span> rate-limiting? <span class=o>(</span>y/n<span class=o>)</span> y
+</span></span><span class=line><span class=cl><span class=o>(</span>是否启用此模块的登录频率限制，登录者将会被限制为最多在30秒内登录3次。<span class=o>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>上面这步会在 <code>/root/.google_authenticator</code> 生成验证文件。</p><p>然后再打开 <code>sshd</code> 配置中 <code>pam</code> 模块，并启用交互式登陆，其实就是打开 <code>ChallengeResponseAuthentication</code> 和 <code>UsePAM</code> 选项。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed -i.bak <span class=s1>&#39;1i UsePAM yes\nChallengeResponseAuthentication yes&#39;</span> /etc/ssh/sshd_config
+</span></span></code></pre></td></tr></table></div></div><p>添加新的 pam 支持，除了 <code>Alpine Linux</code> 默认都会有 <code>/etc/pam.d/sshd</code> 配置文件，这里直接把 google_authenticator 放在第一行加载即可。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed -i.bak <span class=s1>&#39;1i auth            sufficient      pam_google_authenticator.so&#39;</span> /etc/pam.d/sshd
+</span></span></code></pre></td></tr></table></div></div><p>补充说明：<code>sufficient</code> 配置，指明可以使用 <code>google_authenticator</code> 进行验证登陆，验证成功后，如果需要配置两步验证，把 <code>sufficient</code> 改为 <code>required</code> 即可。</p><p>pam 控制命令简单说明：</p><ul><li><strong>required</strong> 必须要验证的模块。在所有步骤验证完毕后返回验证信息。</li><li><strong>requisite</strong> 必须要验证的模块。出错立刻返回错误信息。</li><li><strong>sufficient</strong> 验证成功即通过的模块。成功后不会立即返回成功信息。</li><li><strong>optional</strong> 失败时会忽略的模块。</li><li><strong>include</strong> 验证时加载其他配置文件。</li><li><strong>substack</strong></li></ul><h3 id=手机端配置>手机端配置</h3><p>这里不考虑安装 <code>qrencode</code> 的情况，差别只在于绑定手机 app 的方法，一个是手动输入，一个是扫码而已。</p><p>手机端下载安装： IOS 在 Appstore 搜索 &ldquo;Authenticator&rdquo;；Android 搜索 &ldquo;谷歌动态口令&rdquo; 。</p><p>安装打开后，点击右上角 “+” ，选择 扫描二维码或者输入验证码</p><p><img src=https://od.epurs.com/images/2019/06/06/OrQR5XLo5p/google_authentication_0.png alt></p><p>在系统中可以查看 <code>/root/.google_authenticator</code> 文件找到配置的验证码</p><p>手机端输入后保存</p><p><img src=https://od.epurs.com/images/2019/06/06/yKcQVHE4DR/google_authentication_1.png alt></p><h3 id=验证测试>验证测试</h3><p>上述配置完成后，手动打开 <code>sshd</code> 服务，验证验证连接过程是否符合我们的需求。</p><p>由于容器环境新安装的 <code>sshd</code> 服务还没有自动初始化配置，需要额外执行一些步骤。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nb>echo</span> <span class=s1>&#39;PermitRootLogin yes&#39;</span> &gt;&gt; /etc/ssh/sshd_config  <span class=c1>## 允许 root 用户登陆</span>
-ssh-keygen -A       <span class=c1># 生成服务器 key</span>
-mkdir /run/sshd     <span class=c1># 创建运行环境目录</span>
-hostname -I         <span class=c1># 拿到容器 IP</span>
-/usr/sbin/sshd -d   <span class=c1># 前台运行 sshd 服务</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>测试连接：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>echo</span> <span class=s1>&#39;PermitRootLogin yes&#39;</span> &gt;&gt; /etc/ssh/sshd_config  <span class=c1>## 允许 root 用户登陆</span>
+</span></span><span class=line><span class=cl>ssh-keygen -A       <span class=c1># 生成服务器 key</span>
+</span></span><span class=line><span class=cl>mkdir /run/sshd     <span class=c1># 创建运行环境目录</span>
+</span></span><span class=line><span class=cl>hostname -I         <span class=c1># 拿到容器 IP</span>
+</span></span><span class=line><span class=cl>/usr/sbin/sshd -d   <span class=c1># 前台运行 sshd 服务</span>
+</span></span></code></pre></td></tr></table></div></div><p>测试连接：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -328,121 +126,53 @@ hostname -I         <span class=c1># 拿到容器 IP</span>
 </span><span class=lnt>21
 </span><span class=lnt>22
 </span><span class=lnt>23
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>ssh -v 172.17.0.1
-... ...              <span class=o>(</span>公钥验证<span class=o>)</span>
-ECDSA key fingerprint is SHA256:/9Z8rQasLV5qsSVfwMc+vsvanpNpoWYd2B2c31Uc6lk.
-Are you sure you want to <span class=k>continue</span> connecting <span class=o>(</span>yes/no<span class=o>)</span>? yes
-Warning: Permanently added <span class=s1>&#39;172.17.0.6&#39;</span> <span class=o>(</span>ECDSA<span class=o>)</span> to the list of known hosts.
-debug1: rekey after <span class=m>134217728</span> blocks
-debug1: SSH2_MSG_NEWKEYS sent
-debug1: expecting SSH2_MSG_NEWKEYS
-debug1: SSH2_MSG_NEWKEYS received
-debug1: rekey after <span class=m>134217728</span> blocks
-debug1: SSH2_MSG_EXT_INFO received
-debug1: kex_input_ext_info: server-sig-algs<span class=o>=</span>&lt;ssh-ed25519,ssh-rsa,rsa-sha2-256,rsa-sha2-512,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521&gt;
-debug1: SSH2_MSG_SERVICE_ACCEPT received
-debug1: Authentications that can <span class=k>continue</span>: publickey,password,keyboard-interactive
-debug1: Next authentication method: publickey
-debug1: Trying private key: /root/.ssh/id_rsa
-debug1: Trying private key: /root/.ssh/id_dsa
-debug1: Trying private key: /root/.ssh/id_ecdsa
-debug1: Trying private key: /root/.ssh/id_ed25519
-debug1: Trying private key: /root/.ssh/id_xmss
-debug1: Next authentication method: keyboard-interactive
-Verification code: &lt;输入手机上动态密码&gt;
-Password: &lt;系统内对应用户密码&gt;
-</code></pre></td></tr></table>
-</div>
-</div><p>如果配置和前面一样，这里输入手机显示的正确动态密码后，可以直接登陆服务器。</p>
-<p>如果输入错误，会进一步验证登陆用户对应的密码，输入正确密码，也可登陆。</p>
-<h3 id=扩展配置>扩展配置</h3>
-<h4 id=1-将-ubuntu-中的配置应用到-fedore-其他系统中>1. 将 <code>Ubuntu</code> 中的配置应用到 <code>Fedore</code> (其他)系统中</h4>
-<p>目的：不同发行版，或者说不同主机配置迁移，最终共享同一个配置，使手机端动态密码可以登陆不同主机。</p>
-<p>在先前配置中已经提到过 <code>Fedore</code> 系统安装过程，这步进行完成后，先跳过 <code>google-authenticator</code> 初始化步骤。</p>
-<p>保证下面配置正确：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>ssh -v 172.17.0.1
+</span></span><span class=line><span class=cl>... ...              <span class=o>(</span>公钥验证<span class=o>)</span>
+</span></span><span class=line><span class=cl>ECDSA key fingerprint is SHA256:/9Z8rQasLV5qsSVfwMc+vsvanpNpoWYd2B2c31Uc6lk.
+</span></span><span class=line><span class=cl>Are you sure you want to <span class=k>continue</span> connecting <span class=o>(</span>yes/no<span class=o>)</span>? yes
+</span></span><span class=line><span class=cl>Warning: Permanently added <span class=s1>&#39;172.17.0.6&#39;</span> <span class=o>(</span>ECDSA<span class=o>)</span> to the list of known hosts.
+</span></span><span class=line><span class=cl>debug1: rekey after <span class=m>134217728</span> blocks
+</span></span><span class=line><span class=cl>debug1: SSH2_MSG_NEWKEYS sent
+</span></span><span class=line><span class=cl>debug1: expecting SSH2_MSG_NEWKEYS
+</span></span><span class=line><span class=cl>debug1: SSH2_MSG_NEWKEYS received
+</span></span><span class=line><span class=cl>debug1: rekey after <span class=m>134217728</span> blocks
+</span></span><span class=line><span class=cl>debug1: SSH2_MSG_EXT_INFO received
+</span></span><span class=line><span class=cl>debug1: kex_input_ext_info: server-sig-algs<span class=o>=</span>&lt;ssh-ed25519,ssh-rsa,rsa-sha2-256,rsa-sha2-512,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521&gt;
+</span></span><span class=line><span class=cl>debug1: SSH2_MSG_SERVICE_ACCEPT received
+</span></span><span class=line><span class=cl>debug1: Authentications that can <span class=k>continue</span>: publickey,password,keyboard-interactive
+</span></span><span class=line><span class=cl>debug1: Next authentication method: publickey
+</span></span><span class=line><span class=cl>debug1: Trying private key: /root/.ssh/id_rsa
+</span></span><span class=line><span class=cl>debug1: Trying private key: /root/.ssh/id_dsa
+</span></span><span class=line><span class=cl>debug1: Trying private key: /root/.ssh/id_ecdsa
+</span></span><span class=line><span class=cl>debug1: Trying private key: /root/.ssh/id_ed25519
+</span></span><span class=line><span class=cl>debug1: Trying private key: /root/.ssh/id_xmss
+</span></span><span class=line><span class=cl>debug1: Next authentication method: keyboard-interactive
+</span></span><span class=line><span class=cl>Verification code: &lt;输入手机上动态密码&gt;
+</span></span><span class=line><span class=cl>Password: &lt;系统内对应用户密码&gt;
+</span></span></code></pre></td></tr></table></div></div><p>如果配置和前面一样，这里输入手机显示的正确动态密码后，可以直接登陆服务器。</p><p>如果输入错误，会进一步验证登陆用户对应的密码，输入正确密码，也可登陆。</p><h3 id=扩展配置>扩展配置</h3><h4 id=1-将-ubuntu-中的配置应用到-fedore-其他系统中>1. 将 <code>Ubuntu</code> 中的配置应用到 <code>Fedore</code> (其他)系统中</h4><p>目的：不同发行版，或者说不同主机配置迁移，最终共享同一个配置，使手机端动态密码可以登陆不同主机。</p><p>在先前配置中已经提到过 <code>Fedore</code> 系统安装过程，这步进行完成后，先跳过 <code>google-authenticator</code> 初始化步骤。</p><p>保证下面配置正确：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sed -i.bak <span class=s1>&#39;1i UsePAM yes\nChallengeResponseAuthentication yes&#39;</span> /etc/ssh/sshd_config               <span class=c1># 确保打开 pam 支持 和 交互式验证</span>
-sed -i.bak <span class=s1>&#39;1i auth            sufficient      pam_google_authenticator.so&#39;</span> /etc/pam.d/sshd  <span class=c1># pam 中添加 google_authenticator 验证模块</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>将配置文件复制到 <code>~/.google_authenticator</code>，或者通过编辑器编辑添加该文件。文件要确保属主正确，权限为 <code>600</code> 或者更低。如果是 root 用户，需要确认 sshd 配置可以远程登陆。</p>
-<p>配置完成重启 sshd 服务即可。</p>
-<h4 id=2-禁用账号密码登陆>2. 禁用账号密码登陆</h4>
-<p>目的：当使用密钥登陆时，不想同时开启密码登陆。</p>
-<p>注意： 该配置需要 openssh 6.2 以上支持，参考 <a href=https://wiki.archlinux.org/index.php/OpenSSH#Two-factor_authentication_and_public_keys>Arch wiki</a> 说明。
-这里修改 <code>/etc/ssh/sshd_config</code> 文件中，<code>PasswordAuthentication yes</code> 改为 <code>PasswordAuthentication no</code> 不会生效，因为启用 PAM 验证后，pam 配置中默认有基于密码验证。</p>
-<p>在上述配置基础上：</p>
-<p><code>Ubuntu</code> 系统注释掉 <code>/etc/pam.d/sshd</code> 中 <code>@include common-auth</code> 即可关闭密码验证。
-<code>Fedore</code> 系统注释掉 <code>/etc/pam.d/sshd</code> 中 <code>auth substack password-auth</code> 即可关闭密码验证。</p>
-<p>同理，不开启密钥登陆，这时将只能通过动态密码登陆。别忘了初始化时还有几个一次性备用密码。</p>
-<h4 id=3-使用浏览器插件查看动态密码>3. 使用浏览器插件查看动态密码</h4>
-<p>Chrome 插件：https://t.cn/E9oafuV</p>
-<p>Firefox 插件：https://t.cn/zjaEAlS</p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/sshd/>sshd</a>
-<a href=/tags/secure/>secure</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/a-shell-script-for-searhing-docker-image-tags/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed -i.bak <span class=s1>&#39;1i UsePAM yes\nChallengeResponseAuthentication yes&#39;</span> /etc/ssh/sshd_config               <span class=c1># 确保打开 pam 支持 和 交互式验证</span>
+</span></span><span class=line><span class=cl>sed -i.bak <span class=s1>&#39;1i auth            sufficient      pam_google_authenticator.so&#39;</span> /etc/pam.d/sshd  <span class=c1># pam 中添加 google_authenticator 验证模块</span>
+</span></span></code></pre></td></tr></table></div></div><p>将配置文件复制到 <code>~/.google_authenticator</code>，或者通过编辑器编辑添加该文件。文件要确保属主正确，权限为 <code>600</code> 或者更低。如果是 root 用户，需要确认 sshd 配置可以远程登陆。</p><p>配置完成重启 sshd 服务即可。</p><h4 id=2-禁用账号密码登陆>2. 禁用账号密码登陆</h4><p>目的：当使用密钥登陆时，不想同时开启密码登陆。</p><p>注意： 该配置需要 openssh 6.2 以上支持，参考 <a href=https://wiki.archlinux.org/index.php/OpenSSH#Two-factor_authentication_and_public_keys>Arch wiki</a> 说明。
+这里修改 <code>/etc/ssh/sshd_config</code> 文件中，<code>PasswordAuthentication yes</code> 改为 <code>PasswordAuthentication no</code> 不会生效，因为启用 PAM 验证后，pam 配置中默认有基于密码验证。</p><p>在上述配置基础上：</p><p><code>Ubuntu</code> 系统注释掉 <code>/etc/pam.d/sshd</code> 中 <code>@include common-auth</code> 即可关闭密码验证。
+<code>Fedore</code> 系统注释掉 <code>/etc/pam.d/sshd</code> 中 <code>auth substack password-auth</code> 即可关闭密码验证。</p><p>同理，不开启密钥登陆，这时将只能通过动态密码登陆。别忘了初始化时还有几个一次性备用密码。</p><h4 id=3-使用浏览器插件查看动态密码>3. 使用浏览器插件查看动态密码</h4><p>Chrome 插件：https://t.cn/E9oafuV</p><p>Firefox 插件：https://t.cn/zjaEAlS</p></div><footer class=post-footer><div class=post-tags><a href=/tags/sshd/>sshd</a>
+<a href=/tags/secure/>secure</a></div><nav class=post-nav><a class=prev href=/post/a-shell-script-for-searhing-docker-image-tags/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">一个查找 Docker 镜像包含 tag 的脚本</span>
-<span class="prev-text nav-mobile">上一篇</span>
-</a>
-<a class=next href=/post/nginx-proxy-cache-regular-configuration/>
-<span class="next-text nav-default">nginx location 规则使用正则时改写 request_uri 报错</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/nginx-proxy-cache-regular-configuration/><span class="next-text nav-default">nginx location 规则使用正则时改写 request_uri 报错</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=vcomments></div>
-<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
 <script src=//unpkg.com/valine/dist/Valine.min.js></script>
-<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!0,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
-<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
-</span>
+<script type=text/javascript>new Valine({el:"#vcomments",appId:"GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz",appKey:"cq9Rl1lkMWGfkEoq93b6t3bJ",notify:!0,verify:!0,avatar:"mp",placeholder:"Say something...",visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
 <span class=division>|</span>
-<span class=theme-info>
-主题 -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<span class=copyright-year>
-&copy;
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
 2018 -
-2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<script id=baidu_push>(function(){var a,c,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.async=!0,c=window.location.protocol.split(':')[0],c==='https'?a.src='https://zz.bdstatic.com/linksubmit/push.js':a.src='http://push.zhanzhang.baidu.com/push.js',b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script>
-</body>
-</html>
+<script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-138489412-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){if(window.location.hostname==="localhost")return;var t,n,e=document.createElement("script");e.async=!0,n=window.location.protocol.split(":")[0],n==="https"?e.src="https://zz.bdstatic.com/linksubmit/push.js":e.src="http://push.zhanzhang.baidu.com/push.js",t=document.getElementsByTagName("script")[0],t.parentNode.insertBefore(e,t)})()</script></body></html>

@@ -1,432 +1,140 @@
-<!doctype html><html lang=zh-cn>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Python 中字符串的内置方法 - 闲隅</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="Fimreal"><meta name=description content="Python 中字符串的内置方法总结"><meta name=keywords content="Python">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://blog.epurs.com/post/py-study-string/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Python 中字符串的内置方法">
-<meta property="og:description" content="Python 中字符串的内置方法总结">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.epurs.com/post/py-study-string/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2019-04-15T11:45:00+00:00">
-<meta property="article:modified_time" content="2019-08-19T14:35:05+08:00">
-<meta itemprop=name content="Python 中字符串的内置方法">
-<meta itemprop=description content="Python 中字符串的内置方法总结"><meta itemprop=datePublished content="2019-04-15T11:45:00+00:00">
-<meta itemprop=dateModified content="2019-08-19T14:35:05+08:00">
-<meta itemprop=wordCount content="2014">
-<meta itemprop=keywords content="Python,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Python 中字符串的内置方法">
-<meta name=twitter:description content="Python 中字符串的内置方法总结"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>闲隅</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Python 中字符串的内置方法 - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="Python 中字符串的内置方法总结"><meta name=keywords content="Python"><meta name=generator content="Hugo 0.101.0 with theme even"><link rel=canonical href=https://blog.epurs.com/post/py-study-string/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Python 中字符串的内置方法"><meta property="og:description" content="Python 中字符串的内置方法总结"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.epurs.com/post/py-study-string/"><meta property="article:section" content="post"><meta property="article:published_time" content="2019-04-15T11:45:00+00:00"><meta property="article:modified_time" content="2019-08-19T14:35:05+08:00"><meta itemprop=name content="Python 中字符串的内置方法"><meta itemprop=description content="Python 中字符串的内置方法总结"><meta itemprop=datePublished content="2019-04-15T11:45:00+00:00"><meta itemprop=dateModified content="2019-08-19T14:35:05+08:00"><meta itemprop=wordCount content="2014"><meta itemprop=keywords content="Python,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Python 中字符串的内置方法"><meta name=twitter:description content="Python 中字符串的内置方法总结"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>主页</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>归档</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>标签</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>分类</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>闲隅</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>主页</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>归档</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>标签</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>分类</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Python 中字符串的内置方法</h1>
-<div class=post-meta>
-<span class=post-time> 2019-04-15 </span>
-<div class=post-category>
-<a href=/categories/python/> Python </a>
-</div>
-<span class=more-meta> 约 2014 字 </span>
-<span class=more-meta> 预计阅读 5 分钟 </span>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>文章目录</h2>
-<div class="post-toc-content always-active">
-<nav id=TableOfContents>
-<ul>
-<li><a href=#python-中字符串的内置方法>Python 中字符串的内置方法</a>
-<ul>
-<li></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<p>Python 中字符串的内置方法作用用例总结</p>
-<h2 id=python-中字符串的内置方法>Python 中字符串的内置方法</h2>
-<h4 id=1-大小写转换>1. 大小写转换</h4>
-<h5 id=capitalize><code>capitalize()</code></h5>
-<p>把字符串第一个字符改为大写</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Python 中字符串的内置方法</h1><div class=post-meta><span class=post-time>2019-04-15</span><div class=post-category><a href=/categories/python/>Python</a></div><span class=more-meta>约 2014 字</span>
+<span class=more-meta>预计阅读 5 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#python-中字符串的内置方法>Python 中字符串的内置方法</a><ul><li></li></ul></li></ul></nav></div></div><div class=post-content><p>Python 中字符串的内置方法作用用例总结</p><h2 id=python-中字符串的内置方法>Python 中字符串的内置方法</h2><h4 id=1-大小写转换>1. 大小写转换</h4><h5 id=capitalize><code>capitalize()</code></h5><p>把字符串第一个字符改为大写</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s1>&#39;apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>capitalize</span><span class=p>()</span>
-<span class=s1>&#39;Apple&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=lower><code>lower()</code></h5>
-<p>转换字符串中所有大写字符为小写</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s1>&#39;apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>capitalize</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;Apple&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=lower><code>lower()</code></h5><p>转换字符串中所有大写字符为小写</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=s1>&#39;ApP1E&#39;</span><span class=o>.</span><span class=n>lower</span><span class=p>()</span>
-<span class=s1>&#39;app1e&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=casefold><code>casefold()</code></h5>
-<p>把整个字符串的所有字符改为小写</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=s1>&#39;ApP1E&#39;</span><span class=o>.</span><span class=n>lower</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;app1e&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=casefold><code>casefold()</code></h5><p>把整个字符串的所有字符改为小写</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;ApP1E&#39;</span><span class=o>.</span><span class=n>casefold</span><span class=p>()</span>
-<span class=s1>&#39;app1e&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=upper><code>upper()</code></h5>
-<p>把整个字符串中所有字符改为大写</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;ApP1E&#39;</span><span class=o>.</span><span class=n>casefold</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;app1e&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=upper><code>upper()</code></h5><p>把整个字符串中所有字符改为大写</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;ApP1e&#34;</span><span class=o>.</span><span class=n>upper</span><span class=p>()</span>
-<span class=s1>&#39;APP1E&#39;</span>   
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=swapcase><code>swapcase()</code></h5>
-<p>反转字符串中的大小写字符</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;ApP1e&#34;</span><span class=o>.</span><span class=n>upper</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;APP1E&#39;</span>   
+</span></span></code></pre></td></tr></table></div></div><h5 id=swapcase><code>swapcase()</code></h5><p>反转字符串中的大小写字符</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;ApP1E&#34;</span><span class=o>.</span><span class=n>swapcase</span><span class=p>()</span>
-<span class=s1>&#39;aPp1e&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=2-左右填充空格>2. 左右填充空格</h4>
-<h5 id=centerwidth><code>center(width)</code></h5>
-<p>把字符串居中显示，两边用空格填充至 width 指定长度</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;ApP1E&#34;</span><span class=o>.</span><span class=n>swapcase</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;aPp1e&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=2-左右填充空格>2. 左右填充空格</h4><h5 id=centerwidth><code>center(width)</code></h5><p>把字符串居中显示，两边用空格填充至 width 指定长度</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s1>&#39;apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>center</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
-<span class=s1>&#39;  apple   &#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>width 小于字符串长度时，显示不变。优先把空格加在源字符串右边</p>
-<h5 id=ljustwidth><code>ljust(width)</code></h5>
-<p>返回一个左对齐的字符串，并在右边填充空格变为长度为 width 的新字符串</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s1>&#39;apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>center</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;  apple   &#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>width 小于字符串长度时，显示不变。优先把空格加在源字符串右边</p><h5 id=ljustwidth><code>ljust(width)</code></h5><p>返回一个左对齐的字符串，并在右边填充空格变为长度为 width 的新字符串</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>ljust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
-<span class=s1>&#39;apple     &#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=rjustwidth><code>rjust(width)</code></h5>
-<p>返回一个右对齐的字符串，并在左边填充空格变为长度为 width 的新字符串</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>ljust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;apple     &#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=rjustwidth><code>rjust(width)</code></h5><p>返回一个右对齐的字符串，并在左边填充空格变为长度为 width 的新字符串</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>rjust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
-<span class=s1>&#39;     apple&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=3-删除左右空格>3. 删除左右空格</h4>
-<h5 id=stripchars><code>strip([chars])</code></h5>
-<p>去掉字符串左右两边所有空格，chars 参数可以定制空格为其他待删除的字符</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>rjust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;     apple&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=3-删除左右空格>3. 删除左右空格</h4><h5 id=stripchars><code>strip([chars])</code></h5><p>去掉字符串左右两边所有空格，chars 参数可以定制空格为其他待删除的字符</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;000 apple00 0&#34;</span><span class=o>.</span><span class=n>strip</span><span class=p>(</span><span class=s1>&#39;0 &#39;</span><span class=p>)</span>
-<span class=s1>&#39;apple&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=lstrip><code>lstrip()</code></h5>
-<p>去掉字符串左边的所有空格</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;000 apple00 0&#34;</span><span class=o>.</span><span class=n>strip</span><span class=p>(</span><span class=s1>&#39;0 &#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;apple&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=lstrip><code>lstrip()</code></h5><p>去掉字符串左边的所有空格</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>rjust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>lstrip</span><span class=p>()</span>
-<span class=s1>&#39;apple&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=rstrip><code>rstrip()</code></h5>
-<p>去掉字符串右边的所有空格</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>rjust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>lstrip</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;apple&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=rstrip><code>rstrip()</code></h5><p>去掉字符串右边的所有空格</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>ljust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>rstrip</span><span class=p>()</span>
-<span class=s1>&#39;apple&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=4-子字符串计数>4. 子字符串计数</h4>
-<h5 id=countsubstartend><code>count(sub[,start[,end]])</code></h5>
-<p>返回 sub 在字符串内出现的次数，后面可选参数控制查找范围（0~n）</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>ljust</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>rstrip</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;apple&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=4-子字符串计数>4. 子字符串计数</h4><h5 id=countsubstartend><code>count(sub[,start[,end]])</code></h5><p>返回 sub 在字符串内出现的次数，后面可选参数控制查找范围（0~n）</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s1>&#39;apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>count</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
-<span class=mi>2</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>count</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>2</span><span class=p>)</span>
-<span class=mi>1</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=5-编码字符串>5. 编码字符串</h4>
-<h5 id=encodeencodinguft-8errorsstrict><code>encode(encoding='uft-8',errors='strict')</code></h5>
-<p>以 encofing 指定的编码格式对字符串进行编码</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s1>&#39;apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>count</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>count</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=mi>1</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=5-编码字符串>5. 编码字符串</h4><h5 id=encodeencodinguft-8errorsstrict><code>encode(encoding='uft-8',errors='strict')</code></h5><p>以 encofing 指定的编码格式对字符串进行编码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s1>&#39;apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf8&#39;</span><span class=p>,</span><span class=n>errors</span><span class=o>=</span><span class=s1>&#39;strict&#39;</span><span class=p>)</span>
-<span class=sa>b</span><span class=s1>&#39;apple&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=6-查找匹配开头或者结尾>6. 查找匹配开头或者结尾</h4>
-<h5 id=endswitchsubstartend><code>endswitch(sub[,start[,end]])</code></h5>
-<p>检查字符串是否以 sub 字串结尾，如果是则返回 True，否则返回 False</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s1>&#39;apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf8&#39;</span><span class=p>,</span><span class=n>errors</span><span class=o>=</span><span class=s1>&#39;strict&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=sa>b</span><span class=s1>&#39;apple&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=6-查找匹配开头或者结尾>6. 查找匹配开头或者结尾</h4><h5 id=endswitchsubstartend><code>endswitch(sub[,start[,end]])</code></h5><p>检查字符串是否以 sub 字串结尾，如果是则返回 True，否则返回 False</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s1>&#39;apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>endswith</span><span class=p>(</span><span class=s1>&#39;e&#39;</span><span class=p>)</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=startswithprefixstartend><code>startswith(prefix[,start[,end]])</code></h5>
-<p>检查字符串是否以 prefix 为开头，如果是则返回 True，否则返回 False</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s1>&#39;apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>endswith</span><span class=p>(</span><span class=s1>&#39;e&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=startswithprefixstartend><code>startswith(prefix[,start[,end]])</code></h5><p>检查字符串是否以 prefix 为开头，如果是则返回 True，否则返回 False</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple&#34;</span><span class=o>.</span><span class=n>startswith</span><span class=p>(</span><span class=s1>&#39;A&#39;</span><span class=p>)</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=7-切换制表符tab>7. 切换制表符(tab)</h4>
-<h5 id=expandtabstabsize8><code>expandtabs([tabsize=8])</code></h5>
-<p>把字符串中的制表符（<code>\t</code>）切换成空格，默认为 8 个空格。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple&#34;</span><span class=o>.</span><span class=n>startswith</span><span class=p>(</span><span class=s1>&#39;A&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=7-切换制表符tab>7. 切换制表符(tab)</h4><h5 id=expandtabstabsize8><code>expandtabs([tabsize=8])</code></h5><p>把字符串中的制表符（<code>\t</code>）切换成空格，默认为 8 个空格。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span>
-<span class=s1>&#39;An</span><span class=se>\t</span><span class=s1>apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>expandtabs</span><span class=p>(</span><span class=n>tabsize</span><span class=o>=</span><span class=mi>4</span><span class=p>)</span>
-<span class=s1>&#39;An   apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>print</span><span class=p>(</span><span class=nb>str</span><span class=p>)</span>
-<span class=n>An</span>	<span class=n>apple</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=8-查找子字符串>8. `查找子字符串</h4>
-<h5 id=findsubstartend><code>find(sub[,start[,end]])</code></h5>
-<p>检查 sub 是否存在，存在则返回找到的第一个索引值，不存在则返回"-1"</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;An</span><span class=se>\t</span><span class=s1>apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>expandtabs</span><span class=p>(</span><span class=n>tabsize</span><span class=o>=</span><span class=mi>4</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;An   apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>print</span><span class=p>(</span><span class=nb>str</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>An</span>	<span class=n>apple</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=8-查找子字符串>8. `查找子字符串</h4><h5 id=findsubstartend><code>find(sub[,start[,end]])</code></h5><p>检查 sub 是否存在，存在则返回找到的第一个索引值，不存在则返回"-1"</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>find</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>2</span><span class=p>)</span>
-<span class=mi>2</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>find</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>3</span><span class=p>)</span>
-<span class=o>-</span><span class=mi>1</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=rfindsubstartend><code>rfind(sub[,start[,end]])</code></h5>
-<p>类似上面办法，从右边开始查找</p>
-<h4 id=9-定位子字符串位置>9. 定位子字符串位置</h4>
-<h5 id=indexsubstartend><code>index(sub[,start[,end]])</code></h5>
-<p>同<code>find()</code>类似，但是当不存在 sub 时，会报错</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>find</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>find</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=o>-</span><span class=mi>1</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=rfindsubstartend><code>rfind(sub[,start[,end]])</code></h5><p>类似上面办法，从右边开始查找</p><h4 id=9-定位子字符串位置>9. 定位子字符串位置</h4><h5 id=indexsubstartend><code>index(sub[,start[,end]])</code></h5><p>同<code>find()</code>类似，但是当不存在 sub 时，会报错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
 </span><span class=lnt>7
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>index</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
-<span class=mi>1</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>index</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>3</span><span class=p>)</span>
-<span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
-  <span class=n>File</span> <span class=s2>&#34;&lt;stdin&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
-<span class=ne>ValueError</span><span class=p>:</span> <span class=n>substring</span> <span class=ow>not</span> <span class=n>found</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=rindexsubstartend><code>rindex(sub[,start[,end]])</code></h5>
-<p>类似上面办法，从右边开始查找</p>
-<h4 id=10-匹配类型检查>10. 匹配类型检查</h4>
-<h5 id=isalnum><code>isalnum()</code></h5>
-<p>如果字符串非空，且都是由字母或者数字组成，返回 True，否则 false</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>index</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>index</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=mi>3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>  <span class=n>File</span> <span class=s2>&#34;&lt;stdin&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl><span class=ne>ValueError</span><span class=p>:</span> <span class=n>substring</span> <span class=ow>not</span> <span class=n>found</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=rindexsubstartend><code>rindex(sub[,start[,end]])</code></h5><p>类似上面办法，从右边开始查找</p><h4 id=10-匹配类型检查>10. 匹配类型检查</h4><h5 id=isalnum><code>isalnum()</code></h5><p>如果字符串非空，且都是由字母或者数字组成，返回 True，否则 false</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s2>&#34;1 Apple&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>isalnum</span><span class=p>()</span>
-<span class=kc>False</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;1Apple&#34;</span><span class=o>.</span><span class=n>isalnum</span><span class=p>()</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=isalpha><code>isalpha()</code></h5>
-<p>如果字符串非空，且所有字符都是字母则返回 True，否则 false</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>=</span><span class=s2>&#34;1 Apple&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>isalnum</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>False</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;1Apple&#34;</span><span class=o>.</span><span class=n>isalnum</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=isalpha><code>isalpha()</code></h5><p>如果字符串非空，且所有字符都是字母则返回 True，否则 false</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;1Apple&#34;</span><span class=o>.</span><span class=n>isalpha</span><span class=p>()</span>
-<span class=kc>False</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple&#34;</span><span class=o>.</span><span class=n>isalpha</span><span class=p>()</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=isdecimal><code>isdecimal()</code></h5>
-<p>如果字符串非空，且只包含十进制数字，则返回 True，否则 false</p>
-<h5 id=isdigit><code>isdigit()</code></h5>
-<p>如果字符串非空，且只包含数字，则返回 True，否则 false</p>
-<h5 id=isnumeric><code>isnumeric()</code></h5>
-<p>如果字符串非空，且只包含数字字符，则返回 True，否则 false</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;1Apple&#34;</span><span class=o>.</span><span class=n>isalpha</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>False</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple&#34;</span><span class=o>.</span><span class=n>isalpha</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=isdecimal><code>isdecimal()</code></h5><p>如果字符串非空，且只包含十进制数字，则返回 True，否则 false</p><h5 id=isdigit><code>isdigit()</code></h5><p>如果字符串非空，且只包含数字，则返回 True，否则 false</p><h5 id=isnumeric><code>isnumeric()</code></h5><p>如果字符串非空，且只包含数字字符，则返回 True，否则 false</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -440,28 +148,21 @@
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>isdigit()
-True: Unicode数字，byte数字（单字节），全角数字（双字节），罗马数字
-False: 汉字数字
-Error: 无
-
-isdecimal()
-True: Unicode数字，，全角数字（双字节）
-False: 罗马数字，汉字数字
-Error: byte数字（单字节）
-
-isnumeric()
-True: Unicode数字，全角数字（双字节），罗马数字，汉字数字
-False: 无
-Error: byte数字（单字节）
-</code></pre></td></tr></table>
-</div>
-</div><p>测试：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>isdigit()
+</span></span><span class=line><span class=cl>True: Unicode数字，byte数字（单字节），全角数字（双字节），罗马数字
+</span></span><span class=line><span class=cl>False: 汉字数字
+</span></span><span class=line><span class=cl>Error: 无
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>isdecimal()
+</span></span><span class=line><span class=cl>True: Unicode数字，，全角数字（双字节）
+</span></span><span class=line><span class=cl>False: 罗马数字，汉字数字
+</span></span><span class=line><span class=cl>Error: byte数字（单字节）
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>isnumeric()
+</span></span><span class=line><span class=cl>True: Unicode数字，全角数字（双字节），罗马数字，汉字数字
+</span></span><span class=line><span class=cl>False: 无
+</span></span><span class=line><span class=cl>Error: byte数字（单字节）
+</span></span></code></pre></td></tr></table></div></div><p>测试：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -488,80 +189,50 @@ Error: byte数字（单字节）
 </span><span class=lnt>25
 </span><span class=lnt>26
 </span><span class=lnt>27
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=s2>&#34;0&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
-<span class=kc>True</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
-<span class=kc>True</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isnumeric</span><span class=p>()</span>
-<span class=kc>True</span>
-
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=sa>b</span><span class=s2>&#34;0&#34;</span>  <span class=c1># byte</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
-<span class=kc>True</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
-<span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
-  <span class=n>File</span> <span class=s2>&#34;&lt;stdin&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
-<span class=ne>AttributeError</span><span class=p>:</span> <span class=s1>&#39;bytes&#39;</span> <span class=nb>object</span> <span class=n>has</span> <span class=n>no</span> <span class=n>attribute</span> <span class=s1>&#39;isdecimal&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isnumeric</span><span class=p>()</span>
-<span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
-  <span class=n>File</span> <span class=s2>&#34;&lt;stdin&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
-<span class=ne>AttributeError</span><span class=p>:</span> <span class=s1>&#39;bytes&#39;</span> <span class=nb>object</span> <span class=n>has</span> <span class=n>no</span> <span class=n>attribute</span> <span class=s1>&#39;isnumeric&#39;</span>
-
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=s2>&#34;零&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
-<span class=kc>False</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
-<span class=kc>False</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isnumeric</span><span class=p>()</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>罗马字测试失败</p>
-<h4 id=11-大小写检查>11. 大小写检查</h4>
-<h5 id=islower><code>islower()</code></h5>
-<p>如果字符串中至少包含一个区分大小写的字符，且这些字符都是小写，则返回 True，否则 false</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=s2>&#34;0&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isnumeric</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=sa>b</span><span class=s2>&#34;0&#34;</span>  <span class=c1># byte</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>  <span class=n>File</span> <span class=s2>&#34;&lt;stdin&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl><span class=ne>AttributeError</span><span class=p>:</span> <span class=s1>&#39;bytes&#39;</span> <span class=nb>object</span> <span class=n>has</span> <span class=n>no</span> <span class=n>attribute</span> <span class=s1>&#39;isdecimal&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isnumeric</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>  <span class=n>File</span> <span class=s2>&#34;&lt;stdin&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl><span class=ne>AttributeError</span><span class=p>:</span> <span class=s1>&#39;bytes&#39;</span> <span class=nb>object</span> <span class=n>has</span> <span class=n>no</span> <span class=n>attribute</span> <span class=s1>&#39;isnumeric&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span> <span class=o>=</span> <span class=s2>&#34;零&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdigit</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>False</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isdecimal</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>False</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>num</span><span class=o>.</span><span class=n>isnumeric</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><p>罗马字测试失败</p><h4 id=11-大小写检查>11. 大小写检查</h4><h5 id=islower><code>islower()</code></h5><p>如果字符串中至少包含一个区分大小写的字符，且这些字符都是小写，则返回 True，否则 false</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple123pencil&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>islower</span><span class=p>()</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=isupper><code>isupper()</code></h5>
-<p>如果字符串中至少包含一个区分大小写的字符，且这些字符都是大写，则返回 True，否则 false</p>
-<h4 id=12-匹配全空格>12. 匹配全空格</h4>
-<h5 id=isspace><code>isspace()</code></h5>
-<p>如果字符串中只包含空格，则返回 True，否则 false</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span> <span class=o>=</span> <span class=s2>&#34;apple123pencil&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>str</span><span class=o>.</span><span class=n>islower</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=isupper><code>isupper()</code></h5><p>如果字符串中至少包含一个区分大小写的字符，且这些字符都是大写，则返回 True，否则 false</p><h4 id=12-匹配全空格>12. 匹配全空格</h4><h5 id=isspace><code>isspace()</code></h5><p>如果字符串中只包含空格，则返回 True，否则 false</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;&#34;</span><span class=o>.</span><span class=n>isspace</span><span class=p>()</span>
-<span class=kc>False</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34; &#34;</span><span class=o>.</span><span class=n>isspace</span><span class=p>()</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=13-匹配标题格式>13. 匹配标题格式</h4>
-<h5 id=istitle><code>istitle()</code></h5>
-<p>如果字符串为标题格式（所有单词除了大写开头，其他都是小写），则返回 True，否则 false</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;&#34;</span><span class=o>.</span><span class=n>isspace</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>False</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34; &#34;</span><span class=o>.</span><span class=n>isspace</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=13-匹配标题格式>13. 匹配标题格式</h4><h5 id=istitle><code>istitle()</code></h5><p>如果字符串为标题格式（所有单词除了大写开头，其他都是小写），则返回 True，否则 false</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -569,214 +240,91 @@ Error: byte数字（单字节）
 </span><span class=lnt>6
 </span><span class=lnt>7
 </span><span class=lnt>8
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An Apple&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
-<span class=kc>True</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An AppLe&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
-<span class=kc>False</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An App2e&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
-<span class=kc>False</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An Apple435&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
-<span class=kc>True</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=title><code>title()</code></h5>
-<p>返回标题化的字符串</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An Apple&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An AppLe&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>False</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An App2e&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>False</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;An Apple435&#34;</span><span class=o>.</span><span class=n>istitle</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=kc>True</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=title><code>title()</code></h5><p>返回标题化的字符串</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;An ApP1e&#39;</span><span class=o>.</span><span class=n>title</span><span class=p>()</span>
-<span class=s1>&#39;An App1E&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=14-插入>14. 插入</h4>
-<h5 id=joinsub><code>join(sub)</code></h5>
-<p>把 字符串插入到 子字符串 sub 中</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;An ApP1e&#39;</span><span class=o>.</span><span class=n>title</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;An App1E&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=14-插入>14. 插入</h4><h5 id=joinsub><code>join(sub)</code></h5><p>把 字符串插入到 子字符串 sub 中</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=s1>&#39;0 0&#39;</span><span class=p>)</span>
-<span class=s1>&#39;0apple apple0&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=15-查找分割成新序列>15. 查找分割成新序列</h4>
-<h5 id=partitionsub><code>partition(sub)</code></h5>
-<p>找到 子字符串 sub ，然后把字符串分成一个三元组（<code>'pre_sub'</code>,<code>'sub'</code>,<code>'fol_sub'</code>），如果不包含 sub ，则返回（<code>'原字符串</code>,<code>''</code>,<code>''</code>）</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=s1>&#39;0 0&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;0apple apple0&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=15-查找分割成新序列>15. 查找分割成新序列</h4><h5 id=partitionsub><code>partition(sub)</code></h5><p>找到 子字符串 sub ，然后把字符串分成一个三元组（<code>'pre_sub'</code>,<code>'sub'</code>,<code>'fol_sub'</code>），如果不包含 sub ，则返回（<code>'原字符串</code>,<code>''</code>,<code>''</code>）</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>partition</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
-<span class=p>(</span><span class=s1>&#39;a&#39;</span><span class=p>,</span> <span class=s1>&#39;p&#39;</span><span class=p>,</span> <span class=s1>&#39;ple&#39;</span><span class=p>)</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>中间一定是匹配到的 <code>sub</code> 或者 <code>''</code></p>
-<h5 id=rpartitionsub><code>rpartition(sub)</code></h5>
-<p>类似于 <code>partition(sub)</code>，从右开始匹配</p>
-<h4 id=16-替换子字符串>16. 替换子字符串</h4>
-<h5 id=replaceoldnewcount><code>replace(old,new[,count])</code></h5>
-<p>把字符串中的 old 子字符串 替换成 new 子字符串，count 控制替换的次数</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>partition</span><span class=p>(</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=s1>&#39;a&#39;</span><span class=p>,</span> <span class=s1>&#39;p&#39;</span><span class=p>,</span> <span class=s1>&#39;ple&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>中间一定是匹配到的 <code>sub</code> 或者 <code>''</code></p><h5 id=rpartitionsub><code>rpartition(sub)</code></h5><p>类似于 <code>partition(sub)</code>，从右开始匹配</p><h4 id=16-替换子字符串>16. 替换子字符串</h4><h5 id=replaceoldnewcount><code>replace(old,new[,count])</code></h5><p>把字符串中的 old 子字符串 替换成 new 子字符串，count 控制替换的次数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;a&#39;</span><span class=p>,</span><span class=s1>&#39;A&#39;</span><span class=p>)</span>
-<span class=s1>&#39;Apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;a&#39;</span><span class=p>,</span><span class=s1>&#39;A&#39;</span><span class=p>,</span><span class=mi>0</span><span class=p>)</span>
-<span class=s1>&#39;apple&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=17-分割字符串>17. 分割字符串</h4>
-<h5 id=splitsepnonemaxplit-1><code>split(sep=None,maxplit=-1)</code></h5>
-<p>以 sep 分割字符串，不指定时为空格，maxsplit 可以设置分割次数，最后返回一个列表</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;a&#39;</span><span class=p>,</span><span class=s1>&#39;A&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;Apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;a&#39;</span><span class=p>,</span><span class=s1>&#39;A&#39;</span><span class=p>,</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;apple&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=17-分割字符串>17. 分割字符串</h4><h5 id=splitsepnonemaxplit-1><code>split(sep=None,maxplit=-1)</code></h5><p>以 sep 分割字符串，不指定时为空格，maxsplit 可以设置分割次数，最后返回一个列表</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple and pencil &#34;</span><span class=o>.</span><span class=n>split</span><span class=p>()</span>
-<span class=p>[</span><span class=s1>&#39;Apple&#39;</span><span class=p>,</span> <span class=s1>&#39;and&#39;</span><span class=p>,</span> <span class=s1>&#39;pencil&#39;</span><span class=p>]</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple and pencil &#34;</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=n>sep</span><span class=o>=</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
-<span class=p>[</span><span class=s1>&#39;A&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> <span class=s1>&#39;le and &#39;</span><span class=p>,</span> <span class=s1>&#39;encil &#39;</span><span class=p>]</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple and pencil &#34;</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=n>sep</span><span class=o>=</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=n>maxsplit</span><span class=o>=</span><span class=mi>1</span><span class=p>)</span>
-<span class=p>[</span><span class=s1>&#39;A&#39;</span><span class=p>,</span> <span class=s1>&#39;ple and pencil &#39;</span><span class=p>]</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=splitlineskeepends><code>splitlines([keepends])</code></h5>
-<p>以换行符分割字符串，返回一个列表，keepends 控制是否显示换行符</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple and pencil &#34;</span><span class=o>.</span><span class=n>split</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=s1>&#39;Apple&#39;</span><span class=p>,</span> <span class=s1>&#39;and&#39;</span><span class=p>,</span> <span class=s1>&#39;pencil&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple and pencil &#34;</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=n>sep</span><span class=o>=</span><span class=s1>&#39;p&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=s1>&#39;A&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> <span class=s1>&#39;le and &#39;</span><span class=p>,</span> <span class=s1>&#39;encil &#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;Apple and pencil &#34;</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=n>sep</span><span class=o>=</span><span class=s1>&#39;p&#39;</span><span class=p>,</span><span class=n>maxsplit</span><span class=o>=</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=s1>&#39;A&#39;</span><span class=p>,</span> <span class=s1>&#39;ple and pencil &#39;</span><span class=p>]</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=splitlineskeepends><code>splitlines([keepends])</code></h5><p>以换行符分割字符串，返回一个列表，keepends 控制是否显示换行符</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;ab c</span><span class=se>\n\n</span><span class=s1>de fg</span><span class=se>\r</span><span class=s1>kl</span><span class=se>\r\n</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>splitlines</span><span class=p>()</span>
-<span class=p>[</span><span class=s1>&#39;ab c&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> <span class=s1>&#39;de fg&#39;</span><span class=p>,</span> <span class=s1>&#39;kl&#39;</span><span class=p>]</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;ab c</span><span class=se>\n\n</span><span class=s1>de fg</span><span class=se>\r</span><span class=s1>kl</span><span class=se>\r\n</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>splitlines</span><span class=p>(</span><span class=n>keepends</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
-<span class=p>[</span><span class=s1>&#39;ab c</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>,</span> <span class=s1>&#39;</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>,</span> <span class=s1>&#39;de fg</span><span class=se>\r</span><span class=s1>&#39;</span><span class=p>,</span> <span class=s1>&#39;kl</span><span class=se>\r\n</span><span class=s1>&#39;</span><span class=p>]</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=translatetabledeletechars><code>translate(table[,deletechars=""])</code></h5>
-<p>按照 table 给出的表，转换字符串的字符，deletechars 可以指定需要过滤掉的字符列表（python2 和 3 版本不同）</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;ab c</span><span class=se>\n\n</span><span class=s1>de fg</span><span class=se>\r</span><span class=s1>kl</span><span class=se>\r\n</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>splitlines</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=s1>&#39;ab c&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> <span class=s1>&#39;de fg&#39;</span><span class=p>,</span> <span class=s1>&#39;kl&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s1>&#39;ab c</span><span class=se>\n\n</span><span class=s1>de fg</span><span class=se>\r</span><span class=s1>kl</span><span class=se>\r\n</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>splitlines</span><span class=p>(</span><span class=n>keepends</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=s1>&#39;ab c</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>,</span> <span class=s1>&#39;</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>,</span> <span class=s1>&#39;de fg</span><span class=se>\r</span><span class=s1>&#39;</span><span class=p>,</span> <span class=s1>&#39;kl</span><span class=se>\r\n</span><span class=s1>&#39;</span><span class=p>]</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=translatetabledeletechars><code>translate(table[,deletechars=""])</code></h5><p>按照 table 给出的表，转换字符串的字符，deletechars 可以指定需要过滤掉的字符列表（python2 和 3 版本不同）</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>intab</span> <span class=o>=</span> <span class=s2>&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>outtab</span> <span class=o>=</span> <span class=n>intab</span><span class=o>.</span><span class=n>upper</span><span class=p>()</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=n>tabtrans</span> <span class=o>=</span> <span class=nb>str</span><span class=o>.</span><span class=n>maketrans</span><span class=p>(</span><span class=n>intab</span><span class=p>,</span><span class=n>outtab</span><span class=p>)</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>translate</span><span class=p>(</span><span class=n>tabtrans</span><span class=p>)</span>
-<span class=s1>&#39;APPLE&#39;</span>
-<span class=s1>&#39;&#39;&#39;  过滤字符例子测试不成功 &#39;&#39;&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=18-填充0>18. 填充0</h4>
-<h5 id=zfillwidth><code>zfill(width)</code></h5>
-<p>返回字符串长度为 width 的字符串，原字符串右对齐，左边用 &ldquo;0&rdquo; 填充</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>intab</span> <span class=o>=</span> <span class=s2>&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>outtab</span> <span class=o>=</span> <span class=n>intab</span><span class=o>.</span><span class=n>upper</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>tabtrans</span> <span class=o>=</span> <span class=nb>str</span><span class=o>.</span><span class=n>maketrans</span><span class=p>(</span><span class=n>intab</span><span class=p>,</span><span class=n>outtab</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>translate</span><span class=p>(</span><span class=n>tabtrans</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;APPLE&#39;</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;&#39;&#39;  过滤字符例子测试不成功 &#39;&#39;&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=18-填充0>18. 填充0</h4><h5 id=zfillwidth><code>zfill(width)</code></h5><p>返回字符串长度为 width 的字符串，原字符串右对齐，左边用 &ldquo;0&rdquo; 填充</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>zfill</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
-<span class=s1>&#39;00000apple&#39;</span>
-<span class=o>&gt;&gt;&gt;</span> <span class=nb>type</span><span class=p>(</span><span class=s2>&#34;0123&#34;</span><span class=o>.</span><span class=n>zfill</span><span class=p>(</span><span class=mi>10</span><span class=p>))</span>
-<span class=o>&lt;</span><span class=k>class</span> <span class=err>&#39;</span><span class=nc>str</span><span class=s1>&#39;&gt;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=参考链接>参考链接</h5>
-<ul>
-<li><a href=https://www.cnblogs.com/jebeljebel/p/4006433.html>python中str函数isdigit、isdecimal、isnumeric的区别</a></li>
-<li><a href=https://www.runoob.com/python/att-string-splitlines.html>Python splitlines()方法</a></li>
-<li><a href=https://www.runoob.com/python3/python3-string.html>Python3 字符串</a></li>
-<li><a href=https://www.cnblogs.com/DC0307/p/9408848.html>课时14：字符串：各种奇葩的内置方法</a></li>
-</ul>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/python/>Python</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/coreos-add-bash-completion/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=s2>&#34;apple&#34;</span><span class=o>.</span><span class=n>zfill</span><span class=p>(</span><span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;00000apple&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>type</span><span class=p>(</span><span class=s2>&#34;0123&#34;</span><span class=o>.</span><span class=n>zfill</span><span class=p>(</span><span class=mi>10</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;</span><span class=k>class</span> <span class=err>&#39;</span><span class=nc>str</span><span class=s1>&#39;&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=参考链接>参考链接</h5><ul><li><a href=https://www.cnblogs.com/jebeljebel/p/4006433.html>python中str函数isdigit、isdecimal、isnumeric的区别</a></li><li><a href=https://www.runoob.com/python/att-string-splitlines.html>Python splitlines()方法</a></li><li><a href=https://www.runoob.com/python3/python3-string.html>Python3 字符串</a></li><li><a href=https://www.cnblogs.com/DC0307/p/9408848.html>课时14：字符串：各种奇葩的内置方法</a></li></ul></div><footer class=post-footer><div class=post-tags><a href=/tags/python/>Python</a></div><nav class=post-nav><a class=prev href=/post/coreos-add-bash-completion/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">CoreOS 添加 bash-completion 命令补全</span>
-<span class="prev-text nav-mobile">上一篇</span>
-</a>
-<a class=next href=/post/docker-login-error-saving-credentials/>
-<span class="next-text nav-default">Docker login 报证书存储错误的解决办法</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/docker-login-error-saving-credentials/><span class="next-text nav-default">Docker login 报证书存储错误的解决办法</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=vcomments></div>
-<script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
 <script src=//unpkg.com/valine/dist/Valine.min.js></script>
-<script type=text/javascript>new Valine({el:'#vcomments',appId:'GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz',appKey:'cq9Rl1lkMWGfkEoq93b6t3bJ',notify:!0,verify:!0,avatar:'mp',placeholder:'Say something...',visitor:!1})</script>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
-<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
-</span>
+<script type=text/javascript>new Valine({el:"#vcomments",appId:"GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz",appKey:"cq9Rl1lkMWGfkEoq93b6t3bJ",notify:!0,verify:!0,avatar:"mp",placeholder:"Say something...",visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
 <span class=division>|</span>
-<span class=theme-info>
-主题 -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<span class=copyright-year>
-&copy;
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
 2018 -
-2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-138489412-1','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<script id=baidu_push>(function(){var a,c,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.async=!0,c=window.location.protocol.split(':')[0],c==='https'?a.src='https://zz.bdstatic.com/linksubmit/push.js':a.src='http://push.zhanzhang.baidu.com/push.js',b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script>
-</body>
-</html>
+<script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-138489412-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){if(window.location.hostname==="localhost")return;var t,n,e=document.createElement("script");e.async=!0,n=window.location.protocol.split(":")[0],n==="https"?e.src="https://zz.bdstatic.com/linksubmit/push.js":e.src="http://push.zhanzhang.baidu.com/push.js",t=document.getElementsByTagName("script")[0],t.parentNode.insertBefore(e,t)})()</script></body></html>
