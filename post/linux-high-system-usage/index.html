@@ -1,0 +1,173 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>记一次 system usage 占用高的解决过程 - 闲隅</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="Fimreal"><meta name=description content="这些天遇到一个奇怪问题，Linux 服务器负载持续在6以上，system usage 占用超过50%，但是通过 找不到高 cpu 占用的进程"><meta name=keywords content="perf,top"><meta name=generator content="Hugo 0.109.0 with theme even"><link rel=canonical href=https://blog.epurs.com/post/linux-high-system-usage/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.520181dd342d9369197dd9e27d41b8f7108626419bf37348947efbbba4d9724c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="记一次 system usage 占用高的解决过程"><meta property="og:description" content="这些天遇到一个奇怪问题，Linux 服务器负载持续在6以上，system usage 占用超过50%，但是通过 找不到高 cpu 占用的进程"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.epurs.com/post/linux-high-system-usage/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-12-26T11:50:09+08:00"><meta property="article:modified_time" content="2022-12-26T15:40:42+08:00"><meta itemprop=name content="记一次 system usage 占用高的解决过程"><meta itemprop=description content="这些天遇到一个奇怪问题，Linux 服务器负载持续在6以上，system usage 占用超过50%，但是通过 找不到高 cpu 占用的进程"><meta itemprop=datePublished content="2022-12-26T11:50:09+08:00"><meta itemprop=dateModified content="2022-12-26T15:40:42+08:00"><meta itemprop=wordCount content="1717"><meta itemprop=keywords content="linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="记一次 system usage 占用高的解决过程"><meta name=twitter:description content="这些天遇到一个奇怪问题，Linux 服务器负载持续在6以上，system usage 占用超过50%，但是通过 找不到高 cpu 占用的进程"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>闲隅</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>闲隅</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>记一次 system usage 占用高的解决过程</h1><div class=post-meta><span class=post-time>2022-12-26</span><div class=post-category><a href=/categories/linux/>linux</a></div><span class=more-meta>约 1717 字</span>
+<span class=more-meta>预计阅读 4 分钟</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#异常服务器状态>异常服务器状态</a></li><li><a href=#排查解决过程>排查解决过程</a></li><li><a href=#一些想法>一些想法</a></li></ul></nav></div></div><div class=post-content><p>最近有台 2c 服务器负载经常维持在6-9，每天跑定时任务时间还会因为 cpu 占用过高报警，登上去 <code>ps aux | sort -nk3</code>查看进程 cpu 占用都很低，top 命令可以直观看到进程 cpu 占用也只有不到 30%，但是 sy 占用高达60%，显示系统负载非常高。</p><h2 id=异常服务器状态>异常服务器状态</h2><p>top 命令部分结果如下，可以看到 us 占用并不高，问题应该是出在 sy 占用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>top - 08:38:18 up <span class=m>374</span> days, 16:40,  <span class=m>1</span> user,  load average: 7.19, 7.18, 7.31
+</span></span><span class=line><span class=cl>Tasks: <span class=m>173</span> total,   <span class=m>5</span> running, <span class=m>167</span> sleeping,   <span class=m>0</span> stopped,   <span class=m>1</span> zombie
+</span></span><span class=line><span class=cl>%Cpu<span class=o>(</span>s<span class=o>)</span>: 26.3 us, 57.4 sy,  0.0 ni, 16.1 id,  0.0 wa,  0.0 hi,  0.2 si,  0.0 st
+</span></span><span class=line><span class=cl>KiB Mem :  <span class=m>8010460</span> total,   <span class=m>859648</span> free,  <span class=m>4964672</span> used,  <span class=m>2186140</span> buff/cache
+</span></span><span class=line><span class=cl>KiB Swap:        <span class=m>0</span> total,        <span class=m>0</span> free,        <span class=m>0</span> used.  <span class=m>2650992</span> avail Mem
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+</span></span><span class=line><span class=cl><span class=m>11325</span> root      <span class=m>10</span> -10  189.2m  68.2m   6.1m S  23.2  0.9   7163:02 /usr/local/aegis/aegis_client/aegis_11_41/AliYunDunMonitor
+</span></span><span class=line><span class=cl><span class=m>11461</span> root      <span class=m>20</span>   <span class=m>0</span> 1225.2m 396.4m   3.5m S  12.9  5.1  30737:18 sdsvrd -d
+</span></span><span class=line><span class=cl> <span class=m>4150</span> root      <span class=m>10</span> -10 1028.6m  37.3m   1.2m S   1.3  0.5   1771:11 /usr/local/aegis/alihips/AliHips
+</span></span></code></pre></td></tr></table></div></div><p>查看系统日志，只有潦潦一些 sshd 登录记录。</p><p>内存很空闲，磁盘也完全不紧张，没有读写压力。</p><h2 id=排查解决过程>排查解决过程</h2><p>通过 google 确实找到了不错的思路，参考下文一个 php 博主的压力测试帖子，提到了使用 perf 工具排查系统调用损耗。</p><p><a href=https://learnku.com/articles/39516>https://learnku.com/articles/39516</a></p><p>安装 perf 工具，参考文中办法生成报告。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 切换到 root</span>
+</span></span><span class=line><span class=cl><span class=c1># sudo su -</span>
+</span></span><span class=line><span class=cl>$ <span class=nb>cd</span> /tmp
+</span></span><span class=line><span class=cl><span class=c1># 等待15s 左右，ctrl+c 打断</span>
+</span></span><span class=line><span class=cl>$ perf record -g
+</span></span><span class=line><span class=cl>^C<span class=o>[</span> perf record: Woken up <span class=m>77</span> <span class=nb>times</span> to write data <span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=o>[</span> perf record: Captured and wrote 19.891 MB perf.data <span class=o>(</span><span class=m>102521</span> samples<span class=o>)</span> <span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=c1># 读取记录</span>
+</span></span><span class=line><span class=cl>$ perf report
+</span></span></code></pre></td></tr></table></div></div><p>记录部分如下，在终端中按 e 可以展开，按 d 合上：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>Samples: 102K of event <span class=s1>&#39;cpu-clock&#39;</span>, Event count <span class=o>(</span>approx.<span class=o>)</span>: <span class=m>25630250000</span>
+</span></span><span class=line><span class=cl>  Children      Self  Command          Shared Object                      Symbol
+</span></span><span class=line><span class=cl>+   19.77%     0.01%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> system_call_fastpath
+</span></span><span class=line><span class=cl>+   15.91%     0.02%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> cpu_startup_entry
+</span></span><span class=line><span class=cl>+   15.56%     0.02%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> arch_cpu_idle
+</span></span><span class=line><span class=cl>+   15.54%     0.04%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> default_idle
+</span></span><span class=line><span class=cl>+   15.49%    15.49%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> native_safe_halt
+</span></span><span class=line><span class=cl>+   11.01%     0.00%  ps               <span class=o>[</span>unknown<span class=o>]</span>                          <span class=o>[</span>k<span class=o>]</span> 0x0000000000000800
+</span></span><span class=line><span class=cl>+    8.70%     0.04%  ps               libc-2.17.so                       <span class=o>[</span>.<span class=o>]</span> __GI___libc_read
+</span></span><span class=line><span class=cl>+    8.62%     0.02%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> sys_read
+</span></span><span class=line><span class=cl>+    8.57%     0.03%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> vfs_read
+</span></span><span class=line><span class=cl>+    8.54%     0.00%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> start_secondary
+</span></span><span class=line><span class=cl>+    7.82%     0.92%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> ReleaseProcessNotify
+</span></span><span class=line><span class=cl>+    7.50%     0.04%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> seq_read
+</span></span><span class=line><span class=cl>+    7.40%     0.00%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> x86_64_start_kernel
+</span></span><span class=line><span class=cl>+    7.40%     0.00%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> x86_64_start_reservations
+</span></span><span class=line><span class=cl>+    7.40%     0.00%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> start_kernel
+</span></span><span class=line><span class=cl>+    7.40%     0.00%  swapper          <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> rest_init
+</span></span><span class=line><span class=cl>+    7.25%     0.00%  killmft.sh       libc-2.17.so                       <span class=o>[</span>.<span class=o>]</span> __execve
+</span></span><span class=line><span class=cl>+    7.17%     0.00%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> stub_execve
+</span></span><span class=line><span class=cl>+    7.17%     0.00%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> sys_execve
+</span></span><span class=line><span class=cl>+    7.16%     0.00%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> do_execve_common.isra.25
+</span></span><span class=line><span class=cl>+    6.88%     0.00%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> search_binary_handler
+</span></span><span class=line><span class=cl>+    6.75%     0.02%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> proc_single_show
+</span></span><span class=line><span class=cl>+    6.26%     0.00%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> LoadBinaryNotify
+</span></span><span class=line><span class=cl>+    6.25%     0.01%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> ReleaseDebugPerf
+</span></span><span class=line><span class=cl>+    6.24%     3.57%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> FnMatch
+</span></span><span class=line><span class=cl>+    5.91%     0.03%  ps               libc-2.17.so                       <span class=o>[</span>.<span class=o>]</span> __GI___libc_open
+</span></span><span class=line><span class=cl>+    5.88%     0.16%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> InitFtraceHook
+</span></span><span class=line><span class=cl>+    5.79%     0.00%  killmft.sh       <span class=o>[</span>unknown<span class=o>]</span>                          <span class=o>[</span>k<span class=o>]</span> 0x00000000022aedb0
+</span></span><span class=line><span class=cl>+    5.67%     0.00%  killmft.sh       <span class=o>[</span>unknown<span class=o>]</span>                          <span class=o>[</span>k<span class=o>]</span> 0x00000000022aed30
+</span></span><span class=line><span class=cl>+    5.20%     0.11%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> BuildProcOwnerChain
+</span></span><span class=line><span class=cl>+    5.07%     0.16%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> proc_pid_status
+</span></span><span class=line><span class=cl>+    4.10%     0.00%  AliYunDunMonito  libaqsUtil.so.1                    <span class=o>[</span>.<span class=o>]</span> aqs::CThreadUtil::ThreadFunc
+</span></span><span class=line><span class=cl>+    4.06%     0.01%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> sys_open
+</span></span><span class=line><span class=cl>+    3.82%     0.04%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> do_sys_open
+</span></span><span class=line><span class=cl>+    3.67%     0.00%  ps               <span class=o>[</span>unknown<span class=o>]</span>                          <span class=o>[</span>.<span class=o>]</span> <span class=m>0000000000000000</span>
+</span></span><span class=line><span class=cl>+    3.65%     0.20%  killmft.sh       <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> MatchOpe
+</span></span><span class=line><span class=cl>+    3.60%     1.18%  ps               <span class=o>[</span>kernel.kallsyms<span class=o>]</span>                  <span class=o>[</span>k<span class=o>]</span> vsnprintf
+</span></span></code></pre></td></tr></table></div></div><p>可以明显发现 ps 命令占用特别高，而且重复出现了一个脚本名字 <code>killmft.sh</code> 。<code>swapper</code> 是内核空闲时间跑的，可以忽略。</p><p>现在目标明确了，大概猜测一下有某个进程高频率调用<code>killmft.sh</code>这个脚本，而脚本里用到了 ps 命令，造成内核不停在查询进程信息，表现就是看不到高 cpu 进程存在，但是内核又占用了大量 cpu 时间。</p><p>查一下<code>killmft.sh</code>相关进程：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ ps aux <span class=p>|</span> grep killmft
+</span></span><span class=line><span class=cl>xxx  <span class=m>12635</span>  0.0  0.0 <span class=m>113412</span>   <span class=m>744</span> ?        Ss   3月07  35:53 /bin/bash /home/xxx/killmft.sh
+</span></span><span class=line><span class=cl>xxx  <span class=m>12829</span>  0.0  0.0 <span class=m>112828</span>   <span class=m>980</span> pts/0    S+   09:07   0:00 grep --color<span class=o>=</span>auto killmft
+</span></span><span class=line><span class=cl>xxx  <span class=m>12830</span>  0.0  0.0 <span class=m>113284</span>   <span class=m>556</span> ?        S    09:07   0:00 /bin/bash /home/xxx/killmft.sh
+</span></span><span class=line><span class=cl>xxx  <span class=m>22615</span>  0.0  0.0 <span class=m>113412</span>   <span class=m>760</span> ?        S    3月07  38:47 sh killmft.sh
+</span></span><span class=line><span class=cl>xxx  <span class=m>22942</span>  0.0  0.0 <span class=m>113412</span>   <span class=m>744</span> ?        Ss   3月07  35:54 /bin/bash /home/xxx/killmft.sh
+</span></span><span class=line><span class=cl>xxx  <span class=m>24778</span>  0.6  0.0 <span class=m>113284</span>   <span class=m>616</span> ?        Ss   3月07 2770:30 /bin/bash /home/xxx/killmft.sh
+</span></span></code></pre></td></tr></table></div></div><p>竟然发现多条进程都在跑，脚本内容：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ cat /proc/22615/fd/255
+</span></span><span class=line><span class=cl><span class=c1>#!/bin/bash</span>
+</span></span><span class=line><span class=cl><span class=k>while</span> <span class=nb>true</span>
+</span></span><span class=line><span class=cl><span class=k>do</span>
+</span></span><span class=line><span class=cl>  <span class=nv>PIDS</span><span class=o>=</span><span class=sb>`</span>ps uax<span class=p>|</span>grep sclient.jar<span class=p>|</span>egrep <span class=s1>&#39;bak|0131000001&#39;</span><span class=p>|</span>grep -v grep <span class=p>|</span>awk <span class=s1>&#39;{split($10,a,&#34;:&#34;);if (a[1] &gt;= 1 ) print $2}&#39;</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>  <span class=k>for</span> pid in <span class=si>${</span><span class=nv>PIDS</span><span class=p>[@]</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>  <span class=k>do</span>
+</span></span><span class=line><span class=cl>    <span class=nb>kill</span> <span class=nv>$pid</span>
+</span></span><span class=line><span class=cl>  <span class=k>done</span>
+</span></span><span class=line><span class=cl>  sleep <span class=m>10</span>
+</span></span><span class=line><span class=cl><span class=k>done</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里有个小技巧，fd/255 通常对应的是执行脚本。</p><p>脚本内容很简单，检查 mft 进程，执行超过 1分钟就杀掉，用 while true 保证 10s 执行一次。</p><p>脚本本身10s 一次频率还能接受，但是上面进程里同时发现了 5 条执行记录，平均 2s 就要执行一次 ps 命令，或许一台轻量的 2c 服务器就是这样被拖垮的。</p><p>于是我主动 kill 掉其中4个进程，发现负载快速降低到了 0.x，那么就可以肯定罪魁祸首就是它。</p><h2 id=一些想法>一些想法</h2><p>最近也是遇到光大 mft 客户端升级，免不了要更新原来的一些 bash 脚本。银行的客户端怎么说呢，更新次数不多，但问题不少。我不好说人银行技术怎么样，毕竟下决心更新一个近20年的服务已经很让人感动了，战战兢兢改脚本只能说是我的问题。</p><p>bash 这种脚本化语言，很容易出现不按预期执行的情况，比如 bash 搞成 sh，test 判断出错，甚至是保留字符被认为是命令等等，问题千奇百怪。bash 作为运维处理简单的项目时方便好用，但是写的越长，实现功能越复杂，hack 用法越多，越容易出现问题。所以说写 bash 脚本时，不能贪图简单像命令行一行就想解决问题。写的代码多，代码冗余并不代表质量不好，做好异常判断很重要。</p><p>脚本嘛，修修补补是不可避免的。文中出现的问题其实很好解决，在代码里生成一个 pid 文件避免重复执行即可。</p><p>作运维总结经验很重要，这还是第一次成功排查到 sy 占用高问题的原因并且成功解决了。自己总结的笔记今年又厚了好多，软件也变得越来越卡，要找个机会把东西都归档一下，或者整理下放在github/博客里记录了。</p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>linux</a></div><nav class=post-nav><a class=next href=/post/os-csi/><span class="next-text nav-default">oss/cos 也能动态创建 pv</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=vcomments></div><script src=//cdn1.lncld.net/static/js/3.0.4/av-min.js></script>
+<script src=//unpkg.com/valine/dist/Valine.min.js></script>
+<script type=text/javascript>new Valine({el:"#vcomments",appId:"GbB0g7iuHvLyDClFmsBwewUS-gzGzoHsz",appKey:"cq9Rl1lkMWGfkEoq93b6t3bJ",notify:!0,verify:!0,avatar:"mp",placeholder:"Say something...",visitor:!1})</script></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:&amp;#108;&amp;#109;&amp;#114;&amp;#64;&amp;#101;&amp;#112;&amp;#117;&amp;#114;&amp;#115;&amp;#46;&amp;#99;&amp;#111;&amp;#109; class="iconfont icon-email" title=email></a>
+<a href=https://blog.epurs.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2018 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>Fimreal</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-138489412-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script>
+<script id=baidu_push>(function(){if(window.location.hostname==="localhost")return;var t,n,e=document.createElement("script");e.async=!0,n=window.location.protocol.split(":")[0],n==="https"?e.src="https://zz.bdstatic.com/linksubmit/push.js":e.src="http://push.zhanzhang.baidu.com/push.js",t=document.getElementsByTagName("script")[0],t.parentNode.insertBefore(e,t)})()</script></body></html>
