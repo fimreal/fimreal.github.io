@@ -251,9 +251,9 @@ rabbitmqctl set_policy ha-all "^" '{"ha-mode":"all", "ha-sync-mode":"automatic"}
 最终效果如下图，在 dashboard 中可以查看到 ha-all 策略生效。policies 冲可以看到具体策略信息
 
 
-![](https://od.epurs.com/images/2020/05/15/XmYNb1VBe2/Snipaste_2020-05-15_13-21-01.png)
+![](https://od.epurs.com/api/raw/?path=/images/2020/05/15/XmYNb1VBe2/Snipaste_2020-05-15_13-21-01.png)
 
-![](https://od.epurs.com/images/2020/05/15/LzHpl19zgN/Snipaste_2020-05-15_13-23-26.png)
+![](https://od.epurs.com/api/raw/?path=/images/2020/05/15/LzHpl19zgN/Snipaste_2020-05-15_13-23-26.png)
 
 
 ### 四、监控相关(待补充)

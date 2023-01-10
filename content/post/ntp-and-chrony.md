@@ -84,7 +84,7 @@ NTP 服务器为了支持服务需要启用 UDP 123端口。当我们要利用 T
 
 Linux 中的 glibc 已提供许多编译好的时区文件，存放于 `/usr/share/zoneinfo` 中，包含大多数国家和城市的时区
 
-![zoneinfo](https://od.epurs.com/images/2018/01/10/timezone.png)
+![zoneinfo](https://od.epurs.com/api/raw/?path=/images/2018/01/10/timezone.png)
 
 方法一：修改 `/etc/localtime` 文件，该文件定义了当前系统所在的 local time zone，将 `/usr/share/zoneinfo`中的 time zone 文件符号链接至该文件即可。
 

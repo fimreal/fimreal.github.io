@@ -50,7 +50,7 @@ sequenceDiagrams:
 
 可以高亮过滤 `tag` 内容，例如：
 
-![](https://od.epurs.com/images/2019/06/11/qrJtodTdzt/docker_tags.png)
+![](https://od.epurs.com/api/raw/?path=/images/2019/06/11/qrJtodTdzt/docker_tags.png)
 
 
 ```bash

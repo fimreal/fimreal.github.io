@@ -184,11 +184,11 @@ helm upgrade --install fluent-bit grafana/fluent-bit \
 
 选择创建 Loki
 
-![img](https://od.epurs.com/images/2022/06/21/4QpacQz2Si/%E5%88%9B%E5%BB%BAloki.png)
+![img](https://od.epurs.com/api/raw/?path=/images/2022/06/21/4QpacQz2Si/%E5%88%9B%E5%BB%BAloki.png)
 
 填入地址（替换掉变量）：http://loki.${LOKI_NAMESPACE}.svc.cluster.local:3100
 
-![img](https://od.epurs.com/images/2022/06/21/laVa2Ga8ve/loki%E5%9C%B0%E5%9D%80.png?)
+![img](https://od.epurs.com/api/raw/?path=/images/2022/06/21/laVa2Ga8ve/loki%E5%9C%B0%E5%9D%80.png)
 
 其他不需要改动，点击 Save & test 保存配置。
 
@@ -212,7 +212,7 @@ loki-0                             6m           40Mi</pre><p id="u3a7c8218" clas
 
 在 Loki 页面，点击 Log browser 按条件过滤，例如选择使用 app Label 选择，选到需要的 app 名字，点击 Show logs 查看日志。
 
-![img](https://od.epurs.com/images/2022/06/21/7nZtXldBKY/%E6%97%A5%E5%BF%97%E9%80%89%E6%8B%A9.png)
+![img](https://od.epurs.com/api/raw/?path=/images/2022/06/21/7nZtXldBKY/%E6%97%A5%E5%BF%97%E9%80%89%E6%8B%A9.png)
 
 生成查询语法用`{}`括起来。例如：
 
@@ -222,7 +222,7 @@ loki-0                             6m           40Mi</pre><p id="u3a7c8218" clas
 
 查询结果如下图：
 
-![img](https://od.epurs.com/images/2022/06/21/kIpsE1YRFl/%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A2.png)
+![img](https://od.epurs.com/api/raw/?path=/images/2022/06/21/kIpsE1YRFl/%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A2.png)
 
 基础语法使用如下，用“,”隔开多个条件
 
@@ -248,4 +248,4 @@ loki-0                             6m           40Mi</pre><p id="u3a7c8218" clas
 {container="traefik",namespace="kube-system"} !~ "/ping" !~"machine"
 ```
 
-![img](https://od.epurs.com/images/2022/06/21/ZInO7Q6528/%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A22.png)
+![img](https://od.epurs.com/api/raw/?path=/images/2022/06/21/ZInO7Q6528/%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A22.png)

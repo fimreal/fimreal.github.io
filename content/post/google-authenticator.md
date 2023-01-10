@@ -168,13 +168,13 @@ pam 控制命令简单说明：
 
 安装打开后，点击右上角 “+” ，选择 扫描二维码或者输入验证码
 
-![](https://od.epurs.com/images/2019/06/06/OrQR5XLo5p/google_authentication_0.png)
+![](https://od.epurs.com/api/raw/?path=/images/2019/06/06/OrQR5XLo5p/google_authentication_0.png)
 
 在系统中可以查看 `/root/.google_authenticator` 文件找到配置的验证码
 
 手机端输入后保存
 
-![](https://od.epurs.com/images/2019/06/06/yKcQVHE4DR/google_authentication_1.png)
+![](https://od.epurs.com/api/raw/?path=/images/2019/06/06/yKcQVHE4DR/google_authentication_1.png)
 
 
 ### 验证测试
